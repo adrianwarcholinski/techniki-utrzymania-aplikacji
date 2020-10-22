@@ -1,15 +1,23 @@
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "th7nder/isdp-quick-centos"
   # config.vm.box = "centos/7"
   # config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "th7nder/isdp-quick-centos"
   config.vm.synced_folder "./data", "/vagrant_data"
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "4096"
   end
 
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
+  c1.vm.provision "shell", run: "always", path: "client-scripts/client-1-up.sh"
+
+  config.vm.define "tua-maschine" do |tua|
+    tua.vm.hostname = "tua-maschine"
+    tua.vm.provider "virtualbox" do |v|
+      v.name = "ClientMachine1"
+      v.memory = 256
+    end
+
+    # scripts
+    tua.vm.provision "shell", run: "always", path: "scripts/wildfly.sh"
+  end
 end
