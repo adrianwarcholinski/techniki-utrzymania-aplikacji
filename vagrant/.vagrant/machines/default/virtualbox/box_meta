@@ -1,1 +1,1 @@
-{"name":"ubuntu/bionic64","version":"20201016.0.0","provider":"virtualbox","directory":"boxes/ubuntu-VAGRANTSLASH-bionic64/20201016.0.0/virtualbox"}
+{"name":"th7nder/isdp-quick-centos","version":"0.0.1","provider":"virtualbox","directory":"boxes/th7nder-VAGRANTSLASH-isdp-quick-centos/0.0.1/virtualbox"}

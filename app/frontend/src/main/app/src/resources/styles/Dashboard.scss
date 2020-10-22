@@ -1,0 +1,108 @@
+@import "Colors";
+
+body {
+  min-height: 100vh;
+}
+
+.root {
+  background-image: url("../images/background.jpg");
+  min-height: 100vh;
+}
+
+.sidebar {
+  backdrop-filter: blur(2px);
+  background-color: $color-dark-transparent-background;
+  text-align: center;
+  min-height: 100%;
+  color: white;
+}
+
+%menu-item {
+  padding-left: 0 !important;
+  margin: auto !important;
+  width: 90% !important;
+}
+
+.logo-item {
+  @extend %menu-item;
+}
+
+.menu-button-item {
+  @extend %menu-item;
+  margin-bottom: 20px !important;
+  border-radius: 2px !important;
+  transition-property: background-color !important;
+  transition-duration: 0.5s !important;
+}
+
+.menu-active-item-admin {
+  background-color: $color-red !important;
+  box-shadow: $color-red-shadow;
+}
+
+.menu-active-item-employee {
+  background-color: $color-turquoise !important;
+  box-shadow: $color-turquoise-shadow;
+}
+
+.menu-active-item-customer {
+  background-color: $color-green !important;
+  box-shadow: $color-green-shadow;
+}
+
+.menu-icon {
+  color: white !important;
+  margin-left: 10px;
+  min-width: 30px !important;
+}
+
+.logo-icon {
+  margin-left: 10px;
+  min-width: 40px !important;
+}
+
+.menu-text {
+  color: $color-sidebar-button-font;
+  margin: 10px;
+}
+
+.header {
+  height: 40px;
+}
+
+.content {
+  background-color: $color-paper;
+  padding: 40px 5vh 2px 5vh;
+  min-height: calc(100% - 90px);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: $color-paper;
+  height: 50px;
+  color: $color-dark-grey;
+}
+
+.divider {
+  background: rgba(180, 180, 180, 0.3) !important;
+  height: 1px !important;
+  margin-bottom: 20px !important;
+}
+
+.card-header {
+  color: white;
+  font-weight: 300 !important;
+  background: $color-purple-gradient;
+  box-shadow: $color-purple-shadow;
+  border-radius: 4px;
+  width: 98%;
+  position: relative;
+  top: -20px;
+  margin: auto;
+}
+
+.MuiCard-root {
+  overflow: visible !important;
+}

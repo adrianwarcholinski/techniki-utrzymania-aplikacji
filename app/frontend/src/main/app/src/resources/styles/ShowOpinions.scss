@@ -1,0 +1,63 @@
+@import "Colors";
+
+
+.opinion-header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+
+}
+
+.opinion {
+  text-align: justify;
+  border-bottom: 1px solid #e8d8eb;
+  box-sizing: border-box;
+}
+
+.opinion-content{
+  white-space: pre-line;
+}
+
+.opinion:last-child {
+  border-bottom: none;
+}
+
+.opinion-container {
+}
+
+
+.opinion-container::-webkit-scrollbar{
+  width: 2px;
+}
+
+/* Track */
+.opinion-container::-webkit-scrollbar-track {
+  background: #e8d8eb;
+}
+
+/* Handle */
+.opinion-container::-webkit-scrollbar-thumb {
+  background: #ab47bc
+}
+
+.info-customer{
+  display: table;
+  background-color: #eeeeee;
+  height: 80%;
+  text-align: center;
+  width: 100%;
+}
+
+.info-element{
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 20px;
+}
+
+.info-employee {
+  display: table;
+  background-color: #eeeeee;
+  height: 100%;
+  text-align: center;
+  width: 100%;
+}

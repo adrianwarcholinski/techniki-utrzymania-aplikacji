@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+    <persistence-unit name="ssbd01mokPU" transaction-type="JTA">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>java:app/jdbc/ssbd01mokDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <shared-cache-mode>NONE</shared-cache-mode>
+        <properties>
+            <property name="eclipselink.logging.level" value="OFF"/>
+            <property name="eclipselink.canonicalmodel.subpackage" value="mok"/>
+            <property name="eclipselink.logging.exceptions" value="false"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="ssbd01morPU" transaction-type="JTA">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>java:app/jdbc/ssbd01morDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <shared-cache-mode>NONE</shared-cache-mode>
+        <properties>
+            <property name="eclipselink.logging.level" value="OFF"/>
+            <property name="eclipselink.canonicalmodel.subpackage" value="mor"/>
+            <property name="eclipselink.logging.exceptions" value="false"/>
+        </properties>
+    </persistence-unit>
+
+
+</persistence>
