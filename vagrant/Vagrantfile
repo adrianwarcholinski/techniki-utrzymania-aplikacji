@@ -8,8 +8,6 @@ Vagrant.configure("2") do |config|
     vb.memory = "4096"
   end
 
-  c1.vm.provision "shell", run: "always", path: "client-scripts/client-1-up.sh"
-
   config.vm.define "tua-maschine" do |tua|
     tua.vm.hostname = "tua-maschine"
     tua.vm.provider "virtualbox" do |v|
