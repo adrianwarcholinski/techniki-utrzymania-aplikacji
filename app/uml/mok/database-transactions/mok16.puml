@@ -1,0 +1,20 @@
+@startuml
+title MOK.16 Przeglądaj konta wszystkich użytkowników
+autoactivate on
+actor Admin
+boundary MainMenu
+participant AccountEndpoint
+participant AccountManager
+control AccountFacadeReadCommitted
+autonumber
+    Admin -> MainMenu: "Show all accounts" button clicked
+        MainMenu -> AccountEndpoint: getAllAccounts()
+                AccountEndpoint -> AccountManager: getAllAccounts()
+                group RO, read committed
+                    AccountManager -> AccountFacadeReadCommitted: getAllSortedById()
+                    return list of all account
+                end
+                return list of all accounts
+       return status code 200\nlist of all accounts
+     return All accounts view
+@enduml

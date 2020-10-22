@@ -1,0 +1,77 @@
+@startuml
+
+title MOR.25 Usuń egzemplarz broni
+autoactivate on
+actor Employee
+
+boundary DeleteWeaponView
+participant WeaponEndpoint
+participant WeaponManager
+participant ReservationUtils
+control WeaponFacadeSerializable
+entity WeaponEntity
+
+alt provided data is valid
+autonumber
+    Employee -> DeleteWeaponView: button 'delete' clicked
+            DeleteWeaponView -> WeaponEndpoint: removeWeapon(serialNumber)
+                    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+                        group RW, serializable
+                        WeaponManager -> WeaponFacadeSerializable: findBySerial(serialNumber)
+                        return optional with weaponToDeactivate
+                        WeaponManager -> WeaponEntity: isActive()
+                        return true
+                        WeaponManager -> ReservationUtils: checkIsActiveReservation(weaponToDeactivate.getReservations())
+                        return false
+                        WeaponManager -> WeaponEntity: setActive(false)
+                        return success
+                        WeaponManager -> WeaponFacadeSerializable: edit(weaponToDeactivate)
+                        return success
+                        end
+                    return success
+            return status code 200
+        return success confirmation
+else weapon has active reservation
+autonumber
+    Employee -> DeleteWeaponView: button 'delete' clicked
+            DeleteWeaponView -> WeaponEndpoint: removeWeapon(serialNumber)
+                    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+                        group RW, serializable
+                        WeaponManager -> WeaponFacadeSerializable: findBySerial(serialNumber)
+                        return optional with weaponToDeactivate
+                        WeaponManager -> WeaponEntity: isActive()
+                        return true
+                        WeaponManager -> ReservationUtils: checkIsActiveReservation(weaponToDeactivate.getReservations())
+                        return true
+                        end
+                    return weapon has active reservation
+            return status code 400\nweapon has active reservation
+        return 'weapon has active reservation' message
+else weapon already deactivated
+autonumber
+    Employee -> DeleteWeaponView: button 'delete' clicked
+            DeleteWeaponView -> WeaponEndpoint: removeWeapon(serialNumber)
+                    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+                        group RW, serializable
+                        WeaponManager -> WeaponFacadeSerializable: findBySerial(serialNumber)
+                        return optional with weaponToDeactivate
+                        WeaponManager -> WeaponEntity: isActive()
+                        return false
+                        end
+                    return weapon already deactivated
+            return status code 400\nweapon already deactivated
+        return 'weapon already' deactivated message
+else weapon does not exist
+autonumber
+    Employee -> DeleteWeaponView: button 'delete' clicked
+            DeleteWeaponView -> WeaponEndpoint: removeWeapon(serialNumber)
+                    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+                        group RW, serializable
+                        WeaponManager -> WeaponFacadeSerializable: findBySerial(serialNumber)
+                        return empty optional
+                        end
+                    return weapon does not exist
+            return status code 400\nweapon does not exist
+        return 'weapon does not exist' message
+end
+@enduml

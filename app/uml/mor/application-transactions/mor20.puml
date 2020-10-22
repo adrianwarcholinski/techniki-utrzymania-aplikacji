@@ -1,0 +1,71 @@
+@startuml
+title MOR.20: Usuń model broni
+
+autoactivate on
+participant WeaponModelEndpoint
+participant "WeaponModelManager\nTransactionAttribute.REQUIRES_NEW" as WeaponModelManager
+control "WeaponModelFacadeSerializable\nTransactionAttribute.MANDATORY" as WeaponModelFacade
+entity WeaponModelEntity
+entity WeaponEntity
+alt weapon model is active
+autonumber
+WeaponModelEndpoint -> WeaponModelManager: removeWeaponModel (weaponModelName)
+        WeaponModelManager -> WeaponModelFacade: findByName(weaponModelName)
+        return optional with weapon model
+        WeaponModelManager -> WeaponModelEntity: isActive()
+        return true
+        WeaponModelManager -> WeaponModelEntity: setActive(false)
+        return success
+        WeaponModelManager -> WeaponModelEntity: getWeapons()
+        return list of weapons of weapon model
+        group loop [weapon in weapons extracted from weapon model]
+            WeaponModelManager -> WeaponEntity: isActive()
+            return if_active
+            opt if_active == true
+            WeaponModelManager -> WeaponEntity: getReservations()
+            return list without active reservations
+            WeaponModelManager -> WeaponEntity: setActive(false)
+            return success
+            end
+        end
+        WeaponModelManager -> WeaponModelFacade: edit(weaponModel)
+        return success
+return success
+else weapon model is booked in future reservations
+autonumber
+WeaponModelEndpoint -> WeaponModelManager: removeWeaponModel (weaponModelName)
+        WeaponModelManager -> WeaponModelFacade: findByName(weaponModelName)
+        return optional with weapon model
+        WeaponModelManager -> WeaponModelEntity: isActive()
+        return true
+        WeaponModelManager -> WeaponModelEntity: setActive(false)
+        return success
+        WeaponModelManager -> WeaponModelEntity: getWeapons()
+        return list of weapons of weapon model
+        group loop [weapon in weapons extracted from weapon model]
+            WeaponModelManager -> WeaponEntity: isActive()
+            return if_active
+            opt if_active == true
+                WeaponModelManager -> WeaponEntity: setActive(false)
+                return success
+                WeaponModelManager -> WeaponEntity: getReservations()
+                return list with active reservations
+            end
+        end
+return failure - attempt to remove weapon model with active reservations
+else weapon model is deactivated
+autonumber
+WeaponModelEndpoint -> WeaponModelManager: removeWeaponModel (weaponModelName)
+        WeaponModelManager -> WeaponModelFacade: findByName(weaponModelName)
+        return optional with weapon model
+        WeaponModelManager -> WeaponModelEntity: isActive()
+        return false
+return weapon model already deactivated
+else weapon model does not exist
+autonumber
+WeaponModelEndpoint -> WeaponModelManager: removeWeaponModel (weaponModelName)
+        WeaponModelManager -> WeaponModelFacade: findByName(weaponModelName)
+        return empty optional
+return weapon model does not exist
+end
+@enduml

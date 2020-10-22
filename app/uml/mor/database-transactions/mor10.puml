@@ -1,0 +1,94 @@
+@startuml
+
+autoactivate on
+actor Customer as User
+boundary OpinionForm
+participant OpinionEndpoint
+participant OpinionManager
+participant SecurityContext
+control CustomerFacadeReadCommitted
+control OpinionFacadeReadCommitted
+control WeaponModelFacadeReadCommitted
+entity OpinionEntity
+entity WeaponModelEntity
+
+title MOR.10 Dodaj opinię na temat modelu broni
+
+alt correct
+autonumber
+    User -> OpinionForm: 'submit' button clicked
+        OpinionForm -> OpinionEndpoint: addOpinion(opinionDto)
+        group RW, read committed
+            OpinionEndpoint -> OpinionManager: addOpinion(opinion)
+                OpinionManager -> SecurityContext: getCallerPrincipal()
+                return principal
+                OpinionManager -> CustomerFacadeReadCommitted: findByLogin(principal.getName())
+                return optional with customer
+                OpinionManager -> WeaponModelFacadeReadCommitted: findByName(opinion.getWeaponModel().getName())
+                return optional with weapon model
+                OpinionManager -> WeaponModelEntity: getOpinions()
+                return opinions about weapon model not containing opinion created by the customer
+                OpinionManager -> WeaponModelEntity: setAverageRate(newAverageRate)
+                return success
+                OpinionManager -> OpinionFacadeReadCommitted: create(opinion)
+                return success
+                OpinionManager -> WeaponModelFacadeReadCommitted: edit(weaponModel)
+                return success
+            return success
+        end
+        return status code 200
+    return 'opinion added' message
+else customer has already added opinion on this weapon model
+autonumber
+    User -> OpinionForm: 'submit' button clicked
+        OpinionForm -> OpinionEndpoint: addOpinion(opinionDto)
+        group RW, read committed
+            OpinionEndpoint -> OpinionManager: addOpinion(opinion)
+                OpinionManager -> SecurityContext: getCallerPrincipal()
+                return principal
+                OpinionManager -> CustomerFacadeReadCommitted: findByLogin(principal.getName())
+                return optional with customer
+                OpinionManager -> WeaponModelFacadeReadCommitted: findByName(opinion.getWeaponModel().getName())
+                return weapon model
+                OpinionManager -> WeaponModelEntity: getOpinions()
+                return opinions about weapon model containing opinion created by the customer
+            return customer has already added opinion on this weapon model
+        end
+        return status code 400
+    return 'customer has already added opinion on this weapon model' message
+else weapon model does not exist
+    User -> OpinionForm: 'submit' button clicked
+        OpinionForm -> OpinionEndpoint: addOpinion(opinionDto)
+        group RW, read committed
+            OpinionEndpoint -> OpinionManager: addOpinion(opinion)
+                OpinionManager -> SecurityContext: getCallerPrincipal()
+                return principal
+                OpinionManager -> CustomerFacadeReadCommitted: findByLogin(principal.getName())
+                return optional with customer
+                OpinionManager -> WeaponModelFacadeReadCommitted: findByName(opinion.getWeaponModel().getName())
+                return empty optional
+            return weapon model does not exist
+        end
+        return status code 400
+    return 'weapon model does not exist' message
+else account does not exist
+    User -> OpinionForm: 'submit' button clicked
+        OpinionForm -> OpinionEndpoint: addOpinion(opinionDto)
+        group RW, read committed
+            OpinionEndpoint -> OpinionManager: addOpinion(opinion)
+                OpinionManager -> SecurityContext: getCallerPrincipal()
+                return principal
+                OpinionManager -> CustomerFacadeReadCommitted: findByLogin(principal.getName())
+                return empty optional
+            return account does not exist
+        end
+        return status code 400
+    return 'account does not exist' message
+else invalid form
+    User -> OpinionForm: 'submit' button clicked
+        OpinionForm -> OpinionEndpoint: addOpinion(opinionDto)
+        return status code 400
+    return 'invalid input' message
+end
+
+@enduml

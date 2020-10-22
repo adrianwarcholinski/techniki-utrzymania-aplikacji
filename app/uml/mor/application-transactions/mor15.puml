@@ -1,0 +1,55 @@
+@startuml
+title MOR.15 Usuń tor
+autoactivate on
+participant AlleyEndpoint
+participant "AlleyManager\nTransactionAttribute.REQUIRES_NEW" as AlleyManager
+participant ReservationUtils
+control "AlleyFacadeSerializable\nTransactionAttribute.MANDATORY" as AlleyFacade
+entity AlleyEntity
+alt alley exists
+autonumber
+AlleyEndpoint -> AlleyManager: removeAlley(alleyName)
+   AlleyManager -> AlleyFacade: findByName(alleyName)
+   return optional with alley
+   AlleyManager -> AlleyEntity: isActive()
+   return true
+   AlleyManager -> AlleyEntity: getReservations()
+   return list of reservations for alley
+   loop reservation in reservations
+   AlleyManager -> ReservationUtils: checkIsActiveReservation(reservation)
+      return false
+   end
+   AlleyManager -> AlleyEntity: setActive(false)
+   return success
+   AlleyManager -> AlleyFacade: edit(alleyEntity)
+   return success
+return success
+else alley doesn't exist
+autonumber
+AlleyEndpoint -> AlleyManager: removeAlley(alleyName)
+    AlleyManager -> AlleyFacade: findByName(alleyName)
+    return empty optional
+return alley does not
+else alley is already deactivated
+autonumber
+AlleyEndpoint -> AlleyManager: removeAlley(alleyName)
+  AlleyManager -> AlleyFacade: findByName(alleyName)
+  return optional with alley
+  AlleyManager -> AlleyEntity: isActive()
+ return false
+return alley is already deactivated
+else attempt to remove alley with active reservations
+AlleyEndpoint -> AlleyManager: removeAlley(alleyName)
+    AlleyManager -> AlleyFacade: findByName(alleyName)
+    return optional with alley
+    AlleyManager -> AlleyEntity: isActive()
+    return true
+    AlleyManager -> AlleyEntity: getReservations()
+    return list of reservations for alley
+    loop reservation in reservations
+        AlleyManager -> ReservationUtils: checkIsActiveReservation(reservation)
+    return true
+   end
+return attempt to remove alley with active reservations
+end
+@enduml

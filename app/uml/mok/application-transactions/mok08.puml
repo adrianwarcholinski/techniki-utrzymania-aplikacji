@@ -1,0 +1,60 @@
+@startuml
+title
+MOK.8 Zmień hasło swojego konta
+end title
+
+autoactivate on
+participant AccountEndpoint
+participant "AccountManager\nTransactionAttribute.REQUIRES_NEW" as AccountManager
+control "AccountFacadeReadCommitted\nTransactionAttribute.MANDATORY" as AccountFacadeReadCommitted
+entity AccountEntity
+participant HashGenerator
+
+alt correct
+autonumber
+
+
+            AccountEndpoint -> AccountManager: changeOwnPassword(principal.getName(), oldPassword, newPassword)
+                
+                    AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getPassword()
+                    return currentPasswordHash
+                    AccountManager -> HashGenerator: verifyPassword(oldPassword, currentPasswordHash)
+                    return correct
+                    AccountManager -> HashGenerator: generatePasswordHash(newPassword)
+                    return newPasswordHash
+                    AccountManager -> AccountEntity: setPassword(newPasswordHash)
+                    return success
+
+                    AccountManager -> AccountFacadeReadCommitted: edit(account)
+                    return success
+                
+            return success
+
+else account does not exist
+autonumber
+
+            AccountEndpoint -> AccountManager: changeOwnPassword(principal.getName(), oldPassword, newPassword)
+                
+                    AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                    return empty optional
+               
+            return account does not exist
+ 
+else invalid old password
+autonumber
+
+            AccountEndpoint -> AccountManager: changeOwnPassword(principal.getName(), oldPassword, newPassword)
+                
+                    AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getPassword()
+                    return currentPasswordHash
+                    AccountManager -> HashGenerator: verifyPassword(oldPassword, currentPasswordHash)
+                    return incorrect
+               
+            return invalid old password
+ 
+end
+@enduml

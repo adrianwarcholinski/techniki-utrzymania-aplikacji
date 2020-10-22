@@ -1,0 +1,120 @@
+@startuml
+
+autoactivate on
+actor Customer as User
+boundary OpinionForm
+participant OpinionEndpoint
+participant Crypt
+participant OpinionManager
+participant SecurityContext
+control OpinionFacadeReadCommitted
+entity OpinionEntity
+entity WeaponModelEntity
+
+title MOR.12 Edytuj opinię na temat modelu broni
+
+alt correct
+autonumber
+    User -> OpinionForm: opinion view visited
+        OpinionForm -> OpinionEndpoint: getOwnOpinion(weaponModelName)
+            group RW, read committed
+                OpinionEndpoint -> OpinionManager: getOwnOpinionForWeaponModel(weaponModelName)
+                    OpinionManager -> SecurityContext: getCallerPrincipal()
+                    return principal
+                    OpinionManager -> OpinionFacadeReadCommitted: findByWeaponModelAndCustomerLogin(weaponModelName, principal.getName())
+                    return own opinion for weapon model
+                return own opinion for weapon model
+            end
+            OpinionEndpoint -> Crypt: encrypt(opinion.getId())
+            return encrypted id
+            OpinionEndpoint -> Crypt: encrypt(opinion.getVersion())
+            return encrypted version
+        return status code 200\nown opinion for weapon model
+    return own opinion displayed
+    User -> OpinionForm: 'edit' button clicked
+        OpinionForm -> OpinionEndpoint: editOpinion(opinionDto)
+            OpinionEndpoint -> Crypt: decrypt(opinion.getVersion())
+            return decrypted version
+            OpinionEndpoint -> Crypt: decrypt(opinion.getId())
+            return decrypted id
+            group RW, read committed
+            OpinionEndpoint -> OpinionManager: editOpinion(opinion)
+                OpinionManager -> SecurityContext: getCallerPrincipal()
+                return principal
+                OpinionManager -> OpinionFacadeReadCommitted: find(opinion.getId())
+                return optional with current opinion
+                OpinionManager -> OpinionEntity: getWeaponModel()
+                return commented weapon model
+                OpinionManager -> OpinionEntity: getCustomer()
+                return customer with the same login
+                OpinionManager -> WeaponModelEntity: setAverageRate(newAverageRate)
+                return success
+                OpinionManager -> OpinionEntity: copyNotChangedData(currentOpinion)
+                return success
+                OpinionManager -> OpinionFacadeReadCommitted: edit(opinion)
+                return success
+            return success
+            end
+        return status code 200
+    return 'opinion edited' message
+else opinion does not exist
+autonumber
+    User -> OpinionForm: opinion view visited
+        OpinionForm -> OpinionEndpoint: getOwnOpinion(weaponModelName)
+        group RW, read committed
+            OpinionEndpoint -> OpinionManager: getOwnOpinionForWeaponModel(weaponModelName)
+                OpinionManager -> SecurityContext: getCallerPrincipal()
+                return principal
+                OpinionManager -> OpinionFacadeReadCommitted: findByWeaponModelAndCustomerLogin(weaponModelName, principal.getName())
+                return empty optional
+            return own opinion about weapon model
+        end
+        return status code 400
+    return opinion does not exist
+else attempt to edit another customer's opinion
+autonumber
+    User -> OpinionForm: opinion view visited
+        OpinionForm -> OpinionEndpoint: getOwnOpinion(weaponModelName)
+            group RW, read committed
+                OpinionEndpoint -> OpinionManager: getOwnOpinionForWeaponModel(weaponModelName)
+                    OpinionManager -> SecurityContext: getCallerPrincipal()
+                    return principal
+                    OpinionManager -> OpinionFacadeReadCommitted: findByWeaponModelAndCustomerLogin(weaponModelName, principal.getName())
+                    return own opinion for weapon model
+            end
+            return own opinion for weapon model
+            OpinionEndpoint -> Crypt: encrypt(opinion.getId())
+            return encrypted id
+            OpinionEndpoint -> Crypt: encrypt(opinion.getVersion())
+            return encrypted version
+        return status code 200\nown opinion for weapon model
+    return own opinion displayed
+    User -> OpinionForm: 'edit' button clicked
+        OpinionForm -> OpinionEndpoint: editOpinion(opinionDto)
+            OpinionEndpoint -> Crypt: decrypt(opinion.getVersion())
+            return decrypted version
+            OpinionEndpoint -> Crypt: decrypt(opinion.getId())
+            return decrypted id
+            group RW, read committed
+            OpinionEndpoint -> OpinionManager: editOpinion(opinion)
+                OpinionManager -> SecurityContext: getCallerPrincipal()
+                return principal
+                OpinionManager -> OpinionFacadeReadCommitted: find(opinion.getId())
+                return optional with current opinion
+                OpinionManager -> OpinionEntity: getWeaponModel()
+                return commented weapon model
+                OpinionManager -> OpinionEntity: getCustomer()
+                return customer with another login
+            return attempt to edit another customer's opinion
+            end
+        return status code 400
+    return 'cannot update another customers' opinions' message
+else invalid form
+autonumber
+    User -> OpinionForm: 'submit' button clicked
+        OpinionForm -> OpinionEndpoint: editOpinion(opinionDto)
+        return status code 400
+    return 'invalid input' message
+end
+
+@enduml

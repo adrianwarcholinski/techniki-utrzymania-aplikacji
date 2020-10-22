@@ -1,0 +1,35 @@
+@startuml
+
+title MOR.23 Przeglądaj szczegóły modelu broni
+autoactivate on
+participant WeaponModelEndpoint
+participant "WeaponModelManager\nTransactionAttributeType.REQUIRES_NEW" as WeaponModelManager
+control "WeaponModelFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as WeaponModelFacade
+
+alt weapon model with such name exists
+autonumber
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return optional with weaponModelEntity
+                    WeaponModelManager -> WeaponModelEntity: isActive()
+                    return true
+            return editWeaponModelDto
+
+else weapon model with such name is inactive
+autonumber
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return optional with weaponModelEntity
+                    WeaponModelManager -> WeaponModelEntity: isActive()
+                    return false
+            return weapon model does not exist
+
+else weapon model does not exist
+autonumber
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return empty optional
+            return weapon model does not exist
+
+end
+@enduml

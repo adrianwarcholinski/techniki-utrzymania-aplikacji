@@ -1,0 +1,159 @@
+@startuml
+autoactivate on
+title MOK.18 Zaloguj się
+participant AuthenticationEndpoint
+participant "AccountManager\nTransactionAttribute.REQUIRES_NEW" as AccountManager
+control "AccountFacade\nTransactionAttribute.MANDATORY" as AccountFacade
+control "AdminFacade\nTransactionAttribute.MANDATORY" as AdmintFacade
+entity AccountEntity
+participant LastAuthenticationTimes
+participant EmailCreator
+participant EmailSender
+
+alt login and password are correct
+autonumber
+AuthenticationEndpoint -> AccountManager: getLastAuthenticationTimes(principal.getName())
+        AccountManager -> AccountFacade: findByLogin(login)
+        return optional with account
+        AccountManager -> AccountEntity: getLastUnsuccessfulAuthentication()
+        return time of last unsuccessful authentication attempt
+        AccountManager -> AccountEntity: getLastSuccessfulAuthentication()
+        return time of last successful authentication attempt
+       AccountManager -> LastAuthenticationTimes**: <<create>>
+    return lastAuthenticationTimes
+    note right of AuthenticationEndpoint
+     [...]
+    end note
+    AuthenticationEndpoint -> AccountManager: handleSuccessfulAuthentication(principal.getName(), ip,\n language, isAdmin = callerGroups.contains(Administrator))
+        AccountManager -> AccountFacade: findByLogin(login)
+        return optional with account
+        AccountManager -> AccountEntity: setLastSuccessfulAuthentication(LocalDateTime.now())
+        return success
+        AccountManager -> AccountEntity: setUnsuccessfulAuthenticationCount(0)
+        return success
+        AccountManager -> AccountEntity: setLastUsedIpAddress(ip)
+        return success
+        AccountManager -> AccountFacade: edit(account)
+        return success
+        group opt [isAdmin == true]
+        AccountManager -> EmailCreator: getAdminAuthenticationEmail(lang, account.getEmail(), ip)
+        return email
+        AccountManager -> EmailSender: sendEmail(email)
+        return success
+        end
+    return success
+else login belongs to existing account but password is incorrect\n that's first or second failed authentication attempt in a row
+AuthenticationEndpoint -> AccountManager: handleUnsuccessfulAuthentication(login)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: setLastUnsuccessfulAuthentication(LocalDateTime.now())
+    return success
+    AccountManager -> AccountEntity: setUnsuccessfulAuthenticationCount(\naccount.getUnsuccessfulAuthenticationCount + 1)
+    return success
+    AccountManager -> AccountFacade: edit(account)
+    return success
+return success
+note right of AuthenticationEndpoint
+     [...]
+end note
+AuthenticationEndpoint -> AccountManager: lockAccountAfterFailedAuthentication(login, language)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: getUnsuccessfulAuthenticationCount()
+    return count < 3
+return false
+else login belongs to existing account but password is incorrect\n that's third or subsequent failed authentication attempt in a row
+AuthenticationEndpoint -> AccountManager: handleUnsuccessfulAuthentication(login)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: setLastUnsuccessfulAuthentication(LocalDateTime.now())
+    return success
+    AccountManager -> AccountEntity: setUnsuccessfulAuthenticationCount(\naccount.getUnsuccessfulAuthenticationCount + 1)
+    return success
+    AccountManager -> AccountFacade: edit(account)
+    return success
+return success
+  note right of AuthenticationEndpoint
+     [...]
+    end note
+AuthenticationEndpoint -> AccountManager: lockAccountAfterFailedAuthentication(login, language)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: getUnsuccessfulAuthenticationCount()
+    return count >= 3
+    AccountManager -> AccountEntity: isActive()
+    return true
+    AccountManager -> AdminFacade: countActive(true)
+    return number of active admins
+    group opt [numberOfActiveAdmins == 1]
+        AccountManager -> AccountEntity: getAccessLevels()
+        return list of account access levels
+    end
+    AccountManager -> AccountEntity: setActive(false)
+    return success
+    AccountManager -> AccountEntity: setUnsuccessfulAuthenticationCount(0)
+    return success
+    AccountManager -> AccountFacade: edit(account)
+    return success
+    AccountManager -> EmailCreator: getLockAccountEmail(lang, account.getEmail())
+    return email
+    AccountManager -> EmailSender: sendEmail(email)
+    return success
+return true
+else login belongs to existing account but password is incorrect\n that's third or subsequent failed authentication attempt in a row\n,but account is already locked
+AuthenticationEndpoint -> AccountManager: handleUnsuccessfulAuthentication(login)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: setLastUnsuccessfulAuthentication(LocalDateTime.now())
+    return success
+    AccountManager -> AccountEntity: setUnsuccessfulAuthenticationCount(\naccount.getUnsuccessfulAuthenticationCount + 1)
+    return success
+    AccountManager -> AccountFacade: edit(account)
+    return success
+return success
+  note right of AuthenticationEndpoint
+     [...]
+    end note
+AuthenticationEndpoint -> AccountManager: lockAccountAfterFailedAuthentication(login, language)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: getUnsuccessfulAuthenticationCount()
+    return count >= 3
+    AccountManager -> AccountEntity: isActive()
+    return false
+return false
+else login belongs to existing account but password is incorrect\n that's third failed or subsequent authentication attempt in a row\n,but it is last admin account
+AuthenticationEndpoint -> AccountManager: handleUnsuccessfulAuthentication(login)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: setLastUnsuccessfulAuthentication(LocalDateTime.now())
+    return success
+    AccountManager -> AccountEntity: setUnsuccessfulAuthenticationCount(\naccount.getUnsuccessfulAuthenticationCount + 1)
+    return success
+    AccountManager -> AccountFacade: edit(account)
+    return success
+return success
+  note right of AuthenticationEndpoint
+     [...]
+    end note
+AuthenticationEndpoint -> AccountManager: lockAccountAfterFailedAuthentication(login, language)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return optional with account
+    AccountManager -> AccountEntity: getUnsuccessfulAuthenticationCount()
+    return count >= 3
+    AccountManager -> AccountEntity: isActive()
+    return true
+    AccountManager -> AdminFacade: countActive(true)
+    return number of active admins
+    group opt [numberOfActiveAdmins == 1]
+        AccountManager -> AccountEntity: getAccessLevels()
+        return list of account access levels with admin
+    end
+return Attempt to lock last admin
+else account with such login doesn't exist
+AuthenticationEndpoint -> AccountManager: handleUnsuccessfulAuthentication(login, ip)
+    AccountManager -> AccountFacade: findByLogin(login)
+    return empty optional
+return Account does not exist
+end
+@enduml

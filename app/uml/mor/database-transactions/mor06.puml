@@ -1,0 +1,21 @@
+@startuml
+title MOR.6: Przeglądaj wszystkie rezerwacje
+
+autoactivate on
+actor Employee
+boundary MainMenu as GUI
+participant ReservationEndpoint
+participant ReservationManager
+control ReservationFacadeReadCommitted as ReservationFacade
+autonumber
+Employee -> GUI: button 'reservations' clicked \nor checkboxes for past and canceled reservation changed
+    GUI -> ReservationEndpoint: getAllReservations(getCanceled, getPast)
+        ReservationEndpoint -> ReservationManager: getAllReservations(getCanceled, getPast)
+            group RO, read committed
+                ReservationManager -> ReservationFacade: findAll(getCanceled, getPast)
+                return list of reservations
+            end
+        return list of reservations
+    return status code 200, list of reservations
+return  list of reservations
+@enduml

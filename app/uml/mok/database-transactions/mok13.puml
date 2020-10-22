@@ -1,0 +1,1049 @@
+@startuml
+
+title MOK.13 Edytuj szczegóły konta innego użytkownika
+
+autoactivate on
+actor Administrator
+boundary EditAccountForm
+participant AccountEndpoint
+participant AccountManager
+participant EditAccountDto
+participant CardNumberDto
+participant PhoneNumberDto
+participant WorkPhoneNumberDto
+participant Crypt
+control AccountFacadeReadCommitted as AccountFacade
+control AdminFacadeReadCommitted as AdminFacade
+control CustomerFacadeReadCommitted as CustomerFacade
+control EmployeeFacadeReadCommitted as EmployeeFacade
+entity AccountEntity
+entity AdminEntity
+entity CustomerEntity
+entity EmployeeEntity
+entity AccessLevelEntity
+
+alt account details edited properly
+autonumber
+         Administrator -> EditAccountForm: 'show details' button clicked
+             EditAccountForm -> AccountEndpoint: getAccountDetails(login)
+                 AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                     AccountEndpoint -> AccountManager: getAccountDetails(login)
+                         group RW, read committed
+                                 AccountManager -> AccountFacade: findByLogin(login)
+                                 return optional with account
+                         end
+                     return account
+                     AccountEndpoint -> EditAccountDto: fromAccountEntity(account)
+                     return editAccountDto
+                     AccountEndpoint -> EditAccountDto: getVersion()
+                     return accountVersion
+                     AccountEndpoint -> Crypt: encrypt(accountVersion)
+                     return encrypted accountVersion
+                     AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+                     return success
+                     AccountEndpoint -> EditAccountDto: getId()
+                     return accountId
+                     AccountEndpoint -> Crypt: encrypt(accountId)
+                     return encrypted accountId
+                     AccountEndpoint -> EditAccountDto: setId(accountId)
+                     return success
+                     opt cardNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                         return cardNumberDto
+                         AccountEndpoint -> CardNumberDto: getId()
+                         return cardNumberId
+                         AccountEndpoint -> Crypt: encrypt(cardNumberId)
+                         return encrypted cardNumberId
+                         AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                         return success
+                         AccountEndpoint -> CardNumberDto: getVersion()
+                         return cardNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(cardNumberVersion)
+                         return encrypted cardNumberVersion
+                         AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                         return success
+                     else PhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                         return phoneNumberDto
+                         AccountEndpoint -> PhoneNumberDto: getId()
+                         return phoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberId)
+                         return encrypted phoneNumberId
+                         AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                         return success
+                         AccountEndpoint -> PhoneNumberDto: getVersion()
+                         return phoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberVersion)
+                         return encrypted phoneNumberVersion
+                         AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                         return success
+                     else WorkPhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                         return workPhoneNumberDto
+                         AccountEndpoint -> WorkPhoneNumberDto: getId()
+                         return workPhoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberId)
+                         return encrypted workPhoneNumberId
+                         AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                         return success
+                         AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                         return workPhoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberVersion)
+                         return encrypted workPhoneNumberVersion
+                         AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                         return success
+                     end
+                 return editAccountDto
+             return editAccountDto
+        return show account details
+    Administrator -> EditAccountForm: 'submit' button clicked
+        EditAccountForm -> AccountEndpoint: editAccount(editAccountDto)
+            AccountEndpoint -> AccountEndpoint: performEditAccount(editAccountDto)
+            AccountEndpoint -> EditAccountDto: getVersion()
+            return accountVersion
+            AccountEndpoint -> Crypt: decrypt(accountVersion)
+            return decrypted accountVersion
+            AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+            return success
+            AccountEndpoint -> EditAccountDto: getId()
+            return accountId
+            AccountEndpoint -> Crypt: decrypt(accountId)
+            return decrypted accountId
+            AccountEndpoint -> EditAccountDto: setId(accountId)
+            return success
+            AccountEndpoint -> EditAccountDto: convertToAccountEntity(editAccountDto)
+            return accountEntity
+            opt cardNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                return cardNumberDto
+                AccountEndpoint -> CardNumberDto: getId()
+                return cardNumberId
+                AccountEndpoint -> Crypt: decrypt(cardNumberId)
+                return decrypted cardNumberId
+                AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                return success
+                AccountEndpoint -> CardNumberDto: getVersion()
+                return cardNumberVersion
+                AccountEndpoint -> Crypt: decrypt(cardNumberVersion)
+                return decrypted cardNumberVersion
+                AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                return success
+                AccountEndpoint -> CardNumberDto: convertToAdminEntity(cardNumberDto)
+                return adminEntity
+            else PhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                return phoneNumberDto
+                AccountEndpoint -> PhoneNumberDto: getId()
+                return phoneNumberId
+                AccountEndpoint -> Crypt: decrypt(phoneNumberId)
+                return decrypted phoneNumberId
+                AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                return success
+                AccountEndpoint -> PhoneNumberDto: getVersion()
+                return phoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(phoneNumberVersion)
+                return decrypted phoneNumberVersion
+                AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                return success
+                AccountEndpoint -> PhoneNumberDto: convertToEmployeeEntity(phoneNumberDto)
+                return employeeEntity
+            else WorkPhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                return workPhoneNumberDto
+                AccountEndpoint -> WorkPhoneNumberDto: getId()
+                return workPhoneNumberId
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberId)
+                return decrypted workPhoneNumberId
+                AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                return workPhoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberVersion)
+                return decrypted workPhoneNumberVersion
+                AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: convertToCustomerEntity(workPhoneNumberDto)
+                return customerEntity
+            end
+            AccountEndpoint -> AccountManager: editUserDetails(accountEntity, adminEntity, employeeEntity, customerEntity)
+               group RW, read committed
+                    AccountManager -> AccountEntity: getId()
+                    return accountId
+                    AccountManager -> AccountFacade: find(accountId)
+                    return optional with account
+                    AccountManager -> AccountEntity: copyNotChangedDataAccount(account, accountEntity)
+                    return success
+                    AccountManager -> AdminEntity: getCardNumber()
+                    return cardNumber
+                    AccountManager -> AdminFacade: findByCardNumber(cardNumber)
+                    return optional with ownerAdminEntity
+                    AccountManager -> AccountEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniqueCardNumber(ownerAdminEntity, editedAccountLogin)
+                    return true
+
+                    AccountManager -> CustomerEntity: getPhoneNumber()
+                    return phoneNumber
+                    AccountManager -> CustomerFacade: findByPhoneNumber(phoneNumber)
+                    return optional with ownerCustomerEntity
+                    AccountManager -> CustomerEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniquePhoneNumber(ownerCustomerEntity, editedAccountLogin)
+                    return true
+
+                    AccountManager -> EmployeeEntity: getCardNumber()
+                    return workPhoneNumber
+                    AccountManager -> EmployeeFacade: findByWorkPhoneNumber(workPhoneNumber)
+                    return optional with ownerEmployeeEntity
+                    AccountManager -> EmployeeEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniqueWorkPhoneNumber(ownerEmployeeEntity, editedAccountLogin)
+                    return true
+
+                    AccountManager -> AccountFacade: edit(accountEntity)
+                    return success
+                    AccountManager -> AccountEntity: getAccessLevels()
+                    return accountAccessLevels
+                    loop ent in accountAccessLevels
+                        opt
+                            AccountManager -> AccessLevelEntity: copyNotChangedDataAccessLevel(ent, adminEntity)
+                            return success
+                            AccountManager -> AdminFacade: edit(adminEntity)
+                            return success
+                        else
+                            AccountManager -> AccessLevelEntity: copyNotChangedDataAccessLevel(ent, employeeEntity)
+                            return success
+                            AccountManager -> CustomerFacade: edit(employeeEntity)
+                            return success
+                        else
+                            AccountManager -> AccessLevelEntity: copyNotChangedDataAccessLevel(ent, customerEntity)
+                            return success
+                            AccountManager -> EmployeeFacade: edit(customerEntity)
+                            return success
+                        end
+                    end
+                end
+            return success
+        return success
+    return response code 200
+ return success message
+else invalid form input
+autonumber
+         Administrator -> EditAccountForm: 'show details' button clicked
+             EditAccountForm -> AccountEndpoint: getAccountDetails(login)
+                 AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                     AccountEndpoint -> AccountManager: getAccountDetails(login)
+                         group RW, read committed
+                                 AccountManager -> AccountFacade: findByLogin(login)
+                                 return optional with account
+                         end
+                     return account
+                     AccountEndpoint -> EditAccountDto: fromAccountEntity(account)
+                     return editAccountDto
+                     AccountEndpoint -> EditAccountDto: getVersion()
+                     return accountVersion
+                     AccountEndpoint -> Crypt: encrypt(accountVersion)
+                     return encrypted accountVersion
+                     AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+                     return success
+                     AccountEndpoint -> EditAccountDto: getId()
+                     return accountId
+                     AccountEndpoint -> Crypt: encrypt(accountId)
+                     return encrypted accountId
+                     AccountEndpoint -> EditAccountDto: setId(accountId)
+                     return success
+                     opt cardNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                         return cardNumberDto
+                         AccountEndpoint -> CardNumberDto: getId()
+                         return cardNumberId
+                         AccountEndpoint -> Crypt: encrypt(cardNumberId)
+                         return encrypted cardNumberId
+                         AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                         return success
+                         AccountEndpoint -> CardNumberDto: getVersion()
+                         return cardNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(cardNumberVersion)
+                         return encrypted cardNumberVersion
+                         AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                         return success
+                     else PhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                         return phoneNumberDto
+                         AccountEndpoint -> PhoneNumberDto: getId()
+                         return phoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberId)
+                         return encrypted phoneNumberId
+                         AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                         return success
+                         AccountEndpoint -> PhoneNumberDto: getVersion()
+                         return phoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberVersion)
+                         return encrypted phoneNumberVersion
+                         AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                         return success
+                     else WorkPhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                         return workPhoneNumberDto
+                         AccountEndpoint -> WorkPhoneNumberDto: getId()
+                         return workPhoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberId)
+                         return encrypted workPhoneNumberId
+                         AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                         return success
+                         AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                         return workPhoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberVersion)
+                         return encrypted workPhoneNumberVersion
+                         AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                         return success
+                     end
+                 return editAccountDto
+             return editAccountDto
+        return show account details
+    Administrator -> EditAccountForm: 'submit' button clicked and confirmed
+        EditAccountForm -> AccountEndpoint: editAccountDetails(accountDto)
+        return status code 400
+    return 'error' message
+else invalid card number
+autonumber
+         Administrator -> EditAccountForm: 'show details' button clicked
+             EditAccountForm -> AccountEndpoint: getAccountDetails(login)
+                 AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                     AccountEndpoint -> AccountManager: getAccountDetails(login)
+                         group RW, read committed
+                                 AccountManager -> AccountFacade: findByLogin(login)
+                                 return optional with account
+                         end
+                     return account
+                     AccountEndpoint -> EditAccountDto: fromAccountEntity(account)
+                     return editAccountDto
+                     AccountEndpoint -> EditAccountDto: getVersion()
+                     return accountVersion
+                     AccountEndpoint -> Crypt: encrypt(accountVersion)
+                     return encrypted accountVersion
+                     AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+                     return success
+                     AccountEndpoint -> EditAccountDto: getId()
+                     return accountId
+                     AccountEndpoint -> Crypt: encrypt(accountId)
+                     return encrypted accountId
+                     AccountEndpoint -> EditAccountDto: setId(accountId)
+                     return success
+                     opt cardNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                         return cardNumberDto
+                         AccountEndpoint -> CardNumberDto: getId()
+                         return cardNumberId
+                         AccountEndpoint -> Crypt: encrypt(cardNumberId)
+                         return encrypted cardNumberId
+                         AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                         return success
+                         AccountEndpoint -> CardNumberDto: getVersion()
+                         return cardNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(cardNumberVersion)
+                         return encrypted cardNumberVersion
+                         AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                         return success
+                     else PhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                         return phoneNumberDto
+                         AccountEndpoint -> PhoneNumberDto: getId()
+                         return phoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberId)
+                         return encrypted phoneNumberId
+                         AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                         return success
+                         AccountEndpoint -> PhoneNumberDto: getVersion()
+                         return phoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberVersion)
+                         return encrypted phoneNumberVersion
+                         AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                         return success
+                     else WorkPhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                         return workPhoneNumberDto
+                         AccountEndpoint -> WorkPhoneNumberDto: getId()
+                         return workPhoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberId)
+                         return encrypted workPhoneNumberId
+                         AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                         return success
+                         AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                         return workPhoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberVersion)
+                         return encrypted workPhoneNumberVersion
+                         AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                         return success
+                     end
+                 return editAccountDto
+             return editAccountDto
+        return show account details
+    Administrator -> EditAccountForm: 'submit' button clicked
+        EditAccountForm -> AccountEndpoint: editAccount(editAccountDto)
+            AccountEndpoint -> AccountEndpoint: performEditAccount(editAccountDto)
+            AccountEndpoint -> EditAccountDto: getVersion()
+            return accountVersion
+            AccountEndpoint -> Crypt: decrypt(accountVersion)
+            return decrypted accountVersion
+            AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+            return success
+            AccountEndpoint -> EditAccountDto: getId()
+            return accountId
+            AccountEndpoint -> Crypt: decrypt(accountId)
+            return decrypted accountId
+            AccountEndpoint -> EditAccountDto: setId(accountId)
+            return success
+            AccountEndpoint -> EditAccountDto: convertToAccountEntity(editAccountDto)
+            return accountEntity
+            opt cardNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                return cardNumberDto
+                AccountEndpoint -> CardNumberDto: getId()
+                return cardNumberId
+                AccountEndpoint -> Crypt: decrypt(cardNumberId)
+                return decrypted cardNumberId
+                AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                return success
+                AccountEndpoint -> CardNumberDto: getVersion()
+                return cardNumberVersion
+                AccountEndpoint -> Crypt: decrypt(cardNumberVersion)
+                return decrypted cardNumberVersion
+                AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                return success
+                AccountEndpoint -> CardNumberDto: convertToAdminEntity(cardNumberDto)
+                return adminEntity
+            else PhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                return phoneNumberDto
+                AccountEndpoint -> PhoneNumberDto: getId()
+                return phoneNumberId
+                AccountEndpoint -> Crypt: decrypt(phoneNumberId)
+                return decrypted phoneNumberId
+                AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                return success
+                AccountEndpoint -> PhoneNumberDto: getVersion()
+                return phoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(phoneNumberVersion)
+                return decrypted phoneNumberVersion
+                AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                return success
+                AccountEndpoint -> PhoneNumberDto: convertToEmployeeEntity(phoneNumberDto)
+                return employeeEntity
+            else WorkPhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                return workPhoneNumberDto
+                AccountEndpoint -> WorkPhoneNumberDto: getId()
+                return workPhoneNumberId
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberId)
+                return decrypted workPhoneNumberId
+                AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                return workPhoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberVersion)
+                return decrypted workPhoneNumberVersion
+                AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: convertToCustomerEntity(workPhoneNumberDto)
+                return customerEntity
+            end
+            AccountEndpoint -> AccountManager: editUserDetails(accountEntity, adminEntity, employeeEntity, customerEntity)
+               group RW, read committed
+                    AccountManager -> AccountEntity: getId()
+                    return accountId
+                    AccountManager -> AccountFacade: find(accountId)
+                    return optional with account
+                    AccountManager -> AccountEntity: copyNotChangedDataAccount(account, accountEntity)
+                    return success
+                    AccountManager -> AdminEntity: getCardNumber()
+                    return cardNumber
+                    AccountManager -> AdminFacade: findByCardNumber(cardNumber)
+                    return optional with ownerAdminEntity
+                    AccountManager -> AccountEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniqueCardNumber(ownerAdminEntity, editedAccountLogin)
+                    return false
+                end
+            return failed
+        return failed
+    return response code 400
+ return error message
+else invalid phone number
+autonumber
+         Administrator -> EditAccountForm: 'show details' button clicked
+             EditAccountForm -> AccountEndpoint: getAccountDetails(login)
+                 AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                     AccountEndpoint -> AccountManager: getAccountDetails(login)
+                         group RW, read committed
+                                 AccountManager -> AccountFacade: findByLogin(login)
+                                 return optional with account
+                         end
+                     return account
+                     AccountEndpoint -> EditAccountDto: fromAccountEntity(account)
+                     return editAccountDto
+                     AccountEndpoint -> EditAccountDto: getVersion()
+                     return accountVersion
+                     AccountEndpoint -> Crypt: encrypt(accountVersion)
+                     return encrypted accountVersion
+                     AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+                     return success
+                     AccountEndpoint -> EditAccountDto: getId()
+                     return accountId
+                     AccountEndpoint -> Crypt: encrypt(accountId)
+                     return encrypted accountId
+                     AccountEndpoint -> EditAccountDto: setId(accountId)
+                     return success
+                     opt cardNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                         return cardNumberDto
+                         AccountEndpoint -> CardNumberDto: getId()
+                         return cardNumberId
+                         AccountEndpoint -> Crypt: encrypt(cardNumberId)
+                         return encrypted cardNumberId
+                         AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                         return success
+                         AccountEndpoint -> CardNumberDto: getVersion()
+                         return cardNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(cardNumberVersion)
+                         return encrypted cardNumberVersion
+                         AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                         return success
+                     else PhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                         return phoneNumberDto
+                         AccountEndpoint -> PhoneNumberDto: getId()
+                         return phoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberId)
+                         return encrypted phoneNumberId
+                         AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                         return success
+                         AccountEndpoint -> PhoneNumberDto: getVersion()
+                         return phoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberVersion)
+                         return encrypted phoneNumberVersion
+                         AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                         return success
+                     else WorkPhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                         return workPhoneNumberDto
+                         AccountEndpoint -> WorkPhoneNumberDto: getId()
+                         return workPhoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberId)
+                         return encrypted workPhoneNumberId
+                         AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                         return success
+                         AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                         return workPhoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberVersion)
+                         return encrypted workPhoneNumberVersion
+                         AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                         return success
+                     end
+                 return editAccountDto
+             return editAccountDto
+        return show account details
+    Administrator -> EditAccountForm: 'submit' button clicked
+        EditAccountForm -> AccountEndpoint: editAccount(editAccountDto)
+            AccountEndpoint -> AccountEndpoint: performEditAccount(editAccountDto)
+            AccountEndpoint -> EditAccountDto: getVersion()
+            return accountVersion
+            AccountEndpoint -> Crypt: decrypt(accountVersion)
+            return decrypted accountVersion
+            AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+            return success
+            AccountEndpoint -> EditAccountDto: getId()
+            return accountId
+            AccountEndpoint -> Crypt: decrypt(accountId)
+            return decrypted accountId
+            AccountEndpoint -> EditAccountDto: setId(accountId)
+            return success
+            AccountEndpoint -> EditAccountDto: convertToAccountEntity(editAccountDto)
+            return accountEntity
+            opt cardNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                return cardNumberDto
+                AccountEndpoint -> CardNumberDto: getId()
+                return cardNumberId
+                AccountEndpoint -> Crypt: decrypt(cardNumberId)
+                return decrypted cardNumberId
+                AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                return success
+                AccountEndpoint -> CardNumberDto: getVersion()
+                return cardNumberVersion
+                AccountEndpoint -> Crypt: decrypt(cardNumberVersion)
+                return decrypted cardNumberVersion
+                AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                return success
+                AccountEndpoint -> CardNumberDto: convertToAdminEntity(cardNumberDto)
+                return adminEntity
+            else PhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                return phoneNumberDto
+                AccountEndpoint -> PhoneNumberDto: getId()
+                return phoneNumberId
+                AccountEndpoint -> Crypt: decrypt(phoneNumberId)
+                return decrypted phoneNumberId
+                AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                return success
+                AccountEndpoint -> PhoneNumberDto: getVersion()
+                return phoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(phoneNumberVersion)
+                return decrypted phoneNumberVersion
+                AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                return success
+                AccountEndpoint -> PhoneNumberDto: convertToEmployeeEntity(phoneNumberDto)
+                return employeeEntity
+            else WorkPhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                return workPhoneNumberDto
+                AccountEndpoint -> WorkPhoneNumberDto: getId()
+                return workPhoneNumberId
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberId)
+                return decrypted workPhoneNumberId
+                AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                return workPhoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberVersion)
+                return decrypted workPhoneNumberVersion
+                AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: convertToCustomerEntity(workPhoneNumberDto)
+                return customerEntity
+            end
+            AccountEndpoint -> AccountManager: editUserDetails(accountEntity, adminEntity, employeeEntity, customerEntity)
+               group RW, read committed
+                    AccountManager -> AccountEntity: getId()
+                    return accountId
+                    AccountManager -> AccountFacade: find(accountId)
+                    return optional with account
+                    AccountManager -> AccountEntity: copyNotChangedDataAccount(account, accountEntity)
+                    return success
+                    AccountManager -> AdminEntity: getCardNumber()
+                    return cardNumber
+                    AccountManager -> AdminFacade: findByCardNumber(cardNumber)
+                    return optional with ownerAdminEntity
+                    AccountManager -> AccountEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniqueCardNumber(ownerAdminEntity, editedAccountLogin)
+                    return true
+
+                    AccountManager -> CustomerEntity: getPhoneNumber()
+                    return phoneNumber
+                    AccountManager -> CustomerFacade: findByPhoneNumber(phoneNumber)
+                    return optional with ownerCustomerEntity
+                    AccountManager -> CustomerEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniquePhoneNumber(ownerCustomerEntity, editedAccountLogin)
+                    return false
+                end
+            return failed
+        return failed
+    return response code 400
+ return error message
+else invalid work phone number
+autonumber
+         Administrator -> EditAccountForm: 'show details' button clicked
+             EditAccountForm -> AccountEndpoint: getAccountDetails(login)
+                 AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                     AccountEndpoint -> AccountManager: getAccountDetails(login)
+                         group RW, read committed
+                                 AccountManager -> AccountFacade: findByLogin(login)
+                                 return optional with account
+                         end
+                     return account
+                     AccountEndpoint -> EditAccountDto: fromAccountEntity(account)
+                     return editAccountDto
+                     AccountEndpoint -> EditAccountDto: getVersion()
+                     return accountVersion
+                     AccountEndpoint -> Crypt: encrypt(accountVersion)
+                     return encrypted accountVersion
+                     AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+                     return success
+                     AccountEndpoint -> EditAccountDto: getId()
+                     return accountId
+                     AccountEndpoint -> Crypt: encrypt(accountId)
+                     return encrypted accountId
+                     AccountEndpoint -> EditAccountDto: setId(accountId)
+                     return success
+                     opt cardNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                         return cardNumberDto
+                         AccountEndpoint -> CardNumberDto: getId()
+                         return cardNumberId
+                         AccountEndpoint -> Crypt: encrypt(cardNumberId)
+                         return encrypted cardNumberId
+                         AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                         return success
+                         AccountEndpoint -> CardNumberDto: getVersion()
+                         return cardNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(cardNumberVersion)
+                         return encrypted cardNumberVersion
+                         AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                         return success
+                     else PhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                         return phoneNumberDto
+                         AccountEndpoint -> PhoneNumberDto: getId()
+                         return phoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberId)
+                         return encrypted phoneNumberId
+                         AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                         return success
+                         AccountEndpoint -> PhoneNumberDto: getVersion()
+                         return phoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberVersion)
+                         return encrypted phoneNumberVersion
+                         AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                         return success
+                     else WorkPhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                         return workPhoneNumberDto
+                         AccountEndpoint -> WorkPhoneNumberDto: getId()
+                         return workPhoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberId)
+                         return encrypted workPhoneNumberId
+                         AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                         return success
+                         AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                         return workPhoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberVersion)
+                         return encrypted workPhoneNumberVersion
+                         AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                         return success
+                     end
+                 return editAccountDto
+             return editAccountDto
+        return show account details
+    Administrator -> EditAccountForm: 'submit' button clicked
+        EditAccountForm -> AccountEndpoint: editAccount(editAccountDto)
+            AccountEndpoint -> AccountEndpoint: performEditAccount(editAccountDto)
+            AccountEndpoint -> EditAccountDto: getVersion()
+            return accountVersion
+            AccountEndpoint -> Crypt: decrypt(accountVersion)
+            return decrypted accountVersion
+            AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+            return success
+            AccountEndpoint -> EditAccountDto: getId()
+            return accountId
+            AccountEndpoint -> Crypt: decrypt(accountId)
+            return decrypted accountId
+            AccountEndpoint -> EditAccountDto: setId(accountId)
+            return success
+            AccountEndpoint -> EditAccountDto: convertToAccountEntity(editAccountDto)
+            return accountEntity
+            opt cardNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                return cardNumberDto
+                AccountEndpoint -> CardNumberDto: getId()
+                return cardNumberId
+                AccountEndpoint -> Crypt: decrypt(cardNumberId)
+                return decrypted cardNumberId
+                AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                return success
+                AccountEndpoint -> CardNumberDto: getVersion()
+                return cardNumberVersion
+                AccountEndpoint -> Crypt: decrypt(cardNumberVersion)
+                return decrypted cardNumberVersion
+                AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                return success
+                AccountEndpoint -> CardNumberDto: convertToAdminEntity(cardNumberDto)
+                return adminEntity
+            else PhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                return phoneNumberDto
+                AccountEndpoint -> PhoneNumberDto: getId()
+                return phoneNumberId
+                AccountEndpoint -> Crypt: decrypt(phoneNumberId)
+                return decrypted phoneNumberId
+                AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                return success
+                AccountEndpoint -> PhoneNumberDto: getVersion()
+                return phoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(phoneNumberVersion)
+                return decrypted phoneNumberVersion
+                AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                return success
+                AccountEndpoint -> PhoneNumberDto: convertToEmployeeEntity(phoneNumberDto)
+                return employeeEntity
+            else WorkPhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                return workPhoneNumberDto
+                AccountEndpoint -> WorkPhoneNumberDto: getId()
+                return workPhoneNumberId
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberId)
+                return decrypted workPhoneNumberId
+                AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                return workPhoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberVersion)
+                return decrypted workPhoneNumberVersion
+                AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: convertToCustomerEntity(workPhoneNumberDto)
+                return customerEntity
+            end
+            AccountEndpoint -> AccountManager: editUserDetails(accountEntity, adminEntity, employeeEntity, customerEntity)
+               group RW, read committed
+                    AccountManager -> AccountEntity: getId()
+                    return accountId
+                    AccountManager -> AccountFacade: find(accountId)
+                    return optional with account
+                    AccountManager -> AccountEntity: copyNotChangedDataAccount(account, accountEntity)
+                    return success
+                    AccountManager -> AdminEntity: getCardNumber()
+                    return cardNumber
+                    AccountManager -> AdminFacade: findByCardNumber(cardNumber)
+                    return optional with ownerAdminEntity
+                    AccountManager -> AccountEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniqueCardNumber(ownerAdminEntity, editedAccountLogin)
+                    return true
+
+                    AccountManager -> CustomerEntity: getPhoneNumber()
+                    return phoneNumber
+                    AccountManager -> CustomerFacade: findByPhoneNumber(phoneNumber)
+                    return optional with ownerCustomerEntity
+                    AccountManager -> CustomerEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniquePhoneNumber(ownerCustomerEntity, editedAccountLogin)
+                    return true
+
+                    AccountManager -> EmployeeEntity: getCardNumber()
+                    return workPhoneNumber
+                    AccountManager -> EmployeeFacade: findByWorkPhoneNumber(workPhoneNumber)
+                    return optional with ownerEmployeeEntity
+                    AccountManager -> EmployeeEntity: getLogin()
+                    return editedAccountLogin
+                    AccountManager -> AccountManager: checkUniqueWorkPhoneNumber(ownerEmployeeEntity, editedAccountLogin)
+                    return false
+                end
+            return failed
+        return failed
+    return response code 400
+ return error message
+else account does not exist
+autonumber
+         Administrator -> EditAccountForm: 'show details' button clicked
+             EditAccountForm -> AccountEndpoint: getAccountDetails(login)
+                 AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                     AccountEndpoint -> AccountManager: getAccountDetails(login)
+                         group RW, read committed
+                                 AccountManager -> AccountFacade: findByLogin(login)
+                                 return optional with account
+                         end
+                     return account
+                     AccountEndpoint -> EditAccountDto: fromAccountEntity(account)
+                     return editAccountDto
+                     AccountEndpoint -> EditAccountDto: getVersion()
+                     return accountVersion
+                     AccountEndpoint -> Crypt: encrypt(accountVersion)
+                     return encrypted accountVersion
+                     AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+                     return success
+                     AccountEndpoint -> EditAccountDto: getId()
+                     return accountId
+                     AccountEndpoint -> Crypt: encrypt(accountId)
+                     return encrypted accountId
+                     AccountEndpoint -> EditAccountDto: setId(accountId)
+                     return success
+                     opt cardNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                         return cardNumberDto
+                         AccountEndpoint -> CardNumberDto: getId()
+                         return cardNumberId
+                         AccountEndpoint -> Crypt: encrypt(cardNumberId)
+                         return encrypted cardNumberId
+                         AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                         return success
+                         AccountEndpoint -> CardNumberDto: getVersion()
+                         return cardNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(cardNumberVersion)
+                         return encrypted cardNumberVersion
+                         AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                         return success
+                     else PhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                         return phoneNumberDto
+                         AccountEndpoint -> PhoneNumberDto: getId()
+                         return phoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberId)
+                         return encrypted phoneNumberId
+                         AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                         return success
+                         AccountEndpoint -> PhoneNumberDto: getVersion()
+                         return phoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(phoneNumberVersion)
+                         return encrypted phoneNumberVersion
+                         AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                         return success
+                     else WorkPhoneNumberDto is not null
+                         AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                         return workPhoneNumberDto
+                         AccountEndpoint -> WorkPhoneNumberDto: getId()
+                         return workPhoneNumberId
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberId)
+                         return encrypted workPhoneNumberId
+                         AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                         return success
+                         AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                         return workPhoneNumberVersion
+                         AccountEndpoint -> Crypt: encrypt(workPhoneNumberVersion)
+                         return encrypted workPhoneNumberVersion
+                         AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                         return success
+                         AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                         return success
+                     end
+                 return editAccountDto
+             return editAccountDto
+        return show account details
+    Administrator -> EditAccountForm: 'submit' button clicked
+        EditAccountForm -> AccountEndpoint: editAccount(editAccountDto)
+            AccountEndpoint -> AccountEndpoint: performEditAccount(editAccountDto)
+            AccountEndpoint -> EditAccountDto: getVersion()
+            return accountVersion
+            AccountEndpoint -> Crypt: decrypt(accountVersion)
+            return decrypted accountVersion
+            AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+            return success
+            AccountEndpoint -> EditAccountDto: getId()
+            return accountId
+            AccountEndpoint -> Crypt: decrypt(accountId)
+            return decrypted accountId
+            AccountEndpoint -> EditAccountDto: setId(accountId)
+            return success
+            AccountEndpoint -> EditAccountDto: convertToAccountEntity(editAccountDto)
+            return accountEntity
+            opt cardNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                return cardNumberDto
+                AccountEndpoint -> CardNumberDto: getId()
+                return cardNumberId
+                AccountEndpoint -> Crypt: decrypt(cardNumberId)
+                return decrypted cardNumberId
+                AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                return success
+                AccountEndpoint -> CardNumberDto: getVersion()
+                return cardNumberVersion
+                AccountEndpoint -> Crypt: decrypt(cardNumberVersion)
+                return decrypted cardNumberVersion
+                AccountEndpoint -> CardNumberDto: setVersion(cardNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                return success
+                AccountEndpoint -> CardNumberDto: convertToAdminEntity(cardNumberDto)
+                return adminEntity
+            else PhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                return phoneNumberDto
+                AccountEndpoint -> PhoneNumberDto: getId()
+                return phoneNumberId
+                AccountEndpoint -> Crypt: decrypt(phoneNumberId)
+                return decrypted phoneNumberId
+                AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                return success
+                AccountEndpoint -> PhoneNumberDto: getVersion()
+                return phoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(phoneNumberVersion)
+                return decrypted phoneNumberVersion
+                AccountEndpoint -> PhoneNumberDto: setVersion(phoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                return success
+                AccountEndpoint -> PhoneNumberDto: convertToEmployeeEntity(phoneNumberDto)
+                return employeeEntity
+            else WorkPhoneNumberDto is not null
+                AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                return workPhoneNumberDto
+                AccountEndpoint -> WorkPhoneNumberDto: getId()
+                return workPhoneNumberId
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberId)
+                return decrypted workPhoneNumberId
+                AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                return workPhoneNumberVersion
+                AccountEndpoint -> Crypt: decrypt(workPhoneNumberVersion)
+                return decrypted workPhoneNumberVersion
+                AccountEndpoint -> WorkPhoneNumberDto: setVersion(workPhoneNumberVersion)
+                return success
+                AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                return success
+                AccountEndpoint -> WorkPhoneNumberDto: convertToCustomerEntity(workPhoneNumberDto)
+                return customerEntity
+            end
+            AccountEndpoint -> AccountManager: editUserDetails(accountEntity, adminEntity, employeeEntity, customerEntity)
+               group RW, read committed
+                    AccountManager -> AccountEntity: getId()
+                    return accountId
+                    AccountManager -> AccountFacade: find(accountId)
+                    return empty optional
+               end
+               return failed
+            return failed
+        return response code 400
+     return account does not exist message
+end
+
+@enduml

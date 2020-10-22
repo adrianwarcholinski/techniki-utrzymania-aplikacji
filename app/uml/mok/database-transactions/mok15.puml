@@ -1,0 +1,112 @@
+@startuml
+
+title MOK.15 Przeglądaj szczegóły konta innego użytkownika
+
+autoactivate on
+actor Administrator
+boundary AccountsListForm
+participant AccountEndpoint
+participant AccountManager
+participant EditAccountDto
+participant CardNumberDto
+participant PhoneNumberDto
+participant WorkPhoneNumberDto
+participant Crypt
+control AccountFacadeReadCommitted as AccountFacade
+
+alt account exists
+autonumber
+        Administrator -> AccountsListForm: 'show details' button clicked
+            AccountsListForm -> AccountEndpoint: getAccountDetails(login)
+                AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                    AccountEndpoint -> AccountManager: getAccountDetails(login)
+                        group RW, read committed
+                                AccountManager -> AccountFacade: findByLogin(login)
+                                return optional with account
+                        end
+                    return account
+                    AccountEndpoint -> EditAccountDto: fromAccountEntity(account)
+                    return editAccountDto
+                    AccountEndpoint -> EditAccountDto: getVersion()
+                    return accountVersion
+                    AccountEndpoint -> Crypt: encrypt(accountVersion)
+                    return encrypted accountVersion
+                    AccountEndpoint -> EditAccountDto: setVersion(accountVersion)
+                    return success
+                    AccountEndpoint -> EditAccountDto: getId()
+                    return accountId
+                    AccountEndpoint -> Crypt: encrypt(accountId)
+                    return encrypted accountId
+                    AccountEndpoint -> EditAccountDto: setId(accountId)
+                    return success
+                    opt cardNumberDto is not null
+                    AccountEndpoint -> EditAccountDto: getCardNumberDto()
+                    return cardNumberDto
+                    AccountEndpoint -> CardNumberDto: getId()
+                    return cardNumberId
+                    AccountEndpoint -> Crypt: encrypt(cardNumberId)
+                    return encrypted cardNumberId
+                    AccountEndpoint -> CardNumberDto: setId(cardNumberId)
+                    return success
+                    AccountEndpoint -> CardNumberDto: getVersion()
+                    return cardNumberVersion
+                    AccountEndpoint -> Crypt: encrypt(cardNumberVersion)
+                    return encrypted cardNumberVersion
+                    AccountEndpoint -> CardNumberDto: setId(cardNumberVersion)
+                    return success
+                    AccountEndpoint -> EditAccountDto: setCardNumberDto(cardNumberDto)
+                    return success
+                    else PhoneNumberDto is not null
+                    AccountEndpoint -> EditAccountDto: getPhoneNumberDto()
+                    return phoneNumberDto
+                    AccountEndpoint -> PhoneNumberDto: getId()
+                    return phoneNumberId
+                    AccountEndpoint -> Crypt: encrypt(phoneNumberId)
+                    return encrypted phoneNumberId
+                    AccountEndpoint -> PhoneNumberDto: setId(phoneNumberId)
+                    return success
+                    AccountEndpoint -> PhoneNumberDto: getVersion()
+                    return phoneNumberVersion
+                    AccountEndpoint -> Crypt: encrypt(phoneNumberVersion)
+                    return encrypted phoneNumberVersion
+                    AccountEndpoint -> PhoneNumberDto: setId(phoneNumberVersion)
+                    return success
+                    AccountEndpoint -> EditAccountDto: setPhoneNumberDto(phoneNumberDto)
+                    return success
+                    else WorkPhoneNumberDto is not null
+                    AccountEndpoint -> EditAccountDto: getWorkPhoneNumberDto()
+                    return workPhoneNumberDto
+                    AccountEndpoint -> WorkPhoneNumberDto: getId()
+                    return workPhoneNumberId
+                    AccountEndpoint -> Crypt: encrypt(workPhoneNumberId)
+                    return encrypted workPhoneNumberId
+                    AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberId)
+                    return success
+                    AccountEndpoint -> WorkPhoneNumberDto: getVersion()
+                    return workPhoneNumberVersion
+                    AccountEndpoint -> Crypt: encrypt(workPhoneNumberVersion)
+                    return encrypted workPhoneNumberVersion
+                    AccountEndpoint -> WorkPhoneNumberDto: setId(workPhoneNumberVersion)
+                    return success
+                    AccountEndpoint -> EditAccountDto: setWorkPhoneNumberDto(workPhoneNumberDto)
+                    return success
+                    end
+                return editAccountDto
+            return editAccountDto
+        return show account details
+else account does not exist
+autonumber
+    Administrator -> AccountsListForm: 'show details' button clicked
+        AccountsListForm -> AccountEndpoint: getAccountDetails(login)
+             AccountEndpoint -> AccountEndpoint: getAccountDetailsDto(login)
+                 AccountEndpoint -> AccountManager: getAccountDetails(login)
+                     group RW, read committed
+                         AccountManager -> AccountFacade: findByLogin(login)
+                         return empty optional
+                     end
+                 return failed
+             return failed
+        return status code 400
+    return account does not exist message
+end
+@enduml

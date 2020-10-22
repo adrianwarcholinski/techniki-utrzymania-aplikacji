@@ -1,0 +1,35 @@
+@startuml
+title MOR.13 Przeglądaj opinie na temat modelu broni
+autoactivate on
+participant OpinionEndpoint
+participant "OpinionManager\nTransactionAttribute.REQUIRES_NEW" as OpinionManager
+control "WeaponModelFacadeReadCommitted\nTransactionAttribute.MANDATORY" as WeaponModelFacade
+entity WeaponModelEntity
+alt Opinion for weapon model exist
+autonumber
+    OpinionEndpoint -> OpinionManager: getAllOpinionsForWeaponModel(name)
+        OpinionManager -> WeaponModelFacade: findByName(name)
+        return optional with weapon model
+        OpinionManager -> WeaponModelEntity: getOpinions()
+        return list of all opinions for weapon model
+    return list of all opinions for weapon model
+
+else No opinions for weapon model
+autonumber
+
+    OpinionEndpoint -> OpinionManager: getAllOpinionsForWeaponModel(name)
+        OpinionManager -> WeaponModelFacade: findByName(name)
+        return optional with weapon model
+        OpinionManager -> WeaponModelEntity: getOpinions()
+        return empty list
+    return empty list
+
+else weapon model does not exist
+autonumber
+
+    OpinionEndpoint -> OpinionManager: getAllOpinionsForWeaponModel(name)
+        OpinionManager -> WeaponModelFacade: findByName(name)
+        return empty optional
+    return weapon model does not exist
+end
+@enduml

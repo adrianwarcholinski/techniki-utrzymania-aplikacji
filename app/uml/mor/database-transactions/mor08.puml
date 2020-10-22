@@ -1,0 +1,51 @@
+@startuml
+title
+MOR.8 Przeglądaj szczegóły rezerwacji
+end title
+
+autoactivate on
+actor Employee
+boundary ReservationsList
+participant ReservationEndpoint
+participant ReservationManager
+control ReservationFacadeReadCommitted
+alt reservation exists
+autonumber
+    Employee -> ReservationsList: "details" button clicked
+        ReservationsList -> ReservationEndpoint: getReservation(reservationNumber)
+            ReservationEndpoint -> ReservationManager: getReservation(reservationNumber)
+                group RO, read committed
+                    ReservationManager -> ReservationFacadeReadCommitted: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+                end
+            return reservation
+            ReservationEndpoint -> ReservationDto: map(reservation)
+            return reservationDto
+            ReservationEndpoint -> ReservationDto: getVersion()
+            return version
+            ReservationEndpoint -> Crypt: encrypt(version)
+            return encryptedVersion
+            ReservationEndpoint -> ReservationDto: setVersion(encryptedVersion)
+            return
+            ReservationEndpoint -> ReservationDto: getId()
+            return id
+            ReservationEndpoint -> Crypt: encrypt(id)
+            return encryptedId
+            ReservationEndpoint -> ReservationDto: setId(encryptedId)
+            return
+        return status code 200\nreservationDto
+    return show reservation details
+else reservation does not exists
+autonumber
+     Employee -> ReservationsList: "details" button clicked
+             ReservationsList -> ReservationEndpoint: getReservation(reservationNumber)
+                 ReservationEndpoint -> ReservationManager: getReservation(reservationNumber)
+                     group RO, read committed
+                         ReservationManager -> ReservationFacadeReadCommitted: findByReservationNumber(reservationNumber)
+                         return empty optional
+                     end
+                 return reservation does not exist
+             return status code 400
+         return 'error' message
+end
+@enduml

@@ -1,0 +1,130 @@
+@startuml
+
+autoactivate on
+participant AccountEndpoint
+participant "AccountManager\nTransactionAttributeType.REQUIRES_NEW" as AccountManager
+participant HashGenerator
+participant EmailCreator
+participant EmailSender
+control "AccountFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as AccountFacade
+entity AccountEntity
+
+title MOK.1 Zarejestruj konto
+
+alt correct
+autonumber
+    AccountEndpoint -> AccountManager: addAccount(account, language)
+        AccountManager -> HashGenerator: generatePasswordHash(account.getPassword())
+        return hashedPassword
+        AccountManager -> AccountFacade: findByLogin(account.getLogin())
+        return empty optional
+        AccountManager -> AccountFacade: findByEmail(account.getEmail())
+        return empty optional
+        AccountManager -> AccountFacade: findByPhoneNumber(account.getPhoneNumber())
+        return empty optional
+        AccountManager -> AccountEntity: setPassword(hashedPassword)
+        return success
+        AccountManager -> AccountFacade: create(account)\n<<cascade persist account.getAccessLevels()>>
+        return success
+        AccountManager -> EmailCreator: getVerificationEmail(language, destinationEmail, time, login)
+        return verification email
+        AccountManager -> EmailSender: sendEmail(verificationEmail)
+        return success
+    return success
+    note right of AccountEndpoint
+    [...]
+    end note
+    AccountEndpoint -> AccountManager: verify(login, language)
+        AccountManager -> AccountFacade: findByLogin(login)
+        return account
+        AccountManager -> AccountEntity: isVerified()
+        return false
+        AccountManager -> AccountEntity: setVerified(true)
+        return success
+        AccountManager -> AccountFacade: edit(account)
+        return success
+        AccountManager -> EmailCreator: getVerificationConfirmEmail(language, email, login)
+        return verification confirmation email
+        AccountManager -> EmailSender: sendEmail(verificationConfirmationEmail)
+        return success
+    return success
+else login is already taken
+    AccountEndpoint -> AccountManager: addAccount(account, language)
+        AccountManager -> HashGenerator: generatePasswordHash(account.getPassword())
+        return hashedPassword
+        AccountManager -> AccountFacade: findByLogin(account.getLogin())
+        return optional with account
+    return login is already taken
+else email is already taken
+autonumber
+    AccountEndpoint -> AccountManager: addAccount(account, language)
+        AccountManager -> HashGenerator: generatePasswordHash(account.getPassword())
+        return hashedPassword
+        AccountManager -> AccountFacade: findByLogin(account.getLogin())
+        return empty optional
+        AccountManager -> AccountFacade: findByEmail(account.getEmail())
+        return optional with account
+    return email is already taken
+else phone number is already taken
+autonumber
+    AccountEndpoint -> AccountManager: addAccount(account, language)
+        AccountManager -> HashGenerator: generatePasswordHash(account.getPassword())
+        return hashedPassword
+        AccountManager -> AccountFacade: findByLogin(account.getLogin())
+        return empty optional
+        AccountManager -> AccountFacade: findByEmail(account.getEmail())
+        return empty optional
+        AccountManager -> AccountFacade: findByPhoneNumber(account.getPhoneNumber())
+        return optional with account
+    return phone number is already taken
+else link is corrupted
+autonumber
+    AccountEndpoint -> AccountManager: addAccount(account, language)
+        AccountManager -> HashGenerator: generatePasswordHash(account.getPassword())
+        return hashedPassword
+        AccountManager -> AccountFacade: findByLogin(account.getLogin())
+        return empty optional
+        AccountManager -> AccountFacade: findByEmail(account.getEmail())
+        return empty optional
+        AccountManager -> AccountFacade: findByPhoneNumber(account.getPhoneNumber())
+        return empty optional
+        AccountManager -> AccountEntity: setPassword(hashedPassword)
+        return success
+        AccountManager -> AccountFacade: create(account)\n<<cascade persist account.getAccessLevels()>>
+        return success
+        AccountManager -> EmailCreator: getVerificationEmail(language, destinationEmail, time, login)
+        return verification email
+        AccountManager -> EmailSender: sendEmail(verificationEmail)
+        return success
+    return success
+else link expired
+autonumber
+    AccountEndpoint -> AccountManager: addAccount(account, language)
+        AccountManager -> HashGenerator: generatePasswordHash(account.getPassword())
+        return hashedPassword
+        AccountManager -> AccountFacade: findByLogin(account.getLogin())
+        return empty optional
+        AccountManager -> AccountFacade: findByEmail(account.getEmail())
+        return empty optional
+        AccountManager -> AccountFacade: findByPhoneNumber(account.getPhoneNumber())
+        return empty optional
+        AccountManager -> AccountEntity: setPassword(hashedPassword)
+        return success
+        AccountManager -> AccountFacade: create(account)\n<<cascade persist account.getAccessLevels()>>
+        return success
+        AccountManager -> EmailCreator: getVerificationEmail(language, destinationEmail, time, login)
+        return verification email
+        AccountManager -> EmailSender: sendEmail(verificationEmail)
+        return success
+    return success
+    note right of AccountEndpoint
+    [...]
+    end note
+    AccountEndpoint -> AccountManager: verify(login, language)
+        AccountManager -> AccountFacade: findByLogin(login)
+        return account
+        AccountManager -> AccountEntity: isVerified()
+        return true
+    return account is already verified
+end
+@enduml

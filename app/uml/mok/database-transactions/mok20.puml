@@ -1,0 +1,20 @@
+@startuml
+title MOK.20 Wyświetl raport na temat ostatnich uwierzytelnień użytkowników.
+autoactivate on
+actor Admin
+boundary MainMenu
+participant AccountEndpoint
+participant AccountManager
+control AccountFacadeReadCommitted
+autonumber
+    Admin -> MainMenu: "Accounts' report" button clicked
+        MainMenu -> AccountEndpoint: getAdminReport()
+                AccountEndpoint -> AccountManager: getAuthenticatedAccounts()
+                group RO, read committed
+                    AccountManager -> AccountFacadeReadCommitted: findAuthenticated()
+                    return list of all account
+                end
+                return list of all accounts
+       return status code 200\nlist of all accounts
+     return All accounts report view
+@enduml

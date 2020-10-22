@@ -1,0 +1,183 @@
+@startuml
+
+title
+MOK.7 Resetuj hasło
+end title
+
+autoactivate on
+actor Guest
+boundary ResetPassword
+boundary NewPasswordForm
+participant AccountEndpoint
+participant AuthenticationEndpoint
+participant LinkUtils
+participant AccountManager
+participant EmailCreator
+participant EmailSender
+participant URLUtils
+participant Crypt
+participant Pbkdf2PasswordHash
+control AccountFacadeReadCommitted
+entity AccountEntity
+alt account exists
+autonumber
+    Guest -> ResetPassword: button 'reset' clicked
+        ResetPassword -> AuthenticationEndpoint: sendResetPasswordEmail(email, language)
+                AuthenticationEndpoint -> AccountManager: sendEmailForResetPassword(email, language)
+                    group RW, read committed
+                    AccountManager -> AccountFacadeReadCommitted: findByEmail(email)
+                    return optional with account
+                    AccountManager -> EmailCreator: getResetPasswordEmail\n(browserLanguage, account.email, account.login, tokenLifeTime)
+                        EmailCreator -> URLUtils: createUrl(path, params)
+                            URLUtils -> Crypt: encrypt(elements)
+                            return token containing login and tokenLifeTime
+                        return url for reset password
+                    return email with encrypted link
+                    AccountManager -> EmailSender: sendEmail(email)
+                    return success
+                    end
+                return success
+        return status code 200
+    return 'link sent' message
+    Guest -> NewPasswordForm: link visited
+        NewPasswordForm -> AuthenticationEndpoint : verifyLink(token)
+            AuthenticationEndpoint -> LinkUtils: extractDataFromTimedToken(token)
+                LinkUtils -> Crypt: decrypt(token)
+                return decryptedToken
+            return decryptedToken
+             AuthenticationEndpoint -> LinkUtils: validateTimedToken(decryptedToken)
+             return success
+        return status code 200
+    return form showed
+    Guest -> NewPasswordForm: button 'submit' clicked
+        NewPasswordForm -> AccountEndpoint: resetPassword(password, newPassword)
+        AccountEndpoint -> LinkUtils: extractDataFromTimedToken(token)
+            LinkUtils -> Crypt: decrypt(token)
+            return decryptedToken
+        return login, tokenLifeTime
+        AccountEndpoint -> LinkUtils: validateTimedToken(decryptedToken)
+        return success
+        AccountEndpoint -> AccountManager: resetPassword(login, newPassword)
+            group RW, read committed
+            AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+            return optional with account
+            AccountManager -> Pbkdf2PasswordHash: generate(newPassword)
+            return newPasswordHash
+            AccountManager -> AccountEntity: setPassword(newPasswordHash)
+            return success
+            AccountManager -> AccountFacadeReadCommitted: edit(account)
+            return success
+            end
+        return success
+        return status code 200
+    return success confirmation
+else invalid password
+autonumber
+    Guest -> ResetPassword: button 'reset' clicked
+        ResetPassword -> AuthenticationEndpoint: sendResetPasswordEmail(email, language)
+                AuthenticationEndpoint -> AccountManager: sendEmailForResetPassword(email, language)
+                    group RW, read committed
+                    AccountManager -> AccountFacadeReadCommitted: findByEmail(email)
+                    return optional with account
+                    AccountManager -> EmailCreator: getResetPasswordEmail(browserLanguage, email, login, tokenLifeTime)
+                        EmailCreator -> URLUtils: createUrl(path, params)
+                            URLUtils -> Crypt: encrypt(elements)
+                            return token containing login and tokenLifeTime
+                        return url for reset password
+                    return email with encrypted link
+                    AccountManager -> EmailSender: sendEmail(email)
+                    return success
+                    end
+                return success
+        return status code 200
+    return 'link sent' message
+    Guest -> NewPasswordForm: link visited
+        NewPasswordForm -> AuthenticationEndpoint : verifyLink(token)
+            AuthenticationEndpoint -> LinkUtils: extractDataFromTimedToken(token)
+                LinkUtils -> Crypt: decrypt(token)
+                return decryptedToken
+            return decryptedToken
+             AuthenticationEndpoint -> LinkUtils: validateTimedToken(decryptedToken)
+             return success
+        return status code 200
+    return form showed
+    Guest -> NewPasswordForm: button 'submit' clicked
+        NewPasswordForm -> AuthenticationEndpoint: resetPassword(password, newPassword)
+        return status code 400\n invalid password
+    return error message
+else link expired
+autonumber
+    Guest -> ResetPassword: button 'reset' clicked
+        ResetPassword -> AuthenticationEndpoint: sendResetPasswordEmail(email, language)
+                AuthenticationEndpoint -> AccountManager: sendEmailForResetPassword(email, language)
+                    group RW, read committed
+                    AccountManager -> AccountFacadeReadCommitted: findByEmail(email)
+                    return optional with account
+                    AccountManager -> EmailCreator: getResetPasswordEmail(browserLanguage, email, login, tokenLifeTime)
+                        EmailCreator -> URLUtils: createUrl(path, params)
+                            URLUtils -> Crypt: encrypt(elements)
+                            return token containing login and tokenLifeTime
+                        return url for reset password
+                    return email with encrypted link
+                    AccountManager -> EmailSender: sendEmail(email)
+                    return success
+                    end
+                return success
+        return status code 200
+    return 'link sent' message
+    Guest -> NewPasswordForm: link visited
+        NewPasswordForm -> AuthenticationEndpoint : verifyLink(token)
+            AuthenticationEndpoint -> LinkUtils: extractDataFromTimedToken(token)
+                LinkUtils -> Crypt: decrypt(token)
+                return decryptedToken
+            return decryptedToken
+            AuthenticationEndpoint -> LinkUtils: validateTimedToken(decryptedToken)
+            return throw LinkExpiredException
+        return status code 403\n link expired
+    return error message
+else link corrupted
+    autonumber
+    Guest -> ResetPassword: button 'reset' clicked
+        ResetPassword -> AuthenticationEndpoint: sendResetPasswordEmail(email, language)
+                AuthenticationEndpoint -> AccountManager: sendEmailForResetPassword(email, language)
+                    group RW, read committed
+                    AccountManager -> AccountFacadeReadCommitted: findByEmail(email)
+                    return optional with account
+                    AccountManager -> EmailCreator: getResetPasswordEmail(browserLanguage, email, login, tokenLifeTime)
+                        EmailCreator -> URLUtils: createUrl(path, params)
+                            URLUtils -> Crypt: encrypt(elements)
+                            return token containing login and tokenLifeTime
+                        return url for reset password
+                    return email with encrypted link
+                    AccountManager -> EmailSender: sendEmail(email)
+                    return success
+                    end
+                return success
+        return status code 200
+    return 'link sent' message
+    Guest -> NewPasswordForm: link visited
+        NewPasswordForm -> AuthenticationEndpoint : verifyLink(token)
+            AuthenticationEndpoint -> LinkUtils: extractDataFromTimedToken(token)
+                LinkUtils -> Crypt: decrypt(token)
+                return decryptedToken
+            return decryptedToken
+            AuthenticationEndpoint -> LinkUtils: validateTimedToken(decryptedToken)
+            return throw LinkCorruptedException
+            return status code 403\nlink corrupted
+        return error message
+else account does not exist
+autonumber
+     Guest -> ResetPassword: button 'reset' clicked
+        ResetPassword -> AuthenticationEndpoint: sendResetPasswordEmail(email, language)
+                AuthenticationEndpoint -> AccountManager: sendEmailForResetPassword(email, language)
+                    group RW, read committed
+                    AccountManager -> AccountFacadeReadCommitted: findByEmail(email)
+                    return empty optional
+                    end
+                return account does not exist
+        return status code 200
+     return 'link sent' message
+
+end
+
+@enduml

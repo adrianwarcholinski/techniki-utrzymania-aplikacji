@@ -1,0 +1,246 @@
+@startuml
+title
+MOK.14 Zmień adres e-mail konta innego użytkownika
+end title
+
+autoactivate on
+actor Administrator
+actor "Admin/Employee/Customer" as User
+boundary ChangeEmailForm
+boundary ConfirmationView
+participant AccountEndpoint
+participant AccountManager
+participant EmailCreator
+participant EmailSender
+participant Crypt
+control AccountFacade
+control ExpiredTokenFacade
+entity AccountEntity
+entity ExpiredTokenEntity
+
+alt correct
+autonumber
+    Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                group RO, read committed
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getEmail()
+                    return current account email
+                    AccountManager -> AccountFacade: findByEmail(newEmail)
+                    return empty optional
+                    AccountManager -> EmailCreator: getEmailForChangeEmail(lang, newEmail, byAdmin,\n login, newEmail, LocalDateTime.now().toString())
+                    return emailMessage
+                    AccountManager -> EmailSender: sendEmail(emailMessage)
+                    return success
+                end
+            return success
+        return status code 200
+    return 'link sent' message
+    User -> ConfirmationView: link visited
+            ConfirmationView -> AccountEndpoint: changeOwnEmail(toVerify)
+                AccountEndpoint -> AccountManager: changeEmail(toVerify)
+                    group RW, read commited
+                        AccountManager -> ExpiredTokenFacade: findByToken(cipherText)
+                        return empty optional
+                        AccountManager -> Crypt: decrypt(cipherText)
+                        return decrypted login and email
+                        AccountManager -> AccountFacade: findByLogin(login)
+                        return optional with account
+                        AccountManager -> AccountFacade: findByEmail(email)
+                        return empty optional
+                        AccountManager -> AccountEntity: setEmail(newEmail)
+                        return success
+                        AccountManager -> AccountFacade: edit(account)
+                        return success
+                        create ExpiredTokenEntity
+                        AccountManager -> ExpiredTokenEntity**:<<create>>
+                        AccountManager -> ExpiredTokenFacade: create(expiredToken);
+                        return success
+                    end
+                return success
+            return status code 200
+        return 'email changed' message
+else email does not meet the requirements
+autonumber
+    Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+        return status code 400
+    return 'error' message
+else account does not exist
+autonumber
+Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                group RO, read committed
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return empty optional
+                end
+            return account does not exist
+         return status code 400
+     return 'error' message
+else new email equals old
+autonumber
+Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                group RO, read committed
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getEmail()
+                    return current account email
+                end
+            return new email equals old
+         return status code 400
+     return 'error' message
+else email already in use
+autonumber
+Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                    group RO, read committed
+                        AccountManager -> AccountFacade: findByLogin(login)
+                        return optional with account
+                        AccountManager -> AccountEntity: getEmail()
+                        return current account email
+                        AccountManager -> AccountFacade: findByEmail(newEmail)
+                        return optional with account
+                    end
+                return email already in use
+             return status code 400
+     return 'error' message
+else link expired
+autonumber
+    Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                group RO, read committed
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getEmail()
+                    return current account email
+                    AccountManager -> AccountFacade: findByEmail(newEmail)
+                    return empty optional
+                    AccountManager -> EmailCreator: getEmailForChangeEmail(lang, newEmail, byAdmin,\n login, newEmail, LocalDateTime.now().toString())
+                    return emailMessage
+                    AccountManager -> EmailSender: sendEmail(emailMessage)
+                    return success
+                end
+            return success
+        return status code 200
+    return 'link sent' message
+    User -> ConfirmationView: link visited
+            ConfirmationView -> AccountEndpoint: changeOwnEmail(toVerify)
+                AccountEndpoint -> AccountManager: changeEmail(toVerify)
+                    group RW, read commited
+                        AccountManager -> ExpiredTokenFacade: findByToken(cipherText)
+                        return optional with token
+                    end
+                return link expired
+            return status code 400
+        return 'error' message
+else link is corrupted
+autonumber
+    Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                group RO, read committed
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getEmail()
+                    return current account email
+                    AccountManager -> AccountFacade: findByEmail(newEmail)
+                    return empty optional
+                    AccountManager -> EmailCreator: getEmailForChangeEmail(lang, newEmail, byAdmin,\n login, newEmail, LocalDateTime.now().toString())
+                    return emailMessage
+                    AccountManager -> EmailSender: sendEmail(emailMessage)
+                    return success
+                end
+            return success
+        return status code 200
+    return 'link sent' message
+    User -> ConfirmationView: link visited
+            ConfirmationView -> AccountEndpoint: changeOwnEmail(toVerify)
+                AccountEndpoint -> AccountManager: changeEmail(toVerify)
+                    group RW, read commited
+                        AccountManager -> ExpiredTokenFacade: findByToken(cipherText)
+                        return empty optional
+                        AccountManager -> Crypt: decrypt(cipherText)
+                        return error
+                    end
+                return link corrupted
+            return status code 400
+        return 'error' message
+else account deleted before visiting link
+autonumber
+    Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                group RO, read committed
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getEmail()
+                    return current account email
+                    AccountManager -> AccountFacade: findByEmail(newEmail)
+                    return empty optional
+                    AccountManager -> EmailCreator: getEmailForChangeEmail(lang, newEmail, byAdmin,\n login, newEmail, LocalDateTime.now().toString())
+                    return emailMessage
+                    AccountManager -> EmailSender: sendEmail(emailMessage)
+                    return success
+                end
+            return success
+        return status code 200
+    return 'link sent' message
+    User -> ConfirmationView: link visited
+            ConfirmationView -> AccountEndpoint: changeOwnEmail(toVerify)
+                AccountEndpoint -> AccountManager: changeEmail(toVerify)
+                    group RW, read commited
+                        AccountManager -> ExpiredTokenFacade: findByToken(cipherText)
+                        return empty optional
+                        AccountManager -> Crypt: decrypt(cipherText)
+                        return decrypted login and email
+                        AccountManager -> AccountFacade: findByLogin(login)
+                        return empty optional
+                    end
+                return account deleted before visiting link
+            return status code 400
+        return 'error' message
+else email is already in use
+autonumber
+    Administrator -> ChangeEmailForm: 'submit' button clicked and confirmed
+        ChangeEmailForm -> AccountEndpoint: sendUsersEmailChangeLink(login, newEmail, lang)
+            AccountEndpoint -> AccountManager: sendEmailForChangeEmail(login, newEmail, lang, byAdmin=true)
+                group RO, read committed
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return optional with account
+                    AccountManager -> AccountEntity: getEmail()
+                    return current account email
+                    AccountManager -> AccountFacade: findByEmail(newEmail)
+                    return empty optional
+                    AccountManager -> EmailCreator: getEmailForChangeEmail(lang, newEmail, byAdmin,\n login, newEmail, LocalDateTime.now().toString())
+                    return emailMessage
+                    AccountManager -> EmailSender: sendEmail(emailMessage)
+                    return success
+                end
+            return success
+        return status code 200
+    return 'link sent' message
+    User -> ConfirmationView: link visited
+            ConfirmationView -> AccountEndpoint: changeOwnEmail(toVerify)
+                AccountEndpoint -> AccountManager: changeEmail(toVerify)
+                    group RW, read commited
+                        AccountManager -> ExpiredTokenFacade: findByToken(cipherText)
+                        return empty optional
+                        AccountManager -> Crypt: decrypt(cipherText)
+                        return decrypted login and email
+                        AccountManager -> AccountFacade: findByLogin(login)
+                        return optional with account
+                        AccountManager -> AccountFacade: findByEmail(email)
+                        return optional with account
+                    end
+                return email is already in use
+            return status code 400
+        return 'error' message
+end
+@enduml

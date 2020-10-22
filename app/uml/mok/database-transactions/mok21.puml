@@ -1,0 +1,59 @@
+@startuml
+title MOK.21 Wyślij link weryfikacyjny.
+autoactivate on
+actor Admin
+boundary AccountsListForm
+participant AccountEndpoint
+participant AccountManager
+participant EmailSender
+participant EmailCreator
+control AccountFacadeReadCommitted
+entity AccountEntity
+
+alt account exist and is not verified
+autonumber
+    Admin -> AccountsListForm: "Send verification link" button clicked
+        AccountsListForm -> AccountEndpoint: sendVerificationLink(login, language)
+            AccountEndpoint -> AccountManager: sendVerificationLink(login, language)
+                group RO, read committed
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                return optional with account
+                AccountManager -> AccountEntity: isVerified()
+                return false
+                AccountManager -> EmailCreator: getVerificationEmail(language, \naccountEntity.getEmail(), \nLocalDateTime.now(), \naccountEntity.login)
+                return verificationEmail
+                AccountManager -> EmailSender: sendEmail(verificationEmail)
+                return success
+                end
+            return success
+        return status code 200
+    return "verification link has been send to the user" message
+
+else account does not exist
+autonumber
+    Admin -> AccountsListForm: "Send verification link" button clicked
+        AccountsListForm -> AccountEndpoint: sendVerificationLink(login, language)
+            AccountEndpoint -> AccountManager: sendVerificationLink(login, language)
+                group RO, read committed
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                return empty optional
+                end
+            return failed
+        return status code 400
+    return "Account does not exist" message
+
+else account is verified
+    Admin -> AccountsListForm: "Send verification link" button clicked
+        AccountsListForm -> AccountEndpoint: sendVerificationLink(login, language)
+            AccountEndpoint -> AccountManager: sendVerificationLink(login, language)
+                group RO, read committed
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                return optional with account
+                AccountManager -> AccountEntity: isVerified()
+                return true
+              end
+            return failed
+        return status code 400
+    return "Account is already verified" message
+end
+@enduml

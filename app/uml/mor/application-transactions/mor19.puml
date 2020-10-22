@@ -1,0 +1,99 @@
+@startuml
+
+title MOR.19 Dodaj nowy model broni
+autoactivate on
+participant WeaponCategoryEndpoint
+participant WeaponModelEndpoint
+participant "WeaponModelManager\nTransactionAttributeType.REQUIRES_NEW" as WeaponModelManager
+participant "WeaponCategoryManager\nTransactionAttributeType.REQUIRES_NEW" as WeaponCategoryManager
+control "WeaponModelFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as WeaponModelFacade
+control "WeaponCategoryFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as WeaponCategoryFacade
+entity WeaponModelEntity
+
+alt weapon model with such name does not exist
+autonumber
+
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+            note right WeaponCategoryEndpoint
+                [...]
+            end note
+
+                WeaponModelEndpoint -> WeaponModelManager: addWeaponModel(weaponModelEntity)
+                        WeaponModelManager -> WeaponModelFacade: findByName(weaponModelEntity.getName())
+                        return empty optional
+                        WeaponModelManager -> WeaponCategoryFacade: findByName(weaponModelEntity.getWeaponCategory().getName())
+                        return optional with weaponCategory
+                        WeaponModelManager -> WeaponModelEntity: setWeaponCategory(weaponCategory)
+                        return success
+                        WeaponModelManager -> WeaponModelFacade: create(weaponModel)
+                        return success
+                return success
+
+
+else weapon model with such name exists
+autonumber
+
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+                    note right WeaponCategoryEndpoint
+                        [...]
+                    end note
+
+            WeaponModelEndpoint -> WeaponModelManager: addWeaponModel(weaponModelEntity)
+                    WeaponModelManager -> WeaponModelFacade: findByName(weaponModelEntity.getName())
+                    return optional with weaponModel
+            return weapon model with such name exists
+
+else weapon category does not exist
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+            note right WeaponCategoryEndpoint
+                            [...]
+                        end note
+
+            WeaponModelEndpoint -> WeaponModelManager: addWeaponModel(weaponModelEntity)
+                    WeaponModelManager -> WeaponModelFacade: findByName(weaponModelEntity.getName())
+                    return empty optional
+                    WeaponModelManager -> WeaponCategoryFacade: findByName(weaponModelEntity.getWeaponCategory().getName())
+                    return empty optional
+            return weapon category does not exist
+
+else no weapon categories
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return empty list
+            return no weapon categories
+
+else invalid form data
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+end
+@enduml

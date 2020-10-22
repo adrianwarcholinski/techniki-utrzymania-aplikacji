@@ -1,0 +1,288 @@
+@startuml
+
+skinparam linetype ortho
+left to right direction
+
+title __EJB MOK Class Diagram__\n
+
+  namespace pl.lodz.p.it.ssbd2020.mok.facades.interfaces{
+    interface javax.ejb.SessionSynchronization
+
+    interface pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccessLevelFacadeReadCommittedLocal << Local >> {
+      {abstract} + countAccountRoles(login: String): Optional<Long> throws AppException
+      {abstract} + findByAccessLevelAndLogin(accessLevel: String, login: String): Optional<AccessLevelEntity> throws AppException
+    }
+
+    interface pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccountFacadeReadCommittedLocal << Local >> {
+      {abstract} + findAuthenticated(): List<AccountEntity> throws AppException
+      {abstract} + findByEmail(email: String): Optional<AccountEntity> throws AppException
+      {abstract} + findByLogin(login: String): Optional<AccountEntity> throws AppException
+      {abstract} + findByPhraseInFullName(phrase: String): List<AccountEntity> throws AppException
+      {abstract} + getAllSortedById(): List<AccountEntity> throws AppException
+    }
+
+    interface pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AdminFacadeReadCommittedLocal << Local >> {
+      {abstract} + countActive(active: boolean): Long throws AppException
+      {abstract} + findByCardNumber(cardNumber: String): Optional<AdminEntity> throws AppException
+    }
+
+    interface pl.lodz.p.it.ssbd2020.mok.facades.interfaces.CustomerFacadeReadCommittedLocal << Local >> {
+      {abstract} + findByPhoneNumber(phoneNumber: String): Optional<CustomerEntity> throws AppException
+    }
+
+    interface pl.lodz.p.it.ssbd2020.mok.facades.interfaces.EmployeeFacadeReadCommittedLocal << Local >> {
+      {abstract} + findByWorkPhoneNumber(workPhoneNumber: String): Optional<EmployeeEntity> throws AppException
+    }
+
+    interface pl.lodz.p.it.ssbd2020.mok.facades.interfaces.ExpiredTokenFacadeReadCommittedLocal << Local >> {
+      {abstract} + findByToken(token: String): Optional<ExpiredTokenEntity> throws AppException
+    }
+  }
+
+  namespace pl.lodz.p.it.ssbd2020.facades {
+    abstract class pl.lodz.p.it.ssbd2020.facades.AbstractFacade {
+        {static} + CONSTRAINT_UNIQUE_CARD_NUMBER : String
+        {static} + CONSTRAINT_UNIQUE_EMAIL : String
+        {static} + CONSTRAINT_UNIQUE_LOGIN : String
+        {static} + CONSTRAINT_UNIQUE_LOGIN_ACCESS_LEVEL : String
+        {static} + CONSTRAINT_UNIQUE_PHONE_NUMBER : String
+        {static} + CONSTRAINT_UNIQUE_TOKEN : String
+        {static} + CONSTRAINT_UNIQUE_WORK_PHONE_NUMBER : String
+        {static} + CONSTRAINT_UNIQUE_RESERVATION_NUMBER : String
+        {static} + CONSTRAINT_UNIQUE_ALLEY_NAME : String
+        {static} + CONSTRAINT_UNIQUE_WEAPON_SERIAL_NUMBER : String
+        {static} + CONSTRAINT_UNIQUE_OPINION_NUMBER : String
+        {static} + CONSTRAINT_UNIQUE_CUSTOMER_AND_MODEL : String
+        - entityClass : Class<T>
+        + AbstractFacade()
+        + count(entity: T): int throws AppException
+        + create(): void throws AppException
+        + edit(entity: T): void throws AppException
+        + find(id: Object): Optional<T> throws AppException
+        + findAll(): List<T> throws AppException
+        + remove(entity: T): void throws AppException
+        {abstract} # getEntityManager(): EntityManager
+    }
+  }
+
+  namespace pl.lodz.p.it.ssbd2020.facades {
+    interface pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations << Local >> {
+        {abstract} + count(): int throws AppException
+        {abstract} + create(obj: T) throws AppException
+        {abstract} + edit(obj: T) throws AppException
+        {abstract} + find(id: Object): Optional<T> throws AppException
+        {abstract} + findAll(): List<T> throws AppException
+        {abstract} + remove(obj: T) throws AppException
+    }
+  }
+
+  namespace pl.lodz.p.it.ssbd2020.utils.manager {
+    interface pl.lodz.p.it.ssbd2020.utils.manager.Manager {
+        + afterBegin(): void throws EJBException
+        + afterCompletion(committed: boolean): void throws EJBException
+        + beforeCompletion(): void throws EJBException
+        {abstract} + getLastTransactionId(): String
+        {abstract} + isLastTransactionRollback(): boolean
+        {abstract} + setLastTransactionCommitted(committed: boolean): void
+        {abstract} + setLastTransactionId(id: String): void
+        {abstract} + getCurrentUser() : String
+    }
+  }
+
+  namespace pl.lodz.p.it.ssbd2020.mok.facades {
+    class pl.lodz.p.it.ssbd2020.mok.facades.AccessLevelFacadeReadCommitted << Stateless >> {
+        - em : EntityManager
+        + AccessLevelFacade()
+        + countAccountRoles(login: String): Optional<Long> throws AppException
+        + create(entity: AccessLevelEntity): void throws AppException
+        + edit(entity: AccessLevelEntity): void throws AppException
+        + findByAccessLevelAndLogin(accessLevel: String, login: String): Optional<AccessLevelEntity> throws AppException
+        + findByLevel(level: String): List<AccessLevelEntity> throws AppException
+        + remove(entity: AccessLevelEntity): void throws AppException
+        # getEntityManager(): EntityManager
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.mok.facades {
+    class pl.lodz.p.it.ssbd2020.mok.facades.AccountFacadeReadCommitted << Stateless >> {
+        - em : EntityManager
+        + AccountFacade()
+        + create(entity: AccountEntity): void throws AppException
+        + edit(entity: AccountEntity): void throws AppException
+        + find(id: Object): Optional<AccountEntity> throws AppException
+        + findAuthenticated(): List<AccountEntity> throws AppException
+        + findByEmail(email: String): Optional<AccountEntity> throws AppException
+        + findByLogin(login: String): Optional<AccountEntity> throws AppException
+        + findByPhraseInFullName(phrase String): List<AccountEntity> throws AppException
+        + getAllSortedById(): List<AccountEntity> throws AppException
+        + remove(entity: AccountEntity): void throws AppException
+        # getEntityManager(): EntityManager
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.mok.facades {
+    class pl.lodz.p.it.ssbd2020.mok.facades.AdminFacadeReadCommitted << Stateless >> {
+        - em : EntityManager
+        + AdminFacade()
+        + countActive(active: boolean): Long throws AppException
+        + create(entity: AdminEntity): void throws AppException
+        + edit(entity: AdminEntity): void throws AppException
+        + findByCardNumber(cardNumber: String): Optional<AdminEntity> throws AppException
+        + remove(entity: AdminEntity): void throws AppException
+        # getEntityManager(): EntityManager
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.mok.facades {
+    class pl.lodz.p.it.ssbd2020.mok.facades.CustomerFacadeReadCommitted << Stateless >> {
+        - em : EntityManager
+        + CustomerFacade()
+        + create(entity: CustomerEntity): void throws AppException
+        + edit(entity: CustomerEntity): void throws AppException
+        + findByPhoneNumber(phoneNumber: String): Optional<CustomerEntity> throws AppException
+        + remove(entity: CustomerEntity): void throws AppException
+        # getEntityManager(): EntityManager
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.mok.facades {
+    class pl.lodz.p.it.ssbd2020.mok.facades.EmployeeFacadeReadCommitted << Stateless >> {
+        - em : EntityManager
+        + EmployeeFacade()
+        + create(entity: EmployeeEntity): void throws AppException
+        + edit(entity: EmployeeEntity): void throws AppException
+        + findByWorkPhoneNumber(workPhoneNumber: String): Optional<EmployeeEntity> throws AppException
+        + remove(entity: EmployeeEntity): void throws AppException
+        # getEntityManager(): EntityManager
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.mok.facades {
+    class pl.lodz.p.it.ssbd2020.mok.facades.ExpiredTokenFacadeReadCommitted << Stateless >> {
+        - em : EntityManager
+        + ExpiredTokenFacade()
+        + create(entity: ExpiredTokenEntity): void throws AppException
+        + edit(entity: ExpiredTokenEntity): void throws UnsupportedOperationException
+        + findByToken(token: String): Optional<ExpiredTokenEntity> throws AppException
+        + remove(entity: ExpiredTokenEntity): void throws UnsupportedOperationException
+        # getEntityManager(): EntityManager
+    }
+  }
+
+  namespace pl.lodz.p.it.ssbd2020.mok.managers {
+    namespace interfaces {
+      interface pl.lodz.p.it.ssbd2020.mok.managers.interfaces.AccountManagerLocal << Local >> {
+          {abstract} + addAccount(accountEntity: AccountEntity, language: String): void throws AppException
+          {abstract} + changeEmail(cipherText: String): void throws AppException
+          {abstract} + changeOwnPassword(login: String, oldPassword: String, newPassword: String): void throws AppException
+          {abstract} + changePassword(login: String, newPassword: String): void throws AppException
+          {abstract} + editUserDetails(accountEntity: AccountEntity, adminEntity: AdminEntity, customerEntity: CustomerEntity, employeeEntity: EmployeeEntity): void throws AppException
+          {abstract} + findByPhraseInFullName(phrase: String): List<AccountEntity> throws AppException
+          {abstract} + getAccountDetails(login: String): AccountEntity throws AppException
+          {abstract} + getAllAccounts(): List<AccountEntity> throws AppException
+          {abstract} + getAuthenticatedAccounts(): List<AccountEntity> throws AppException
+          {abstract} + getLastAuthenticationTimes(login: String): LastAuthenticationTimes throws AppException
+          {abstract} + grantAccessLevel(accessLevel: String, login: String, info: String): void throws AppException
+          {abstract} + handleSuccessfulAuthentication(login: String, ip: String, lang: String, isAdmin: boolean): void throws AppException
+          {abstract} + handleUnsuccessfulAuthenticationAttempt(login: String): void throws AppException
+          {abstract} + isVerifiedAccountWithEmail(email: String): boolean throws AppException
+          {abstract} + lockAccount(login: String): void throws AppException
+          {abstract} + resetPassword(login: String, newPassword: String) throws AppException
+          {abstract} + revokeAccessLevel(login: String, accessLevel: String): void throws AppException
+          {abstract} + sendEmailForChangeEmail(login: String, newEmail: String, lang: String, byAdmin: boolean) throws AppException
+          {abstract} + sendEmailForResetPassword(email: String, browserLanguage: String): void throws AppException
+          {abstract} + unlockAccount(login: String): void throws AppException
+          {abstract} + verify(login: String, language: String): void throws AppException
+          {abstract} + lockAccountAfterFailedAuthentication(login: String, language: String) : boolean throws AppException
+          {abstract} + sendVerificationLink(login: String, language: String): void throws AppException
+      }
+    }
+
+    class pl.lodz.p.it.ssbd2020.mok.managers.AccountManager << Stateful >> {
+        - emailSender: EmailSender
+        - crypt: Crypt
+        - hashGenerator: HashGenerator
+        - emailCreator: EmailCreator
+        - isLastTransactionCommitted : boolean
+        - lastTransactionId : String
+        - securityContext : SecurityContext
+        - servletContext : ServletContext
+        + addAccount(accountEntity: AccountEntity, language: String): void throws AppException
+        + changeEmail(cipherText: String): void throws AppException
+        + changeOwnPassword(login: String, oldPassword: String, newPassword: String): void throws AppException
+        + changePassword(login: String, newPassword: String): void throws AppException
+        + editUserDetails(accountEntity: AccountEntity, adminEntity: AdminEntity, customerEntity: CustomerEntity, employeeEntity: EmployeeEntity): void throws AppException throws AppException
+        + findByPhraseInFullName(phrase: String): List<AccountEntity> throws AppException
+        + getAccountDetails(login: String): AccountEntity throws AppException
+        + getAllAccounts(): List<AccountEntity> throws AppException
+        + getAuthenticatedAccounts(): List<AccountEntity> throws AppException
+        + getLastAuthenticationTimes(login: String): LastAuthenticationTimes throws AppException
+        + getLastTransactionId(): String
+        + grantAccessLevel(accessLevel: String, login: String, info: String): void throws AppException
+        + handleSuccessfulAuthentication(login: String, ip: String, lang: String, isAdmin: boolean): void throws AppException
+        + handleUnsuccessfulAuthenticationAttempt(login: String): void throws AppException
+        + isLastTransactionRollback(): boolean
+        + lockAccountAfterFailedAuthentication(login: String, language: String) boolean throws AppException
+        + isVerifiedAccountWithEmail(email: String): boolean throws AppException
+        + lockAccount(login: String): void throws AppException
+        + resetPassword(login: String, newPassword: String) throws AppException
+        + revokeAccessLevel(login: String, accessLevel: String): void throws AppException
+        + sendEmailForChangeEmail(login: String, newEmail: String, lang: String, byAdmin: boolean) throws AppException
+        + sendEmailForResetPassword(email: String, browserLanguage: String): void throws AppException
+        + setLastTransactionCommitted(committed: boolean): void
+        + setLastTransactionId(id: String): void
+        + unlockAccount(login: String): void throws AppException
+        + verify(login: String, language: String): void throws AppException
+        + sendVerificationLink(login: String, language String) void throws AppException
+        - checkBlockLastAdminAttempt(account: AccountEntity): void throws AppException
+        - checkGrantIsAvailable(accessLevel: String, login: String, info: String): void throws AppException
+        - checkGrantIsAvailable(accessLevelEntity: AccessLevelEntity, login: String): void throws AppException
+        - checkUniqueCardNumber(ownerAdminEntity: Optional<AdminEntity>, editedAccountLogin: String): boolean
+        - checkUniquePhoneNumber(ownerCustomerEntity: Optional<CustomerEntity>, editedAccountLogin: String): boolean
+        - checkUniqueWorkPhoneNumber(ownerEmployeeEntity: Optional<EmployeeEntity>, editedAccountLogin: String): boolean
+        - grantAccessLevel(accessLevelEntity: AccessLevelEntity, info: String): void throws AppException
+        - grantAccessLevel(accessLevel: String: account: AccountEntity, info: String): void throws AppException
+        - sendVerificationConfirmation(account: AccountEntity, language: String): void throws AppException
+        - sendVerificationLink(account: AccountEntity, language: String): void throws AppException
+    }
+  }
+
+  pl.lodz.p.it.ssbd2020.facades.AbstractFacade .down.|> pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations
+
+  pl.lodz.p.it.ssbd2020.mok.managers.AccountManager .left.|> pl.lodz.p.it.ssbd2020.mok.managers.interfaces.AccountManagerLocal
+  pl.lodz.p.it.ssbd2020.mok.managers.interfaces.AccountManagerLocal -right-|> pl.lodz.p.it.ssbd2020.utils.manager.Manager
+  pl.lodz.p.it.ssbd2020.utils.manager.Manager --|> javax.ejb.SessionSynchronization
+
+  pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccessLevelFacadeReadCommittedLocal --|> pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations
+  pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccountFacadeReadCommittedLocal --|> pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations
+  pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AdminFacadeReadCommittedLocal --|> pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations
+  pl.lodz.p.it.ssbd2020.mok.facades.interfaces.CustomerFacadeReadCommittedLocal --|> pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations
+  pl.lodz.p.it.ssbd2020.mok.facades.interfaces.EmployeeFacadeReadCommittedLocal --|> pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations
+  pl.lodz.p.it.ssbd2020.mok.facades.interfaces.ExpiredTokenFacadeReadCommittedLocal --|> pl.lodz.p.it.ssbd2020.facades.BasicFacadeOperations
+  pl.lodz.p.it.ssbd2020.mok.managers.AccountManager o--- pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccessLevelFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.managers.AccountManager o--- pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccountFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.managers.AccountManager o--- pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AdminFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.managers.AccountManager o--- pl.lodz.p.it.ssbd2020.mok.facades.interfaces.CustomerFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.managers.AccountManager o--- pl.lodz.p.it.ssbd2020.mok.facades.interfaces.EmployeeFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.managers.AccountManager o--- pl.lodz.p.it.ssbd2020.mok.facades.interfaces.ExpiredTokenFacadeReadCommittedLocal
+
+  pl.lodz.p.it.ssbd2020.mok.facades.ExpiredTokenFacadeReadCommitted -left-|> pl.lodz.p.it.ssbd2020.facades.AbstractFacade
+  pl.lodz.p.it.ssbd2020.mok.facades.AccessLevelFacadeReadCommitted -left-|> pl.lodz.p.it.ssbd2020.facades.AbstractFacade
+  pl.lodz.p.it.ssbd2020.mok.facades.AccountFacadeReadCommitted -left-|> pl.lodz.p.it.ssbd2020.facades.AbstractFacade
+  pl.lodz.p.it.ssbd2020.mok.facades.AdminFacadeReadCommitted -left-|> pl.lodz.p.it.ssbd2020.facades.AbstractFacade
+  pl.lodz.p.it.ssbd2020.mok.facades.CustomerFacadeReadCommitted -left-|> pl.lodz.p.it.ssbd2020.facades.AbstractFacade
+  pl.lodz.p.it.ssbd2020.mok.facades.EmployeeFacadeReadCommitted -left-|> pl.lodz.p.it.ssbd2020.facades.AbstractFacade
+
+  pl.lodz.p.it.ssbd2020.mok.facades.AccessLevelFacadeReadCommitted .up.|> pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccessLevelFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.facades.AccountFacadeReadCommitted .up.|> pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AccountFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.facades.AdminFacadeReadCommitted .up.|> pl.lodz.p.it.ssbd2020.mok.facades.interfaces.AdminFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.facades.CustomerFacadeReadCommitted .up.|> pl.lodz.p.it.ssbd2020.mok.facades.interfaces.CustomerFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.facades.EmployeeFacadeReadCommitted .up.|> pl.lodz.p.it.ssbd2020.mok.facades.interfaces.EmployeeFacadeReadCommittedLocal
+  pl.lodz.p.it.ssbd2020.mok.facades.ExpiredTokenFacadeReadCommitted .up.|> pl.lodz.p.it.ssbd2020.mok.facades.interfaces.ExpiredTokenFacadeReadCommittedLocal
+
+@enduml

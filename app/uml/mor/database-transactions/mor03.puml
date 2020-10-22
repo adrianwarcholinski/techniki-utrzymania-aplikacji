@@ -1,0 +1,226 @@
+@startuml
+title MOR.3 Odwołaj swoją rezerwację
+autoactivate on
+actor "Employee" as User
+boundary ReservationListForm
+participant ReservationEndpoint
+participant SecurityContext
+participant ReservationManager
+participant EmailSender
+control ReservationFacadeReadCommitted as ReservationFacade
+entity ReservationEntity
+entity CustomerEntity
+entity AccountEntity
+
+
+
+alt reservation canceled properly
+autonumber
+    User -> ReservationListForm: 'cancel' and 'confirm' button clicked
+        ReservationListForm -> ReservationEndpoint: cancelOwnReservation(reservationNumber, language)
+             ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+             return principal
+             ReservationEndpoint -> Principal: getName()
+             return login
+                ReservationEndpoint -> ReservationManager: cancelReservation(reservationNumber, login, finalLanguage)
+                    group RW, read committed
+                    ReservationManager -> ReservationFacade: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+                    ReservationManager -> ReservationEntity: getCustomer()
+                    return customer
+                    ReservationManager -> CustomerEntity: getAccount()
+                    return account
+                    ReservationManager -> AccountEntity: getLogin()
+                    return login equal to given login parameter
+                    ReservationManager -> ReservationManager: cancelReservation(reservation)
+                        ReservationManager -> ReservationEntity: getEndDate()
+                        return future date
+                        ReservationManager -> ReservationEntity: getStartDate()
+                        return future date
+                        ReservationManager -> ReservationEntity: isActive()
+                        return true
+                        ReservationManager -> ReservationEntity: setActive(false)
+                        return success
+                        ReservationManager -> ReservationFacade: edit(reservation)
+                        return success
+                    return success
+                    ReservationManager -> AccountEntity: getEmail()
+                    return destinationEmail
+                    ReservationManager -> AccountEntity: getReservationNumber()
+                    return reservationNumber
+                    ReservationManager -> EmailCreator: getCancelReservationEmail(finalLanguage, destinationEmail, reservationNumber)
+                    return cancelReservationEmail
+                    ReservationManager -> EmailSender: sendEmail(cancelReservationEmail)
+                    return success
+                    end
+                return success
+        return status code 200
+    return success confirmation
+else reservation does not exist
+autonumber
+    User -> ReservationListForm: 'cancel' and 'confirm' button clicked
+        ReservationListForm -> ReservationEndpoint: cancelOwnReservation(reservationNumber, language)
+             ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+             return principal
+             ReservationEndpoint -> Principal: getName()
+             return login
+                ReservationEndpoint -> ReservationManager: cancelReservation(reservationNumber, login, finalLanguage)
+                    group RW, read committed
+                    ReservationManager -> ReservationFacade: findByReservationNumber(reservationNumber)
+                    return empty optional
+                    end
+                return failed
+        return status code 400
+    return failure message
+else reservation does not belong to the user
+autonumber
+    User -> ReservationListForm: 'cancel' and 'confirm' button clicked
+        ReservationListForm -> ReservationEndpoint: cancelOwnReservation(reservationNumber, language)
+             ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+             return principal
+             ReservationEndpoint -> Principal: getName()
+             return login
+                ReservationEndpoint -> ReservationManager: cancelReservation(reservationNumber, login, finalLanguage)
+                    group RW, read committed
+                    ReservationManager -> ReservationFacade: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+                    ReservationManager -> ReservationEntity: getCustomer()
+                    return customer
+                    ReservationManager -> CustomerEntity: getAccount()
+                    return account
+                    ReservationManager -> AccountEntity: getLogin()
+                    return login not equal to given login parameter
+                    end
+                return failed
+        return status code 400
+    return failure message
+else reservation was finished in the past
+autonumber
+    User -> ReservationListForm: 'cancel' and 'confirm' button clicked
+        ReservationListForm -> ReservationEndpoint: cancelOwnReservation(reservationNumber, language)
+             ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+             return principal
+             ReservationEndpoint -> Principal: getName()
+             return login
+                ReservationEndpoint -> ReservationManager: cancelReservation(reservationNumber, login, finalLanguage)
+                    group RW, read committed
+                    ReservationManager -> ReservationFacade: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+                    ReservationManager -> ReservationEntity: getCustomer()
+                    return customer
+                    ReservationManager -> CustomerEntity: getAccount()
+                    return account
+                    ReservationManager -> AccountEntity: getLogin()
+                    return login equal to given login parameter
+                    ReservationManager -> ReservationManager: cancelReservation(reservation)
+                        ReservationManager -> ReservationEntity: getEndDate()
+                        return past date
+                    return failed
+                    end
+                return failed
+        return status code 400
+    return failure message
+else reservation is in progress
+autonumber
+    User -> ReservationListForm: 'cancel' and 'confirm' button clicked
+        ReservationListForm -> ReservationEndpoint: cancelOwnReservation(reservationNumber, language)
+             ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+             return principal
+             ReservationEndpoint -> Principal: getName()
+             return login
+                ReservationEndpoint -> ReservationManager: cancelReservation(reservationNumber, login, finalLanguage)
+                    group RW, read committed
+                    ReservationManager -> ReservationFacade: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+                    ReservationManager -> ReservationEntity: getCustomer()
+                    return customer
+                    ReservationManager -> CustomerEntity: getAccount()
+                    return account
+                    ReservationManager -> AccountEntity: getLogin()
+                    return login equal to given login parameter
+                    ReservationManager -> ReservationManager: cancelReservation(reservation)
+                        ReservationManager -> ReservationEntity: getEndDate()
+                        return future date
+                        ReservationManager -> ReservationEntity: getStartDate()
+                        return past date
+                    return failed
+                    end
+                return failed
+        return status code 400
+    return failure message
+else reservation is canceled
+autonumber
+    User -> ReservationListForm: 'cancel' and 'confirm' button clicked
+        ReservationListForm -> ReservationEndpoint: cancelOwnReservation(reservationNumber, language)
+             ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+             return principal
+             ReservationEndpoint -> Principal: getName()
+             return login
+                ReservationEndpoint -> ReservationManager: cancelReservation(reservationNumber, login, finalLanguage)
+                    group RW, read committed
+                    ReservationManager -> ReservationFacade: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+                    ReservationManager -> ReservationEntity: getCustomer()
+                    return customer
+                    ReservationManager -> CustomerEntity: getAccount()
+                    return account
+                    ReservationManager -> AccountEntity: getLogin()
+                    return login equal to given login parameter
+                    ReservationManager -> ReservationManager: cancelReservation(reservation)
+                        ReservationManager -> ReservationEntity: getEndDate()
+                        return future date
+                        ReservationManager -> ReservationEntity: getStartDate()
+                        return future date
+                        ReservationManager -> ReservationEntity: isActive()
+                        return false
+                    return failed
+                    end
+                return failed
+        return status code 400
+    return failure message
+else email sending error
+autonumber
+    User -> ReservationListForm: 'cancel' and 'confirm' button clicked
+        ReservationListForm -> ReservationEndpoint: cancelOwnReservation(reservationNumber, language)
+             ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+             return principal
+             ReservationEndpoint -> Principal: getName()
+             return login
+                ReservationEndpoint -> ReservationManager: cancelReservation(reservationNumber, login, finalLanguage)
+                    group RW, read committed
+                    ReservationManager -> ReservationFacade: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+                    ReservationManager -> ReservationEntity: getCustomer()
+                    return customer
+                    ReservationManager -> CustomerEntity: getAccount()
+                    return account
+                    ReservationManager -> AccountEntity: getLogin()
+                    return login equal to given login parameter
+                    ReservationManager -> ReservationManager: cancelReservation(reservation)
+                        ReservationManager -> ReservationEntity: getEndDate()
+                        return future date
+                        ReservationManager -> ReservationEntity: getStartDate()
+                        return future date
+                        ReservationManager -> ReservationEntity: isActive()
+                        return true
+                        ReservationManager -> ReservationEntity: setActive(false)
+                        return success
+                        ReservationManager -> ReservationFacade: edit(reservation)
+                        return success
+                    return success
+                    ReservationManager -> AccountEntity: getEmail()
+                    return destinationEmail
+                    ReservationManager -> AccountEntity: getReservationNumber()
+                    return reservationNumber
+                    ReservationManager -> EmailCreator: getCancelReservationEmail(finalLanguage, destinationEmail, reservationNumber)
+                    return cancelReservationEmail
+                    ReservationManager -> EmailSender: sendEmail(cancelReservationEmail)
+                    return failed
+                    end
+                return failed
+        return status code 400
+    return failure message
+end
+
+
+@enduml

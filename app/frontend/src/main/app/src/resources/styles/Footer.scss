@@ -1,0 +1,18 @@
+@import "Colors";
+
+.center-content {
+  background-color: $color-purple-gradient;
+  align-items: center;
+  padding: 5vh;
+  min-height: calc(100vh - 50px);
+}
+
+
+.common-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 50px;;
+  font-size: large;
+  color: $color-sidebar-button-font;
+}

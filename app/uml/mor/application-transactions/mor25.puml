@@ -1,0 +1,51 @@
+@startuml
+
+title MOR.25 Usuń egzemplarz broni
+autoactivate on
+
+participant WeaponEndpoint
+participant "WeaponManager\nTransactionAttribute.REQUIRES_NEW" as WeaponManager
+participant ReservationUtils
+control "WeaponFacadeSerializable\nTransactionAttribute.MANDATORY" as WeaponFacade
+entity WeaponEntity
+
+alt provided data is valid
+autonumber
+    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+        WeaponManager -> WeaponFacade: findBySerial(serialNumber)
+        return optional with weaponToDeactivate
+        WeaponManager -> WeaponEntity: isActive()
+        return true
+        WeaponManager -> ReservationUtils: checkIsActiveReservation(weaponToDeactivate.getReservations())
+        return false
+        WeaponManager -> WeaponEntity: setActive(false)
+        return success
+        WeaponManager -> WeaponFacade: edit(weaponToDeactivate)
+        return success
+    return success
+else weapon has active reservation
+autonumber
+    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+        WeaponManager -> WeaponFacade: findBySerial(serialNumber)
+        return optional with weaponToDeactivate
+        WeaponManager -> WeaponEntity: isActive()
+        return true
+        WeaponManager -> ReservationUtils: checkIsActiveReservation(weaponToDeactivate.getReservations())
+        return true
+    return weapon has active reservation
+else weapon already deactivated
+autonumber
+    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+        WeaponManager -> WeaponFacade: findBySerial(serialNumber)
+        return optional with weaponToDeactivate
+        WeaponManager -> WeaponEntity: isActive()
+        return false
+    return weapon already deactivated
+else weapon does not exist
+autonumber
+    WeaponEndpoint -> WeaponManager: removeWeapon(serialNumber)
+        WeaponManager -> WeaponFacade: findBySerial(serialNumber)
+        return empty optional
+    return weapon does not exist
+end
+@enduml

@@ -1,0 +1,343 @@
+@startuml
+title
+MOR.4 Edytuj szczegóły rezerwacji
+end title
+
+autoactivate on
+participant ReservationEndpoint
+participant AlleyEndpoint
+participant WeaponEndpoint
+participant WeaponModelEndpoint
+participant "ReservationManager\nTransactionAttribute.REQUIRES_NEW" as ReservationManager
+participant "AlleyManager\nTransactionAttribute.REQUIRES_NEW" as AlleyManager
+participant "WeaponManager\nTransactionAttribute.REQUIRES_NEW" as WeaponManager
+participant "WeaponModelManager\nTransactionAttribute.REQUIRES_NEW" as WeaponModelManager
+control "ReservationFacadeReadCommitted\nTransactionAttribute.MANDATORY" as ReservationFacadeReadCommitted
+control "WeaponFacadeReadCommitted\nTransactionAttribute.MANDATORY" as WeaponFacadeReadCommitted
+control "WeaponModelFacadeReadCommitted\nTransactionAttribute.MANDATORY" as WeaponModelFacadeReadCommitted
+control "AlleyFacadeReadCommitted\nTransactionAttribute.MANDATORY" as AlleyFacadeReadCommitted
+control "ReservationFacadeSerializable\nTransactionAttribute.MANDATORY" as ReservationFacadeSerializable
+control "WeaponFacadeSerializable\nTransactionAttribute.MANDATORY" as WeaponFacadeSerializable
+control "WeaponModelFacadeSerializable\nTransactionAttribute.MANDATORY" as WeaponModelFacadeSerializable
+control "AlleyFacadeSerializable\nTransactionAttribute.MANDATORY" as AlleyFacadeSerializable
+entity ReservationEntity
+entity AlleyEntity
+entity WeaponEntity
+entity WeaponEntity
+alt reservation exists, at least one active alley, at least one active weapon model with active weapon
+autonumber
+    
+            AlleyEndpoint -> AlleyManager: getAllActiveAlleys()
+
+                    AlleyManager -> AlleyFacadeReadCommitted: findByActive(true)
+                    return list of all active alleys
+
+            return list of all active alleys
+    note right of ReservationEndpoint
+    [...]
+    end note
+            WeaponModelEndpoint -> WeaponModelManager: getAllActiveWeaponModelsWithActiveWeapons()
+
+                    WeaponModelManager -> WeaponModelFacadeReadCommitted: findByActive(true)
+                    return list of all active weapon models
+
+            return list of all active weapon models with available weapons
+     note right of ReservationEndpoint
+     [...]
+     end note   
+        
+            ReservationEndpoint -> ReservationManager: getReservation(reservationNumber)
+
+                    ReservationManager -> ReservationFacadeReadCommitted: findByReservationNumber(reservationNumber)
+                    return optional with reservation
+
+            return reservation
+
+     note right of ReservationEndpoint
+     [...]
+     end note
+
+             ReservationEndpoint -> ReservationManager: getConflictReservationsByWeapon(date, alleyName, weaponSerialNumber, excludedReservationNumber)
+
+                     ReservationManager -> ReservationFacadeReadCommitted: findConflictReservationsByWeapon(dateWithOpeningHour, dateWithClosingHour, weaponModelName, alleyName)
+                     return list of conflict reservations
+
+             return list of conflict reservations without excluded reservation
+
+      note right of ReservationEndpoint
+      [...]
+      end note
+
+                WeaponEndpoint -> WeaponManager: getAllActiveWeaponsByModelName(modelName)
+
+                       WeaponManager -> WeaponFacadeReadCommitted: findByActiveAndWeaponModelName(true, modelName)
+                       return list of all active weapons of given weapon model
+
+               return list of all active weapons of given weapon model
+
+        note right of ReservationEndpoint
+        [...]
+        end note
+            
+
+
+                ReservationEndpoint -> ReservationManager: updateReservation(reservation, language)
+
+                    activate ReservationManager
+                    activate ReservationManager
+                    activate ReservationManager
+                    activate ReservationManager
+                    activate ReservationManager
+                    activate ReservationManager
+                    activate ReservationManager
+
+                        ReservationManager -> ReservationFacadeSerializable: find(reservation.getId())
+                        return optional with originalReservation
+
+                        alt correct
+                        ReservationManager -> ReservationManager: checkReservationEditability(originalReservation)
+                        return success
+                        else reservation is already canceled
+                        autonumber 16
+                        ReservationManager -> ReservationManager: checkReservationEditability(originalReservation)
+                        return reservation is already canceled
+                        else reservation is already finished
+                        autonumber 16
+                        ReservationManager -> ReservationManager: checkReservationEditability(originalReservation)
+                        return reservation is already finished
+                        else reservation is already in progress
+                        autonumber 16
+                        ReservationManager -> ReservationManager: checkReservationEditability(originalReservation)
+                        return reservation is already in progress
+                        end
+
+                        alt correct
+                        ReservationManager -> ReservationManager: checkReservationDuration(reservation.getStartDate(), reservation.getEndDate())
+                        return success
+                        else reservation is too long
+                        autonumber 18
+                        ReservationManager -> ReservationManager: checkReservationDuration(reservation.getStartDate(), reservation.getEndDate())
+                        return reservation is too long
+                        end
+
+                        alt correct
+                        ReservationManager -> ReservationManager: checkOpeningHours(reservation.getStartDate(), reservation.getEndDate())
+                        return success
+                        else reservation during closing hours
+                        autonumber 20
+                        ReservationManager -> ReservationManager: checkOpeningHours(reservation.getStartDate(), reservation.getEndDate())
+                        return reservation during closing hours
+                        end
+
+                        alt correct
+                                ReservationManager -> AlleyFacade: findByName(reservation.getAlley().getName())
+                                return optional with alley
+                                ReservationManager -> AlleyEntity: isActive
+                                return true
+                        else alley is inactive
+                        autonumber 22
+
+                                ReservationManager -> AlleyFacadeSerializable: findByName(reservation.getAlley().getName())
+                                return optional with alley
+                                ReservationManager -> AlleyEntity: isActive
+                                return false
+
+                        else alley does not exist
+                        autonumber 22
+
+                                ReservationManager -> AlleyFacadeSerializable: findByName(reservation.getAlley().getName())
+                                return empty optional
+
+                        end
+                        alt correct
+
+                                ReservationManager -> WeaponFacadeSerializable: findBySerialNumber(reservation.getWeapon().getSerialNumber())
+                                return optional with weapon
+                                ReservationManager -> WeaponEntity: isActive()
+                                return true
+
+                        else weapon is inactive
+                        autonumber 24
+
+                                ReservationManager -> WeaponFacadeSerializable: findBySerialNumber(reservation.getWeapon().getSerialNumber())
+                                return optional with weapon
+                                ReservationManager -> WeaponEntity: isActive()
+                                return false
+
+                        else weapon does not exist
+                        autonumber 24
+
+                                ReservationManager -> WeaponFacadeSerializable: findBySerialNumber(reservation.getWeapon().getSerialNumber())
+                                return empty optional
+
+                        end
+                        ReservationManager -> ReservationFacadeSerializable: findConflictReservationsByWeapon(reservation.getStartDate(),reservation.getEndDate(), weapon.getSerialNumber(), alley.getName())
+                        return conflict reservations
+                        opt reservation is editable, within working hours and maximum duration, weapon and alley is available
+                            ReservationManager -> ReservationEntity: copyNotChangedReservationData(originalReservation)
+                            return success
+                            ReservationManager -> ReservationEntity: setWeapon(weapon)
+                            return success
+                            ReservationManager -> ReservationEntity: setAlley(alley)
+                            return success
+                            ReservationManager -> ReservationFacadeSerializable: edit(reservation)
+                            return success
+                            ReservationManager -> EmailCreator: getEmailForReservationEdit(emailDetails)
+                            return email
+                            ReservationManager -> EmailSender: sendEmail(email)
+                            return success
+                        end
+
+                    alt correct
+                                ReservationManager --> ReservationEndpoint: success
+
+                    else alley is not available
+                    autonumber 38
+                                ReservationManager --> ReservationEndpoint: alley is not available
+
+                    else weapon is not available
+                    autonumber 38
+                                ReservationManager --> ReservationEndpoint: weapon is not available
+
+                     else reservation is already canceled
+                     autonumber 38
+                                 ReservationManager --> ReservationEndpoint: reservation is already canceled
+
+                     else reservation is already finished
+                     autonumber 38
+                                 ReservationManager --> ReservationEndpoint: reservation is already finished
+
+                    else reservation is already in progress
+                    autonumber 38
+                                ReservationManager --> ReservationEndpoint: reservation is already in progress
+
+                    else reservation is too long
+                    autonumber 38
+                                ReservationManager --> ReservationEndpoint: reservation is too long
+
+                    else reservation during closing hours
+                    autonumber 38
+                                ReservationManager --> ReservationEndpoint: reservation during closing hours
+
+                    end
+
+else no active alleys
+autonumber
+
+            AlleyEndpoint -> AlleyManager: getAllActiveAlleys()
+
+                    AlleyManager -> AlleyFacadeReadCommitted: findByActive(true)
+                    return list of all active alleys
+
+            return list of all active alleys
+
+
+
+else no active weapon models with active weapons
+
+                AlleyEndpoint -> AlleyManager: getAllActiveAlleys()
+
+                        AlleyManager -> AlleyFacadeReadCommitted: findByActive(true)
+                        return list of all active alleys
+
+                return list of all active alleys
+
+    note right of ReservationEndpoint
+    [...]
+    end note
+
+                WeaponModelEndpoint -> WeaponModelManager: getAllActiveWeaponModelsWithActiveWeapons()
+
+                        WeaponModelManager -> WeaponModelFacadeReadCommitted: findByActive(true)
+                        return list of all active weapon models
+
+                return list of all active weapon models with available weapons
+
+
+else reservation does not exist
+
+                AlleyEndpoint -> AlleyManager: getAllActiveAlleys()
+
+                        AlleyManager -> AlleyFacadeReadCommitted: findByActive(true)
+                        return list of all active alleys
+
+                return list of all active alleys
+
+    note right of ReservationEndpoint
+    [...]
+    end note
+
+                WeaponModelEndpoint -> WeaponModelManager: getAllActiveWeaponModelsWithActiveWeapons()
+
+                        WeaponModelManager -> WeaponModelFacadeReadCommitted: findByActive(true)
+                        return list of all active weapon models
+
+                return list of all active weapon models with available weapons
+
+    note right of ReservationEndpoint
+    [...]
+    end note
+
+                ReservationEndpoint -> ReservationManager: getReservation(reservationNumber)
+
+                        ReservationManager -> ReservationFacadeReadCommitted: findByReservationNumber(reservationNumber)
+                        return empty optional
+
+                return reservation does not exist
+
+
+else no available weapons of given model
+
+                    AlleyEndpoint -> AlleyManager: getAllActiveAlleys()
+
+                            AlleyManager -> AlleyFacadeReadCommitted: findByActive(true)
+                            return list of all active alleys
+
+                    return list of all active alleys
+
+    note right of ReservationEndpoint
+    [...]
+    end note
+
+                    WeaponModelEndpoint -> WeaponModelManager: getAllActiveWeaponModelsWithActiveWeapons()
+
+                            WeaponModelManager -> WeaponModelFacadeReadCommitted: findByActive(true)
+                            return list of all active weapon models
+
+                    return list of all active weapon models with available weapons
+
+    note right of ReservationEndpoint
+    [...]
+    end note
+
+                    ReservationEndpoint -> ReservationManager: getReservation(reservationNumber)
+
+                            ReservationManager -> ReservationFacadeReadCommitted: findByReservationNumber(reservationNumber)
+                            return empty optional
+
+                    return reservation does not exists
+
+    note right of ReservationEndpoint
+    [...]
+    end note
+
+                    ReservationEndpoint -> ReservationManager: getConflictReservationsByWeapon(date, alleyName, weaponSerialNumber, excludedReservationNumber)
+
+                            ReservationManager -> ReservationFacadeReadCommitted: findConflictReservationsByWeapon(dateWithOpeningHour, dateWithClosingHour, weaponSerialNumber, alleyName)
+                            return list of conflict reservations
+
+                    return list of conflict reservations without excluded reservation
+
+    note right of ReservationEndpoint
+    [...]
+    end note
+
+                    WeaponEndpoint -> WeaponManager: getAllActiveWeaponsByModelName(modelName)
+
+                            WeaponManager -> WeaponFacadeReadCommitted: findByActiveAndWeaponModelName(true, modelName)
+                            return list of all active weapons of given weapon model
+
+                    return list of all active weapons of given weapon model
+
+end
+@enduml

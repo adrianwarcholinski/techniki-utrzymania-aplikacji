@@ -1,0 +1,122 @@
+@startuml
+title MOR.18 Przeglądaj szczegóły toru
+autoactivate on
+actor "Employee/Customer"
+boundary AlleyList
+participant AlleyEndpoint
+participant AlleyManager
+participant AlleyDifficultyLevelManager
+participant EditAlleyDto
+participant Crypt
+control AlleyFacadeReadCommitted as AlleyFacade
+control AlleyDifficultyLevelFacadeReadCommitted as AlleyDifficultyLevelFacade
+entity AlleyEntity
+
+alt alley details displayed properly
+autonumber
+    "Employee/Customer" -> AlleyList: 'show details' button clicked
+        AlleyList -> AlleyEndpoint: getAlleyDetails(name)
+                AlleyEndpoint -> AlleyEndpoint: getAlleyDetailsDto(name)
+                    AlleyEndpoint -> AlleyManager: getAlleyDetails(name)
+                        group RW, read committed
+                        AlleyManager -> AlleyFacade: findByName(name)
+                        return optional with alley
+                        AlleyManager -> AlleyEntity: isActive()
+                        return true
+                        end
+                    return alley
+                    AlleyEndpoint -> EditAlleyDto: fromAlleyEntity(alley)
+                    return editAlleyDto
+                    AlleyEndpoint -> EditAlleyDto: getVersion()
+                    return alleyVersion
+                    AlleyEndpoint -> Crypt: encrypt(alleyVersion)
+                    return encrypted alleyVersion
+                    AlleyEndpoint -> EditAlleyDto: setVersion(alleyVersion)
+                    return success
+                    AlleyEndpoint -> EditAlleyDto: getId()
+                    return alleyId
+                    AlleyEndpoint -> Crypt: encrypt(alleyId)
+                    return encrypted alleyId
+                    AlleyEndpoint -> EditAlleyDto: setId(alleyId)
+                    return success
+                return editAlleyDto
+                AlleyEndpoint -> AlleyDifficultyLevelManager: getAllAlleyDifficultyLevels()
+                    group RW, read committed
+                        AlleyDifficultyLevelManager -> AlleyDifficultyLevelFacade: findAll()
+                        return alleyDifficultyLevelsEntityList
+                    end
+                return alleyDifficultyLevelsEntityList
+                AlleyEndpoint -> AlleyEndpoint: mapToString(alleyDifficultyLevelsEntityList)
+                return alleyDifficultyLevelsStringList
+                AlleyEndpoint -> EditAlleyDto: setDifficultyLevels(alleyDifficultyLevelsStringList)
+                return success
+        return status code 200, editAlleyDto
+    return alley details view
+else alley does not exist
+autonumber
+    "Employee/Customer" -> AlleyList: 'show details' button clicked
+        AlleyList -> AlleyEndpoint: getAlleyDetails(name)
+                AlleyEndpoint -> AlleyEndpoint: getAlleyDetailsDto(name)
+                    AlleyEndpoint -> AlleyManager: getAlleyDetails(name)
+                        group RW, read committed
+                        AlleyManager -> AlleyFacade: findByName(name)
+                        return empty optional
+                        end
+                    return failed
+                return failed
+        return status code 400
+    return failure message
+else alley was removed
+autonumber
+    "Employee/Customer" -> AlleyList: 'show details' button clicked
+        AlleyList -> AlleyEndpoint: getAlleyDetails(name)
+                AlleyEndpoint -> AlleyEndpoint: getAlleyDetailsDto(name)
+                    AlleyEndpoint -> AlleyManager: getAlleyDetails(name)
+                        group RW, read committed
+                        AlleyManager -> AlleyFacade: findByName(name)
+                        return optional with alley
+                        AlleyManager -> AlleyEntity: isActive()
+                        return false
+                        end
+                    return failed
+                return failed
+        return status code 400
+    return failure message
+else no alley difficulty levels
+autonumber
+    "Employee/Customer" -> AlleyList: 'show details' button clicked
+        AlleyList -> AlleyEndpoint: getAlleyDetails(name)
+                AlleyEndpoint -> AlleyEndpoint: getAlleyDetailsDto(name)
+                    AlleyEndpoint -> AlleyManager: getAlleyDetails(name)
+                        group RW, read committed
+                        AlleyManager -> AlleyFacade: findByName(name)
+                        return optional with alley
+                        AlleyManager -> AlleyEntity: isActive()
+                        return true
+                        end
+                    return alley
+                    AlleyEndpoint -> EditAlleyDto: fromAlleyEntity(alley)
+                    return editAlleyDto
+                    AlleyEndpoint -> EditAlleyDto: getVersion()
+                    return alleyVersion
+                    AlleyEndpoint -> Crypt: encrypt(alleyVersion)
+                    return encrypted alleyVersion
+                    AlleyEndpoint -> EditAlleyDto: setVersion(alleyVersion)
+                    return success
+                    AlleyEndpoint -> EditAlleyDto: getId()
+                    return alleyId
+                    AlleyEndpoint -> Crypt: encrypt(alleyId)
+                    return encrypted alleyId
+                    AlleyEndpoint -> EditAlleyDto: setId(alleyId)
+                    return success
+                return editAlleyDto
+                AlleyEndpoint -> AlleyDifficultyLevelManager: getAllAlleyDifficultyLevels()
+                    group RW, read committed
+                        AlleyDifficultyLevelManager -> AlleyDifficultyLevelFacade: findAll()
+                        return empty list
+                    end
+                return failed
+        return status code 400
+    return failure message
+end
+@enduml

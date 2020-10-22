@@ -1,0 +1,34 @@
+@startuml
+autoactivate on
+title MOK.12 Zmień hasło konta innego użytkownika
+participant AccountEndpoint
+participant "AccountManager\nTransactionAttribute.REQUIRES_NEW" as AccountManager
+participant HashGenerator
+participant PasswordHash
+control "AccountFacade\nTransactionAttribute.MANDATORY" as AccountFacade
+entity AccountEntity
+
+alt account exists and password meet the requirements
+autonumber
+            AccountEndpoint -> AccountManager: changePassword(login, newPassword)
+                AccountManager -> AccountFacade: findByLogin(login)
+                return optional with account
+                AccountManager -> HashGenerator: generatePasswordHash(newPassword)
+                    HashGenerator -> PasswordHash: generatePasswordHash
+                    return newPasswordHash
+                return newPasswordHash
+                AccountManager -> AccountEntity: setPassword(newPasswordHash)
+                return success
+                AccountManager -> AccountFacade: edit(accountEntity)
+                return success
+
+            return success
+else account does not exist
+autonumber
+            AccountEndpoint -> AccountManager: changePassword(login, newPassword)
+
+                    AccountManager -> AccountFacade: findByLogin(login)
+                    return empty optional
+            return account does not exist
+end
+@enduml

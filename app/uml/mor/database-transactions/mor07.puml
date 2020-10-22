@@ -1,0 +1,28 @@
+@startuml
+title MOR.7: Przeglądaj wszystkie swoje rezerwacje
+
+autoactivate on
+actor Customer
+boundary MainMenu as GUI
+participant ReservationEndpoint
+participant ReservationManager
+participant SecurityContext
+participant Principal
+control ReservationFacadeReadCommitted as ReservationFacade
+autonumber
+Customer -> GUI: button 'reservations' clicked \nor checkboxes for past and canceled reservation changed
+    GUI -> ReservationEndpoint: getAllOwnReservations(getCanceled, getPast)
+                 ReservationEndpoint -> SecurityContext: getCallerPrincipal()
+                                return Principal
+                                ReservationEndpoint -> Principal: getName()
+                                return logged user's login
+                                ReservationEndpoint -> ReservationManager: getAllCustomersReservations(login, getCanceled, getPast)
+                group RO, read committed
+                    ReservationManager -> ReservationFacade: findByCustomer(login, getCanceled, getPast)
+                    return list of customer's reservations
+                end
+            return list of customer's reservations
+    return status code 200,\n list of reservations
+return list of customer's reservations
+
+@enduml

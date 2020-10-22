@@ -1,0 +1,86 @@
+@startuml
+
+title MOK.4 Odłącz poziom dostępu od konta
+autoactivate on
+participant AccountEndpoint
+participant "AccountManager\nTransactionAttributeType.REQUIRES_NEW" as AccountManager
+control "AccessLevelFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as AccessLevelFacade
+control "AdminFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as AdminFacade
+entity AccessLevelEntity
+
+alt access level is granted
+autonumber
+        AccountEndpoint -> AccountManager: revokeAccessLevel(login, accessLevel))
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin(accessLevel, login)
+            return optional with accessLevel
+
+            AccountManager -> AccessLevelEntity: isActive()
+            return true
+
+            AccountManager -> AccessLevelFacade: countAccountRoles(login)
+            return != 1
+
+            AccountManager -> AdminFacade: countActive(true)
+            return != 1
+
+            AccountManager -> AccessLevelEntity: setActive(false);
+            return success
+
+            AccountManager -> AccessLevelFacade: edit(accessLevel)
+            return success
+        return success
+
+else access level is already revoked
+autonumber
+        AccountEndpoint -> AccountManager: revokeAccessLevel(login, accessLevel))
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin(accessLevel, login)
+            return optional with accessLevel
+
+            AccountManager -> AccessLevelEntity: isActive()
+            return false
+        return access level is already revoked
+
+else account does not exist
+autonumber
+        AccountEndpoint -> AccountManager: revokeAccessLevel(login, accessLevel))
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin(accessLevel, login)
+            return empty optional
+        return account does not exist
+
+else attempt to revoke last access level
+autonumber
+        AccountEndpoint -> AccountManager: revokeAccessLevel(login, accessLevel))
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin(accessLevel, login)
+            return optional with accessLevel
+
+            AccountManager -> AccessLevelEntity: isActive()
+            return true
+
+            AccountManager -> AccessLevelFacade: countAccountRoles(login)
+            return 1
+        return attempt to revoke last access level
+
+else attempt to revoke admin from last admin
+autonumber
+        AccountEndpoint -> AccountManager: revokeAccessLevel(login, accessLevel))
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin(accessLevel, login)
+            return optional with accessLevel
+
+            AccountManager -> AccessLevelEntity: isActive()
+            return true
+
+            AccountManager -> AccessLevelFacade: countAccountRoles(login)
+            return != 1
+
+            AccountManager -> AdminFacade: countActive(true)
+            return 1
+        return attempt to revoke\nadmin from last admin
+
+else invalid level
+autonumber
+        AccountEndpoint -> AccountManager: revokeAccessLevel(login, accessLevel))
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin(accessLevel, login)
+            return empty optional
+        return invalid level
+end
+@enduml

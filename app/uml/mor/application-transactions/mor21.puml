@@ -1,0 +1,166 @@
+@startuml
+
+title MOR.21 Edytuj szczegóły modelu broni
+autoactivate on
+participant WeaponModelEndpoint
+participant WeaponCategoryEndpoint
+participant "WeaponModelManager\nTransactionAttributeType.REQUIRES_NEW" as WeaponModelManager
+participant "WeaponCategoryManager\nTransactionAttributeType.REQUIRES_NEW" as WeaponCategoryManager
+control "WeaponModelFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as WeaponModelFacade
+control "WeaponCategoryFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as WeaponCategoryFacade
+entity WeaponModelEntity
+
+alt weapon model exists
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+                note right WeaponModelEndpoint
+                    [...]
+                end note
+
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return optional with weaponModelEntity
+                note right WeaponModelEndpoint
+                    [...]
+                end note
+            return editWeaponModelDto
+
+            note right WeaponModelEndpoint
+                [...]
+            end note
+
+            WeaponModelEndpoint -> WeaponModelManager: editWeaponModel(weaponModelEntity)
+                    WeaponModelManager -> WeaponModelFacade: find(weaponModelEntity.getId())
+                    return optional with weaponModel
+                    WeaponModelManager -> WeaponModelEntity: isActive()
+                    return true
+                    WeaponModelManager -> WeaponModelEntity: copyNotChangedData(weaponModelEntity)
+                    return success
+                    WeaponModelManager -> WeaponCategoryFacade: findByName(name)
+                    return optional with weapon category
+                    WeaponModelManager -> WeaponModelEntity: setWeaponCategory(weaponCategoryEntity)
+                    return success
+                    WeaponModelManager -> WeaponModelEntity: edit(weaponModelEntity)
+                    return success
+            return success
+
+else weapon model does not exist
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+                note right WeaponModelEndpoint
+                    [...]
+                end note
+
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return empty optional
+            return weapon model does not exist
+
+else weapon category does not exist
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+                note right WeaponModelEndpoint
+                    [...]
+                end note
+
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return optional with weaponModelEntity
+                note right WeaponModelEndpoint
+                    [...]
+                end note
+            return editWeaponModelDto
+
+            note right WeaponModelEndpoint
+                [...]
+            end note
+
+            WeaponModelEndpoint -> WeaponModelManager: editWeaponModel(weaponModelEntity)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return optional with weaponModel
+                    WeaponModelManager -> WeaponModelEntity: isActive()
+                    return true
+                    WeaponModelManager -> WeaponModelEntity: copyNotChangedData(weaponModelEntity)
+                    return success
+                    WeaponModelManager -> WeaponCategoryFacade: findByName(name)
+                    return empty optional
+            return weapon category does not exist
+
+else weapon category is inactive
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+            return weaponCategoryDtos
+
+            note right WeaponModelEndpoint
+                [...]
+            end note
+
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return optional with weaponModelEntity
+            return editWeaponModelDto
+
+            note right WeaponModelEndpoint
+                [...]
+            end note
+
+            WeaponModelEndpoint -> WeaponModelManager: editWeaponModel(weaponModelEntity)
+                    WeaponModelManager -> WeaponModelFacade: find(weaponModelEntity.getId())
+                    return optional with weaponModel
+                    WeaponModelManager -> WeaponModelEntity: isActive()
+                    return false
+            return weapon category does not exist
+
+else no weapon categories
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return empty list
+            return no weapon categories
+
+else invalid data
+autonumber
+            WeaponCategoryEndpoint -> WeaponCategoryManager: getAllWeaponCategories()
+                    WeaponCategoryManager -> WeaponCategoryFacade: findAll()
+                    return weaponCategoryEntities
+                note right WeaponCategoryEndpoint
+                    [...]
+                end note
+            return weaponCategoryDtos
+
+                note right WeaponModelEndpoint
+                    [...]
+                end note
+
+            WeaponModelEndpoint -> WeaponModelManager: getWeaponModel(name)
+                    WeaponModelManager -> WeaponModelFacade: findByName(name)
+                    return optional with weaponModelEntity
+                note right WeaponModelEndpoint
+                    [...]
+                end note
+            return editWeaponModelDto
+end
+@enduml

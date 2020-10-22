@@ -1,0 +1,275 @@
+@startuml
+
+autoactivate on
+actor Guest as User
+boundary RegisterForm
+boundary VerificationConfirmView
+participant AccountEndpoint
+participant AccountDto
+participant CaptchaUtils
+participant AccountManager
+participant HashGenerator
+participant Crypt
+participant EmailCreator
+participant EmailSender
+control AccountFacadeReadCommitted
+entity AccountEntity
+entity CustomerEntity
+
+title MOK.1 Zarejestruj konto
+
+alt correct
+autonumber
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(accountDto, language, captchaToken)
+            AccountEndpoint -> CaptchaUtils: validateToken(captchaToken)
+            return success
+            AccountEndpoint -> AccountDto: convertToAccountEntity(accountDto)
+            return account
+            AccountEndpoint -> AccountEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountDto: createAccountAccessLevelEntity("ROLE_CUSTOMER", account, accountDto)
+            return customerEntity
+            AccountEndpoint -> CustomerEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountEntity: getAccessLevels().add(customerEntity)
+            return success
+            group RW, read committed
+            AccountEndpoint -> AccountManager: addAccount(account, language)
+                AccountManager -> HashGenerator: generatePasswordHash(account.getPassword)
+                return hashedPassword
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(account.getLogin())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByEmail(account.getEmail())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByPhoneNumber(account.getPhoneNumber())
+                return empty optional
+                AccountManager -> AccountEntity: setPassword(hashedPassword)
+                return success
+                AccountManager -> AccountFacadeReadCommitted: create(account)\n<<cascade persist account.getAccessLevels()>>
+                return success
+                AccountManager -> EmailCreator: getVerificationEmail(language, destinationEmail, time, login)
+                return verification email
+                AccountManager -> EmailSender: sendEmail(verificationEmail)
+                return success
+            return success
+            end
+        return status code 200
+    return "A verification link has been sent to provided e-mail address." message
+    User -> VerificationConfirmView: verification link visited
+        VerificationConfirmView -> AccountEndpoint: verifyAccount(token, language)
+            AccountEndpoint -> Crypt: decrypt(token)
+            return link generation date and user login
+            group RW, read committed
+            AccountEndpoint -> AccountManager: verify(login, language)
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                return account
+                AccountManager -> AccountEntity: isVerified()
+                return false
+                AccountManager -> AccountEntity: setVerified(true)
+                return success
+                AccountManager -> AccountFacadeReadCommitted: edit(account)
+                return success
+                AccountManager -> EmailCreator: getVerificationConfirmEmail(language, email, login)
+                return verification confirmation email
+                AccountManager -> EmailSender: sendEmail(verificationConfirmationEmail)
+                return success
+            return success
+            end
+        return status code 200
+    return "Account verified successfully!" message\n
+else invalid form input
+autonumber
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(customerDto)
+        return status code 400\ninvalid input
+    return 'invalid input' message
+else login is already taken
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(accountDto, language, captchaToken)
+            AccountEndpoint -> CaptchaUtils: validateToken(captchaToken)
+            return success
+            AccountEndpoint -> AccountDto: convertToAccountEntity(accountDto)
+            return account
+            AccountEndpoint -> AccountEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountDto: createAccountAccessLevelEntity("ROLE_CUSTOMER", account, accountDto)
+            return customerEntity
+            AccountEndpoint -> CustomerEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountEntity: getAccessLevels().add(customerEntity)
+            return success
+            group RW, read committed
+            AccountEndpoint -> AccountManager: addAccount(account, language)
+                AccountManager -> HashGenerator: generatePasswordHash(account.getPassword)
+                return hashedPassword
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(account.getLogin())
+                return optional with account
+            return login is already taken
+            end
+        return status code 400\nlogin is already taken
+    return "Login is already taken" message
+else email is already taken
+autonumber
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(accountDto, language, captchaToken)
+            AccountEndpoint -> CaptchaUtils: validateToken(captchaToken)
+            return success
+            AccountEndpoint -> AccountDto: convertToAccountEntity(accountDto)
+            return account
+            AccountEndpoint -> AccountEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountDto: createAccountAccessLevelEntity("ROLE_CUSTOMER", account, accountDto)
+            return customerEntity
+            AccountEndpoint -> CustomerEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountEntity: getAccessLevels().add(customerEntity)
+            return success
+            group RW, read committed
+            AccountEndpoint -> AccountManager: addAccount(account, language)
+                AccountManager -> HashGenerator: generatePasswordHash(account.getPassword)
+                return hashedPassword
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(account.getLogin())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByEmail(account.getEmail())
+                return optional with account
+            return email is already taken
+            end
+        return status code 400\nemail is already taken
+    return "Email is already taken" message
+else phone number is already taken
+autonumber
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(accountDto, language, captchaToken)
+            AccountEndpoint -> CaptchaUtils: validateToken(captchaToken)
+            return success
+            AccountEndpoint -> AccountDto: convertToAccountEntity(accountDto)
+            return account
+            AccountEndpoint -> AccountEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountDto: createAccountAccessLevelEntity("ROLE_CUSTOMER", account, accountDto)
+            return customerEntity
+            AccountEndpoint -> CustomerEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountEntity: getAccessLevels().add(customerEntity)
+            return success
+            group RW, read committed
+            AccountEndpoint -> AccountManager: addAccount(account, language)
+                AccountManager -> HashGenerator: generatePasswordHash(account.getPassword)
+                return hashedPassword
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(account.getLogin())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByEmail(account.getEmail())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByPhoneNumber(account.getPhoneNumber())
+                return optional with account
+            return phone number is already taken
+            end
+        return status code 400\nphone number is already taken
+    return "Phone number is already taken" message
+else link is corrupted
+autonumber
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(accountDto, language, captchaToken)
+            AccountEndpoint -> CaptchaUtils: validateToken(captchaToken)
+            return success
+            AccountEndpoint -> AccountDto: convertToAccountEntity(accountDto)
+            return account
+            AccountEndpoint -> AccountEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountDto: createAccountAccessLevelEntity("ROLE_CUSTOMER", account, accountDto)
+            return customerEntity
+            AccountEndpoint -> CustomerEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountEntity: getAccessLevels().add(customerEntity)
+            return success
+            group RW, read committed
+            AccountEndpoint -> AccountManager: addAccount(account, language)
+                AccountManager -> HashGenerator: generatePasswordHash(account.getPassword)
+                return hashedPassword
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(account.getLogin())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByEmail(account.getEmail())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByPhoneNumber(account.getPhoneNumber())
+                return empty optional
+                AccountManager -> AccountEntity: setPassword(hashedPassword)
+                return success
+                AccountManager -> AccountFacadeReadCommitted: create(account)\n<<cascade persist account.getAccessLevels()>>
+                return success
+                AccountManager -> EmailCreator: getVerificationEmail(language, destinationEmail, time, login)
+                return verification email
+                AccountManager -> EmailSender: sendEmail(verificationEmail)
+                return success
+            return success
+            end
+        return status code 200
+    return "A verification link has been sent to provided e-mail address." message
+    User -> VerificationConfirmView: verification link visited
+        VerificationConfirmView -> AccountEndpoint: verifyAccount(token, language)
+            AccountEndpoint -> Crypt: decrypt(token)
+            return decryption error
+        return status code 400
+    return "Link corrupted" message
+else link expired
+autonumber
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(accountDto, language, captchaToken)
+            AccountEndpoint -> CaptchaUtils: validateToken(captchaToken)
+            return success
+            AccountEndpoint -> AccountDto: convertToAccountEntity(accountDto)
+            return account
+            AccountEndpoint -> AccountEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountDto: createAccountAccessLevelEntity("ROLE_CUSTOMER", account, accountDto)
+            return customerEntity
+            AccountEndpoint -> CustomerEntity: setActive(true)
+            return success
+            AccountEndpoint -> AccountEntity: getAccessLevels().add(customerEntity)
+            return success
+            group RW, read committed
+            AccountEndpoint -> AccountManager: addAccount(account, language)
+                AccountManager -> HashGenerator: generatePasswordHash(account.getPassword)
+                return hashedPassword
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(account.getLogin())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByEmail(account.getEmail())
+                return empty optional
+                AccountManager -> AccountFacadeReadCommitted: findByPhoneNumber(account.getPhoneNumber())
+                return empty optional
+                AccountManager -> AccountEntity: setPassword(hashedPassword)
+                return success
+                AccountManager -> AccountFacadeReadCommitted: create(account)\n<<cascade persist account.getAccessLevels()>>
+                return success
+                AccountManager -> EmailCreator: getVerificationEmail(language, destinationEmail, time, login)
+                return verification email
+                AccountManager -> EmailSender: sendEmail(verificationEmail)
+                return success
+            return success
+            end
+        return status code 200
+    return "A verification link has been sent to provided e-mail address." message
+    User -> VerificationConfirmView: verification link visited
+        VerificationConfirmView -> AccountEndpoint: verifyAccount(token, language)
+            AccountEndpoint -> Crypt: decrypt(token)
+            return link generation date and user login
+            group RW, read committed
+            AccountEndpoint -> AccountManager: verify(login, language)
+                AccountManager -> AccountFacadeReadCommitted: findByLogin(login)
+                return account
+                AccountManager -> AccountEntity: isVerified()
+                return true
+            return account is already verified
+            end
+        return status code 200
+    return "Account is already verified" message\n
+else invalid captcha token
+autonumber
+    User -> RegisterForm: 'submit' button clicked
+        RegisterForm -> AccountEndpoint: register(accountDto, language, captchaToken)
+            AccountEndpoint -> CaptchaUtils: validateToken(captchaToken)
+            return invalid captcha token
+        return status code 400\ninvalid captcha token
+    return "Invalid captcha token" message
+end
+@enduml

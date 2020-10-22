@@ -1,0 +1,83 @@
+@startuml
+title MOR.11: Usuń opinię na temat modelu broni
+
+autoactivate on
+participant OpinionEndpoint
+participant "OpinionManager\nTransactionAttribute.REQUIRES_NEW" as OpinionManager
+participant SecurityContext
+control "OpinionFacadeReadCommitted\nTransactionAttribute.MANDATORY" as OpinionFacade
+control "WeaponModelFacadeReadCommitted\nTransactionAttribute.MANDATORY" as WeaponModelFacade
+entity OpinionEntity
+entity WeaponModelEntity
+entity CustomerEntity
+entity AccountEntity
+
+alt opinion exists
+autonumber
+OpinionEndpoint -> OpinionManager: removeOpinion(opinionNumber)
+        OpinionManager -> OpinionFacade: findByOpinionNumber(opinionNumber)
+        return optional with opinion
+        OpinionManager -> OpinionEntity: getWeaponModel()
+        return weaponModel for opinion
+        OpinionManager -> WeaponModelEntity: isActive()
+        return true
+        OpinionManager -> OpinionEntity: getCustomer()
+        return customer
+        OpinionManager -> CustomerEntity: getAccount()
+        return account
+        OpinionManager -> SecurityContext: getCallerPrincipal()
+        return principal
+        OpinionManager -> AccountEntity: getLogin()
+        return the same customer login
+        OpinionManager -> OpinionFacade: remove(opinionEntity)
+        return success
+        OpinionManager -> WeaponModelEntity: getOpinions().remove(opinionEntity)
+        return success
+        OpinionManager -> WeaponModelEntity: getOpinions().stream().mapToDouble(OpinionEntity::getRate).average()
+        return average - optional with average rate as Double
+        alt average.isPresent() == true
+        OpinionManager -> WeaponModelEntity: setAverageRate(average.getAsDouble())
+        return success
+        else average.isPresent() == false
+        OpinionManager -> WeaponModelEntity: setAverageRate(null)
+        return success
+        end
+        OpinionManager -> WeaponModelFacade: edit(weaponModelEntity)
+        return success
+return success
+else opinion does not exist
+autonumber
+OpinionEndpoint -> OpinionManager: removeOpinion(opinionNumber)
+        OpinionManager -> OpinionFacade: findByOpinionNumber (opinionNumber)
+        return empty optional
+return opinion does not exist
+else attempt to delete another customer's opinion
+autonumber
+OpinionEndpoint -> OpinionManager: removeOpinion(opinion)
+        OpinionManager -> OpinionFacade: findByOpinionNumber (opinionNumber)
+        return empty optional
+        OpinionManager -> OpinionEntity: getWeaponModel()
+        return weaponModel for opinion
+        OpinionManager -> WeaponModelEntity: isActive()
+        return true
+        OpinionManager -> OpinionEntity: getCustomer()
+        return customer
+        OpinionManager -> CustomerEntity: getAccount()
+        return account
+        OpinionManager -> SecurityContext: getCallerPrincipal()
+        return principal
+        OpinionManager -> AccountEntity: getLogin()
+        return another customer's login
+return failed - attempt to delete another customer's opinion
+    else weaponModel has been removed (is inactive)
+    autonumber
+        OpinionEndpoint -> OpinionManager: removeOpinion(opinion)
+            OpinionManager -> OpinionFacade: findByOpinionNumber (opinionNumber)
+            return empty optional
+            OpinionManager -> OpinionEntity: getWeaponModel()
+            return weaponModel for opinion
+            OpinionManager -> WeaponModelEntity: isActive()
+            return false
+     return failed - weapon model does not exist
+end
+@enduml

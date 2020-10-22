@@ -1,0 +1,12 @@
+@startuml
+title MOK.20 Wyświetl raport na temat ostatnich uwierzytelnień użytkowników.
+autoactivate on
+participant AccountEndpoint
+participant "AccountManager\nTransactionAttribute.REQUIRES_NEW" as AccountManager
+control "AccountFacadeReadCommitted\nTransactionAttribute.MANDATORY" as AccountFacadeReadCommitted
+autonumber 
+    AccountEndpoint -> AccountManager: getAuthenticatedAccounts()
+        AccountManager -> AccountFacadeReadCommitted: findAuthenticated()
+               return list of all account
+     return list of all accounts
+@enduml

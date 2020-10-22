@@ -1,0 +1,17 @@
+@startuml
+
+autoactivate on
+participant WeaponEndpoint
+participant "WeaponManager\nTransactionAttributeType.REQUIRES_NEW" as WeaponManager
+control "WeaponFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as WeaponFacade
+
+title MOR.26 Przeglądaj wszystkie egzemplarze broni
+
+alt any weapon exists
+autonumber
+    WeaponEndpoint -> WeaponManager: getAllActiveWeapons()
+        WeaponManager -> WeaponFacade: findByActive(true)
+        return all active weapons
+    return all active weapons
+end
+@enduml

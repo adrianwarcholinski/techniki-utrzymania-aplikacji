@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AllPages</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+
+    <!--adres URL API używany do wysyłania e-maili-->
+    <context-param>
+        <param-name>API_URL</param-name>
+        <param-value>https://studapp.it.p.lodz.pl:8401</param-value>
+    </context-param>
+
+    <!--czas życia -linku do formularza zmiany hasła-->
+    <context-param>
+        <param-name>RESET_PASSWORD_LINK_LIFETIME</param-name>
+        <param-value>15</param-value>
+        <!--min-->
+    </context-param>
+
+    <!--parametry dla JWTTokenUtils-->
+    <context-param>
+        <param-name>ROLE_KEY</param-name>
+        <param-value>role</param-value>
+    </context-param>
+    <context-param>
+        <param-name>HASH_GENERATOR</param-name>
+        <param-value>secretKey1234$%&amp;**&amp;(</param-value>
+    </context-param>
+    <context-param>
+        <param-name>TOKEN_LIFE_TIME_SECONDS</param-name>
+        <param-value>600</param-value>
+    </context-param>
+    <context-param>
+        <param-name>COOKIE_NAME</param-name>
+        <param-value>JREMEMBERMEID</param-value>
+    </context-param>
+    <context-param>
+        <param-name>COOKIE_PATH</param-name>
+        <param-value>/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>COOKIE_DOMAIN</param-name>
+        <param-value></param-value>
+    </context-param>
+    <context-param>
+        <param-name>COOKIE_SECURE</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>COOKIE_HTTP_ONLY</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
+    <!--parametry dla Crypt-->
+    <context-param>
+        <param-name>CRYPT_KEY</param-name>
+        <param-value>TestowyKlucz</param-value>
+    </context-param>
+    <context-param>
+        <param-name>TRANSFORMATION</param-name>
+        <param-value>AES/ECB/PKCS5Padding</param-value>
+    </context-param>
+    <context-param>
+        <param-name>ALGORITHM_MD</param-name>
+        <param-value>SHA-1</param-value>
+    </context-param>
+    <context-param>
+        <param-name>KEY_LENGTH</param-name>
+        <param-value>16</param-value>
+    </context-param>
+    <context-param>
+        <param-name>ALGORITHM_SKF</param-name>
+        <param-value>AES</param-value>
+    </context-param>
+    <context-param>
+        <param-name>RENEW_TRANSACTION_LIMIT</param-name>
+        <param-value>3</param-value>
+    </context-param>
+    <context-param>
+        <param-name>MAX_RESERVATION_DURATION</param-name>
+        <param-value>4</param-value>
+    </context-param>
+    <context-param>
+        <param-name>OPENING_HOUR</param-name>
+        <param-value>12</param-value>
+    </context-param>
+    <context-param>
+        <param-name>CLOSING_HOUR</param-name>
+        <param-value>22</param-value>
+    </context-param>
+
+
+    <!--wsparcie dla routingu w react-->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/index.html</location>
+    </error-page>
+    <!--parametry dla Captcha-->
+    <context-param>
+        <param-name>ENABLE_CAPTCHA</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>CAPTCHA_API_KEY</param-name>
+        <param-value>6Ld_2O0UAAAAAFzNCCjHQoWOpmqkHEEodD1Oe3Jl</param-value>
+    </context-param>
+
+    <security-role>
+        <role-name>ROLE_ADMIN</role-name>
+    </security-role>
+    <security-role>
+        <role-name>ROLE_EMPLOYEE</role-name>
+    </security-role>
+    <security-role>
+        <role-name>ROLE_CUSTOMER</role-name>
+    </security-role>
+
+    <!-- AccountEndpoint -->
+    <security-role>
+        <role-name>addAccount</role-name>
+    </security-role>
+    <security-role>
+        <role-name>editAccount</role-name>
+    </security-role>
+    <security-role>
+        <role-name>editOwnAccount</role-name>
+    </security-role>
+    <security-role>
+        <role-name>grantAdminAccessLevel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>grantEmployeeAccessLevel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>grantCustomerAccessLevel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>revokeAccessLevel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAllAccounts</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAccountDetails</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getOwnAccountDetails</role-name>
+    </security-role>
+    <security-role>
+        <role-name>changeOwnPassword</role-name>
+    </security-role>
+    <security-role>
+        <role-name>changeOwnEmail</role-name>
+    </security-role>
+    <security-role>
+        <role-name>changePassword</role-name>
+    </security-role>
+    <security-role>
+        <role-name>lockAccount</role-name>
+    </security-role>
+    <security-role>
+        <role-name>unlockAccount</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAccountsFilteredByPhraseInFullName</role-name>
+    </security-role>
+    <security-role>
+        <role-name>sendEmailChangeLink</role-name>
+    </security-role>
+    <security-role>
+        <role-name>sendUsersEmailChangeLink</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAdminReport</role-name>
+    </security-role>
+    <security-role>
+        <role-name>sendVerificationLink</role-name>
+    </security-role>
+
+    <!-- AuthenticationEndpoint -->
+    <security-role>
+        <role-name>logout</role-name>
+    </security-role>
+
+    <!-- SendingEmailEndpoint -->
+    <security-role>
+        <role-name>activityChangedNotification</role-name>
+    </security-role>
+
+    <!-- ChangeRoleEndpoint -->
+    <security-role>
+        <role-name>changeRole</role-name>
+    </security-role>
+
+
+    <!-- MOR -->
+
+    <!-- AlleyDifficultyLevelEndpoint -->
+    <security-role>
+        <role-name>getAllAlleyDifficultyLevels</role-name>
+    </security-role>
+
+    <!-- AlleyEndpoint -->
+    <security-role>
+        <role-name>getAllActiveAlleys</role-name>
+    </security-role>
+    <security-role>
+        <role-name>addAlley</role-name>
+    </security-role>
+    <security-role>
+        <role-name>removeAlley</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAlleyDetails</role-name>
+    </security-role>
+    <security-role>
+        <role-name>editAlley</role-name>
+    </security-role>
+
+    <!-- ReservationEndpoint -->
+    <security-role>
+        <role-name>getReservation</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getOwnReservation</role-name>
+    </security-role>
+    <security-role>
+        <role-name>updateReservation</role-name>
+    </security-role>
+    <security-role>
+        <role-name>updateOwnReservation</role-name>
+    </security-role>
+    <security-role>
+        <role-name>makeReservation</role-name>
+    </security-role>
+    <security-role>
+        <role-name>cancelReservation</role-name>
+    </security-role>
+    <security-role>
+        <role-name>cancelOwnReservation</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAllReservations</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAllOwnReservations</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getConflictReservationsByWeaponModel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getConflictReservationsByWeapon</role-name>
+    </security-role>
+    <!-- WeaponEndpoint -->
+    <security-role>
+        <role-name>getAllActiveWeapons</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAllActiveWeaponsByModelName</role-name>
+    </security-role>
+    <security-role>
+        <role-name>createWeapon</role-name>
+    </security-role>
+    <security-role>
+        <role-name>removeWeapon</role-name>
+    </security-role>
+
+    <!-- WeaponModelEndpoint -->
+    <security-role>
+        <role-name>getAllActiveWeaponModels</role-name>
+    </security-role>
+    <security-role>
+        <role-name>removeWeaponModel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getWeaponModel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>addWeaponModel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>editWeaponModel</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getAllActiveWeaponModelsWithActiveWeapons</role-name>
+    </security-role>
+
+    <!-- WeaponModelCategoryEndpoint -->
+    <security-role>
+        <role-name>getAllWeaponCategories</role-name>
+    </security-role>
+
+    <!-- OpinionEndpoint -->
+    <security-role>
+        <role-name>getAllOpinionsForWeaponModel</role-name>
+    </security-role>
+    <security-role>
+    <role-name>addOpinion</role-name>
+    </security-role>
+    <security-role>
+        <role-name>editOpinion</role-name>
+    </security-role>
+    <security-role>
+        <role-name>removeOpinion</role-name>
+    </security-role>
+    <security-role>
+        <role-name>getOwnOpinionForWeaponModel</role-name>
+    </security-role>
+</web-app>

@@ -1,0 +1,14 @@
+@startuml
+title MOR.6: Przeglądaj wszystkie rezerwacje
+
+autoactivate on
+participant ReservationEndpoint
+participant "ReservationManager\nTransactionAttribute.REQUIRES_NEW" as ReservationManager
+control "ReservationFacadeReadCommitted\nTransactionAttribute.MANDATORY" as ReservationFacade
+
+autonumber
+ReservationEndpoint -> ReservationManager: getAllReservations(getCanceled, getPast)
+        ReservationManager -> ReservationFacade: findAll(getCanceled, getPast)
+        return list of reservations
+return list of reservations
+@enduml

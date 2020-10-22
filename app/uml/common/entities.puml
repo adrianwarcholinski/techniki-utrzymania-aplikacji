@@ -1,0 +1,333 @@
+@startuml
+
+title __ENTITIES's Class Diagram__\n
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.AccessLevelEntity {
+        - active : boolean
+        - id : Long
+        - level : String
+        - version : long
+        + AccessLevelEntity()
+        # AccessLevelEntity(account : AccountEntity, level : String)
+        + AccessLevelEntity(id : Long, account : AccountEntity, level : String, version : long)
+        + copyNotChangedDataAccessLevel(source: AccessLevelEntity) : void
+        + equals(o : Object) : boolean
+        + getAccount() : AccountEntity
+        + getId() : long
+        + getLevel() : String
+        + hashCode() : int
+        + isActive() : boolean
+        + setActive() : void
+        + toString() : String
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.AccountEntity {
+        - active : boolean
+        - email : String
+        - id : Long
+        - login : String
+        - name : String
+        - password : String
+        - surname : String
+        - verified : boolean
+        - version : long
+        - lastUnsuccessfulAuthentication : LocalDateTime
+        - unsuccessfulAuthenticationCount : long
+        - lastUsedIpAddress : String
+        + AccountEntity()
+        + AccountEntity(id : Long, login : String, email : String, name : String, surname : String, version : long)
+        + AccountEntity(login : String, password : String, email : String, name : String, surname : String)
+        + equals(o : Object) : boolean
+        + getAccessLevels() : List<AccessLevelEntity>
+        + getEmail() : String
+        + getId() : long
+        + getLogin() : String
+        + getName() : String
+        + getPassword() : String
+        + getSurname() : String
+        + hashCode() : int
+        + isActive() : boolean
+        + isVerified() : boolean
+        + setActive(active : boolean) : void
+        + setEmail(email : String) : void
+        + setName(name : String) : void
+        + setPassword(password : String) : void
+        + setSurname(surname : String) : void
+        + setVerified(verified : boolean) : void
+        + setAccessLevels(accessLevels : List<AccessLevelEntity>) : void
+        + getLastSuccessfulAuthentication() : LocalDateTime
+        + setLastSuccessfulAuthentication(lastSuccessfulAuthentication : LocalDateTime) : void
+        + getLastUnsuccessfulAuthentication() : LocalDateTime
+        + setLastUnsuccessfulAuthentication(lastUnsuccessfulAuthentication : LocalDateTime) : void
+        + getUnsuccessfulAuthenticationCount() : long
+        + setUnsuccessfulAuthenticationCount(unsuccessfulAuthenticationCount : long) : void
+        + getLastUsedIpAddress() : String
+        + setLastUsedIpAddress(lasUsedIpAddress : String) : void
+        + toString() : String
+        + copyNotChangedDataAccount(source : AccountEntity) : void
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.AdminEntity {
+        - cardNumber : String
+        + AdminEntity()
+        + AdminEntity(account : AccountEntity, cardNumber : String)
+        + AdminEntity(id : Long, account : AccountEntity, cardNumber : String, version : long)
+        + getCardNumber() : String
+        + setCardNumber(cardNumber : String) : void
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.AlleyDifficultyLevelEntity {
+        - id : Long
+        - name : String
+        - version : long
+        - AlleyDifficultyLevelEntity()
+        + equals(o : Object) : boolean
+        + getId() : Long
+        + getName() : String
+        + hashCode() : int
+        + toString() : String
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.AlleyEntity {
+        - active : boolean
+        - description : String
+        - id : Long
+        - name : String
+        - version : long
+        + AlleyEntity()
+        + AlleyEntity(name : String)
+        + AlleyEntity(name : String, description : String)
+        + AlleyEntity(id : Long, name : String, description : String, version : long)
+        + AlleyEntity(name : String, difficultyLevel : AlleyDifficultyLevelEntity)
+        + equals(o : Object) : boolean
+        + getDescription() : String
+        + getDifficultyLevel() : AlleyDifficultyLevelEntity
+        + getId() : long
+        + getName() : String
+        + getReservations() : List<ReservationEntity>
+        + hashCode() : int
+        + isActive() : boolean
+        + setActive(active : boolean) : void
+        + setDescription(description : String) : void
+        + setDifficultyLevel(difficultyLevel AlleyDifficultyLevelEntity) : void
+        + copyNotChangedDataAlley(source : AlleyEntity)
+        + toString() : String
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.CustomerEntity {
+        - phoneNumber : String
+        + CustomerEntity()
+        + CustomerEntity(account : AccountEntity, phoneNumber : String)
+        + CustomerEntity(id : Long, account : AccountEntity, phoneNumber : String, version : long)
+        + getPhoneNumber() : String
+        + setPhoneNumber(phoneNumber : String) : void
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.EmployeeEntity {
+        - workPhoneNumber : String
+        + EmployeeEntity()
+        + EmployeeEntity(account : AccountEntity, workPhoneNumber : String)
+        + EmployeeEntity(id : Long, account : AccountEntity, workPhoneNumber : String, version : long)
+        + getWorkPhoneNumber() : String
+        + setWorkPhoneNumber(workPhoneNumber : String) : void
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+        class pl.lodz.p.it.ssbd2020.entities.ExpiredTokenEntity {
+        - id : Long
+        - token : String
+        + ExpiredTokenEntity()
+        + ExpiredTokenEntity(token : String)
+        + getId() : Long
+        + getToken() : String
+        + equals(o : Object) : boolean
+        + hashCode() : int
+        + toString() : String
+    }
+  }
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.OpinionEntity {
+        - content : String
+        - id : Long
+        - opinionNumber : long
+        - rate : int
+        - version : long
+        + OpinionEntity()
+        + OpinionEntity(id : long, opinionNumber : long, version : long)
+        + OpinionEntity(opinionNumber : long, weaponModel : WeaponModelEntity, customer : CustomerEntity, content : String, rate : int)
+        + OpinionEntity(opinionNumber : long, model : WeaponModelEntity, customer : CustomerEntity, content : String, rate : int, version : long)
+        + equals(o : Object) : boolean
+        + getContent() : String
+        + getCustomer() : CustomerEntity
+        + getId() : Long
+        + getOpinionNumber() : long
+        + getRate() : int
+        + getRateCheck() : boolean
+        + getWeaponModel() : WeaponModelEntity
+        + hashCode() : int
+        + setContent(content : String) : void
+        + setRate(rate : int) : void
+        + setWeaponModel(weapongModel : WeaponModelEntity) : void
+        + toString() : String
+        + copyNotChangedData(source : OpinionEntity) : void
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.ReservationEntity {
+        - active : boolean
+        - endDate : LocalDateTime
+        - id : Long
+        - reservationNumber : long
+        - startDate : LocalDateTime
+        - version : long
+        + ReservationEntity()
+        + ReservationEntity(startDate : LocalDateTime, endDate : LocalDateTime)
+        + ReservationEntity(reservationNumber : long, startDate : LocalDateTime, endDate : LocalDateTime)
+        + ReservationEntity(id : Long, alley : AlleyEntity, weapon : WeaponEntity, startDate : LocalDateTime, endDate : LocalDateTime, version : long)
+        + ReservationEntity(reservationNumber : long, customer : CustomerEntity, alley : AlleyEntity, weapon : WeaponEntity, startDate : LocalDateTime, endDate : LocalDateTime)
+        + equals(o : Object) : boolean
+        + getAlley() : AlleyEntity
+        + getCustomer() : CustomerEntity
+        + getDatesCheck() : boolean
+        + getEndDate() : LocalDateTime
+        + getId() : Long
+        + getReservationNumber() : long
+        + getStartDate() : LocalDateTime
+        + getWeapon() : WeaponEntity
+        + hashCode() : int
+        + isActive() : boolean
+        + setActive(active : boolean) : void
+        + setAlley(alley : AlleyEntity) : void
+        + setCustomer(customer : CustomerEntity) : void
+        + setEndDate(endDate : LocalDateTime) : void
+        + setStartDate(startDate : LocalDateTime) : void
+        + setWeapon(weapon : WeaponEntity) : void
+        + toString() : String
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.WeaponCategoryEntity {
+        - id : Long
+        - name : String
+        - version : long
+        + WeaponCategoryEntity()
+        + WeaponCategoryEntity(name : String)
+        + equals(o : Object) : boolean
+        + getId() : Long
+        + getName() : String
+        + setName(name : String) : String
+        + hashCode() : int
+        + toString() : String
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.WeaponEntity {
+        - active : boolean
+        - id : Long
+        - serialNumber : String
+        - version : long
+        + WeaponEntity()
+        + WeaponEntity(serialNumber : String)
+        + WeaponEntity(weaponModel : WeaponModelEntity)
+        + WeaponEntity(serialNumber : String, weaponModel : WeaponModelEntity)
+        + equals(o : Object) : boolean
+        + getId() : Long
+        + getReservations() : List<ReservationEntity>
+        + getSerialNumber() : String
+        + getWeaponModel() : WeaponModelEntity
+        + hashCode() : int
+        + isActive() : boolean
+        + setActive(active : boolean) : void
+        + setReservations(reservations : List<ReservationEntity>) : void
+        + setWeaponModel(weaponModel: WeaponModelEntity) : WeaponModelEntity
+        + toString() : String
+    }
+  }
+
+
+  namespace pl.lodz.p.it.ssbd2020.entities {
+    class pl.lodz.p.it.ssbd2020.entities.WeaponModelEntity {
+        - active : boolean
+        - averageRate : Double
+        - caliberMm : double
+        - description : String
+        - id : Long
+        - magazineCapacity : int
+        - name : String
+        - version : long
+        + WeaponModelEntity()
+        + WeaponModelEntity(name : String)
+        + WeaponModelEntity(name : String, description : String, caliberMm : double, magazineCapacity : int, weaponCategory : WeaponCategoryEntity)
+        + WeaponModelEntity(id : Long, name : String, description : String, caliberMm : double, magazineCapacity : int, weaponCategory : WeaponCategoryEntity, version : long)
+        + equals(o : Object) : boolean
+        + getAverageRate() : double
+        + getAverageRateCheck() : boolean
+        + getCaliberMm() : double
+        + getDescription() : String
+        + getId() : Long
+        + getMagazineCapacity() : int
+        + getName() : String
+        + getOpinions() : List<OpinionEntity>
+        + getWeaponCategory() : WeaponCategoryEntity
+        + getWeapons() : List<WeaponEntity>
+        + hashCode() : int
+        + isActive() : boolean
+        + setActive(active : boolean) : void
+        + setAverageRate(averageRate : double) : void
+        + setCaliberMm(caliberMm : double) : void
+        + setDescription(description : String) : void
+        + setMagazineCapacity(magazineCapacity : int) : void
+        + setWeaponCategory(weaponCategory : WeaponCategoryEntity) : void
+        + toString() : String
+    }
+  }
+
+  pl.lodz.p.it.ssbd2020.entities.AccessLevelEntity <|-up- pl.lodz.p.it.ssbd2020.entities.AdminEntity
+  pl.lodz.p.it.ssbd2020.entities.AccessLevelEntity <|-up- pl.lodz.p.it.ssbd2020.entities.CustomerEntity
+  pl.lodz.p.it.ssbd2020.entities.AccessLevelEntity <|-up- pl.lodz.p.it.ssbd2020.entities.EmployeeEntity
+  pl.lodz.p.it.ssbd2020.entities.AccessLevelEntity "3\naccessLevels" *-- "1\naccount" pl.lodz.p.it.ssbd2020.entities.AccountEntity
+  pl.lodz.p.it.ssbd2020.entities.ReservationEntity "*\nreservations" *-- "1\nalley" pl.lodz.p.it.ssbd2020.entities.AlleyEntity
+  pl.lodz.p.it.ssbd2020.entities.ReservationEntity *-- "1\ncustomer" pl.lodz.p.it.ssbd2020.entities.CustomerEntity
+  pl.lodz.p.it.ssbd2020.entities.ReservationEntity "*\nreservations" *-- "1\nweapon" pl.lodz.p.it.ssbd2020.entities.WeaponEntity
+  pl.lodz.p.it.ssbd2020.entities.WeaponModelEntity "1\nweaponModel" --* "*\nweapons" pl.lodz.p.it.ssbd2020.entities.WeaponEntity
+  pl.lodz.p.it.ssbd2020.entities.WeaponModelEntity *-- "1\nweaponCategory" pl.lodz.p.it.ssbd2020.entities.WeaponCategoryEntity
+  pl.lodz.p.it.ssbd2020.entities.OpinionEntity *-- "1\ncustomer" pl.lodz.p.it.ssbd2020.entities.CustomerEntity
+  pl.lodz.p.it.ssbd2020.entities.OpinionEntity "*\nopinions" *-- "1\nweaponModel" pl.lodz.p.it.ssbd2020.entities.WeaponModelEntity
+  pl.lodz.p.it.ssbd2020.entities.AlleyEntity *-- "1\nalleyDifficultyLevel" pl.lodz.p.it.ssbd2020.entities.AlleyDifficultyLevelEntity
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

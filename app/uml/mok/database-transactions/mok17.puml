@@ -1,0 +1,25 @@
+@startuml
+title MOK.17 Przełącz poziom dostępu (dot. kont z kilkoma poziomami)
+autoactivate on
+actor "Admin/Employee/Client"
+boundary MainMenu
+participant ChangeRoleEndpoint
+participant SecurityContext
+alt user has selected role
+autonumber
+    "Admin/Employee/Client" -> MainMenu: "change role" button clicked
+        MainMenu -> ChangeRoleEndpoint: changeRole(request, targetRole)
+                ChangeRoleEndpoint -> SecurityContext: isCallerInRole(targetRole)
+                return true
+        return status code 200
+    return view with changed access level
+else user doesn't have selected role
+autonumber
+      "Admin/Employee/Client" -> MainMenu: "change role" button clicked
+            MainMenu -> ChangeRoleEndpoint: changeRole(request, targetRole)
+                    ChangeRoleEndpoint -> SecurityContext: isCallerInRole(targetRole)
+                    return false
+            return status code 403
+        return "action prohibited" error message
+end
+@enduml

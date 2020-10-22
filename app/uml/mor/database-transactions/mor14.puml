@@ -1,0 +1,139 @@
+@startuml
+title
+MOR.14 Dodaj nowy tor
+end title
+
+autoactivate on
+actor Employee
+boundary NewAlleyForm
+participant AlleyEndpoint
+participant AlleyDifficultyLevelEndpoint
+participant AlleyManager
+participant AlleyDifficultyLevelManager
+control AlleyFacadeReadCommitted
+control AlleyDifficultyLevelFacadeReadCommitted
+entity AlleyEntity
+alt correct
+autonumber
+    Employee -> NewAlleyForm: 'add' button clicked
+        NewAlleyForm -> AlleyDifficultyLevelEndpoint: getAllAlleyDifficultyLevels()
+            AlleyDifficultyLevelEndpoint -> AlleyDifficultyLevelManager: getAllAlleyDifficultyLevels()
+            group RO, read committed
+                AlleyDifficultyLevelManager -> AlleyDifficultyLevelFacadeReadCommitted: findAll()
+                return list of all alley difficulty levels
+            end
+            return list of all alley difficulty levels
+        return status code 200, List<AlleyDifficultyLevelDto>
+    return show new alley form and available options
+    Employee -> NewAlleyForm: 'submit' button clicked and confirmed
+        NewAlleyForm -> AlleyEndpoint: addAlley(addAlleyDto)
+            AlleyEndpoint -> AddAlleyDto: map(addAlleyDto)
+            return alleyEntity
+            AlleyEndpoint -> AddAlleyDto: getAlleyDifficultyLevelName()
+            return alleyDifficultyLevelName
+            AlleyEndpoint -> AlleyManager: addAlley(alleyEntity, alleyDifficultyLevelName)
+                group RW, read committed
+                    AlleyManager -> AlleyDifficultyLevelFacadeReadCommitted: findByName(alleyDifficultyLevelName)
+                    return optional with alleyDifficultyLevelEntity
+                    AlleyManager -> AlleyEntity: setDifficultyLevel(alleyDifficultyLevelEntity)
+                    return
+                    AlleyManager -> AlleyEntity: getName()
+                    return alleyName
+                    AlleyManager -> AlleyFacadeReadCommitted: findByName(alleyName)
+                    return empty optional
+                    AlleyManager -> AlleyFacadeReadCommitted: create(alley)
+                    return success
+                end
+            return success
+        return status code 200
+    return 'success' message
+else no alley difficulty levels
+ autonumber
+     Employee -> NewAlleyForm: 'add' button clicked
+         NewAlleyForm -> AlleyDifficultyLevelEndpoint: getAllAlleyDifficultyLevels()
+             AlleyDifficultyLevelEndpoint -> AlleyDifficultyLevelManager: getAllAlleyDifficultyLevels()
+             group RO, read committed
+                 AlleyDifficultyLevelManager -> AlleyDifficultyLevelFacadeReadCommitted: findAll()
+                 return list of all alley difficulty levels
+             end
+             return no alley difficulty levels
+         return status code 400
+     return 'error' message
+else invalid form
+ autonumber
+     Employee -> NewAlleyForm: 'add' button clicked
+         NewAlleyForm -> AlleyDifficultyLevelEndpoint: getAllAlleyDifficultyLevels()
+             AlleyDifficultyLevelEndpoint -> AlleyDifficultyLevelManager: getAllAlleyDifficultyLevels()
+             group RO, read committed
+                 AlleyDifficultyLevelManager -> AlleyDifficultyLevelFacadeReadCommitted: findAll()
+                 return list of all alley difficulty levels
+             end
+             return list of all alley difficulty levels
+         return status code 200, List<AlleyDifficultyLevelDto>
+     return show new alley form and available options
+      Employee -> NewAlleyForm: 'submit' button clicked and confirmed
+          NewAlleyForm -> AlleyEndpoint: addAlley(addAlleyDto)
+          return status code 400
+      return 'error' message
+else alley difficulty level does not exist
+autonumber
+    Employee -> NewAlleyForm: 'add' button clicked
+        NewAlleyForm -> AlleyDifficultyLevelEndpoint: getAllAlleyDifficultyLevels()
+            AlleyDifficultyLevelEndpoint -> AlleyDifficultyLevelManager: getAllAlleyDifficultyLevels()
+            group RO, read committed
+                AlleyDifficultyLevelManager -> AlleyDifficultyLevelFacadeReadCommitted: findAll()
+                return list of all alley difficulty levels
+            end
+            return list of all alley difficulty levels
+        return status code 200, List<AlleyDifficultyLevelDto>
+    return show new alley form and available options
+     Employee -> NewAlleyForm: 'submit' button clicked and confirmed
+         NewAlleyForm -> AlleyEndpoint: addAlley(addAlleyDto)
+         AlleyEndpoint -> AddAlleyDto: map(addAlleyDto)
+         return alleyEntity
+         AlleyEndpoint -> AddAlleyDto: getAlleyDifficultyLevelName()
+         return alleyDifficultyLevelName
+             AlleyEndpoint -> AlleyManager: addAlley(alley, alleyDifficultyLevelName)
+                 group RW, read committed
+                     AlleyManager -> AlleyDifficultyLevelFacadeReadCommitted: findByName(alleyDifficultyLevelName)
+                     return empty optional
+                  end
+             return alley difficulty level does not exist
+         return status code 400
+     return 'error' message
+else alley with such name exists
+autonumber
+    Employee -> NewAlleyForm: 'add' button clicked
+        NewAlleyForm -> AlleyDifficultyLevelEndpoint: getAllAlleyDifficultyLevels()
+            AlleyDifficultyLevelEndpoint -> AlleyDifficultyLevelManager: getAllAlleyDifficultyLevels()
+            group RO, read committed
+                AlleyDifficultyLevelManager -> AlleyDifficultyLevelFacadeReadCommitted: findAll()
+                return list of all alley difficulty levels
+            end
+            return list of all alley difficulty levels
+        return status code 200, List<AlleyDifficultyLevelDto>
+    return show new alley form and available options
+     Employee -> NewAlleyForm: 'submit' button clicked and confirmed
+         NewAlleyForm -> AlleyEndpoint: addAlley(addAlleyDto)
+         AlleyEndpoint -> AddAlleyDto: map(addAlleyDto)
+          return alleyEntity
+          AlleyEndpoint -> AddAlleyDto: getAlleyDifficultyLevelName()
+          return alleyDifficultyLevelName
+             AlleyEndpoint -> AlleyManager: addAlley(alley, alleyDifficultyLevelName)
+                 group RW, read committed
+                     AlleyManager -> AlleyDifficultyLevelFacadeReadCommitted: findByName(alleyDifficultyLevelName)
+                     return optional with alleyDifficultyLevelEntity
+                     AlleyManager -> AlleyEntity: setDifficultyLevel(alleyDifficultyLevelEntity)
+                     return
+                     AlleyManager -> AlleyEntity: getName()
+                     return alleyName
+                     AlleyManager -> AlleyFacadeReadCommitted: findByName(alleyName)
+                     return optional with alley
+                 end
+             return alley with such name exists
+         return status code 400
+     return 'error' message
+
+
+end
+@enduml

@@ -1,0 +1,75 @@
+@startuml
+
+title MOK.3a Dołącz poziom dostępu do konta
+autoactivate on
+participant AccountEndpoint
+participant "AccountManager\nTransactionAttributeType.REQUIRES_NEW" as AccountManager
+participant SecurityContext
+control "AccountFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as AccountFacade
+control "EmployeeFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as EmployeeFacade
+control "AccessLevelFacadeReadCommitted\nTransactionAttributeType.MANDATORY" as AccessLevelFacade
+entity AccountEntity
+entity AccessLevelEntity
+
+alt access level is not granted
+autonumber
+        AccountEndpoint -> AccountManager: grantAccessLevel("ROLE_EMPLOYEE", login, workPhoneNumber)
+
+            AccountManager -> AccountFacade: findByLogin(login)
+            return optional with account
+
+            AccountManager -> EmployeeFacade: findByWorkPhoneNumber(workPhoneNumber)
+            return optional with accountEntity
+
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin("ROLE_EMPLOYEE", login)
+            return optional with accessLevelEntity
+
+            opt accessLevelEntity is present
+                AccountManager -> AccessLevelEntity: isActive()
+                return false
+                AccountManager -> AccessLevelEntity: setActive(true)
+                return success
+                AccountManager -> AccessLevelEntity: setWorkPhoneNumber(workPhoneNumber)
+                return success
+
+
+                AccountManager -> EmployeeFacade: edit(accessLevelEntity)
+                return success
+            else accessLevelEntity is empty
+                AccountManager -> AdminEntity **: <<create>>
+
+                AccountManager -> AdminEntity: setActive(true)
+                return success
+                AccountManager -> AccountEntity: getAccessLevels().add(employeeEntity)
+                return success
+
+                AccountManager -> EmployeeFacade: create(employeeEntity)
+                return success
+            end
+        return success
+
+else access level is already granted
+autonumber
+        AccountEndpoint -> AccountManager: grantAccessLevel("ROLE_EMPLOYEE", login, workPhoneNumber)
+
+            AccountManager -> AccountFacade: findByLogin(login)
+            return optional with account
+
+            AccountManager -> EmployeeFacade: findByCardNumber(workPhoneNumber)
+            return optional with accountEntity
+
+            AccountManager -> AccessLevelFacade: findByAccessLevelAndLogin("ROLE_EMPLOYEE", login)
+            return optional with accessLevelEntity
+
+            AccountManager -> AccessLevelEntity: isActive()
+            return true
+        return access level is already granted
+
+else account does not exist
+autonumber
+        AccountEndpoint -> AccountManager: grantAccessLevel("ROLE_EMPLOYEE", login, workPhoneNumber)
+            AccountManager -> AccountFacade: findByLogin(login)
+            return empty optional
+        return account does not exist
+end
+@enduml
