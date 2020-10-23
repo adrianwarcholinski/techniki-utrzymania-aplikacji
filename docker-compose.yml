@@ -10,14 +10,16 @@ services:
       MYSQL_DATABASE: ssbd01
       MYSQL_ROOT_PASSWORD: example
   wildfly:
-      build: ./wildfly
-      ports:
-        - 8080:8080
-        - 9990:9990
-        - 8787:8787
-      environment:
-        WILDFLY_PASS: admin
-        MYSQL_USER: "ssbd01admin"
-        MYSQL_PASSWORD: "P@ssw0rd"
-        MYSQL_CONNECTION: "jdbc:mysql://mysql:3306/ssbd01"
+    build: ./wildfly
+    ports:
+      - 8080:8080
+      - 9990:9990
+      - 8787:8787
+    environment:
+      WILDFLY_PASS: admin
+      MYSQL_USER: "ssbd01admin"
+      MYSQL_PASSWORD: "P@ssw0rd"
+      MYSQL_CONNECTION: "jdbc:mysql://mysql:3306/ssbd01"
+    volumes:
+    - "./wildfly/configuration:/opt/wildfly/standalone/configuration/:rw"
 
