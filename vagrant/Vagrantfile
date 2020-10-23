@@ -8,14 +8,15 @@ Vagrant.configure("2") do |config|
     vb.memory = "4096"
   end
 
-  config.vm.define "tua-maschine" do |tua|
-    tua.vm.hostname = "tua-maschine"
+  config.vm.define "tua-machine" do |tua|
+    tua.vm.hostname = "tua-machine"
     tua.vm.provider "virtualbox" do |v|
-      v.name = "ClientMachine1"
-      v.memory = 256
+      v.name = "tua-machine"
+      v.memory = 4096
     end
 
     # scripts
     tua.vm.provision "shell", run: "always", path: "scripts/wildfly.sh"
+    tua.vm.provision "shell", run: "always", path: "scripts/mysql.sh"
   end
 end
