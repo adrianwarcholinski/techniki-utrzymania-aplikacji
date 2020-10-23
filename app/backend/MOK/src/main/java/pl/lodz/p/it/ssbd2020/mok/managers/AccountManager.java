@@ -13,6 +13,7 @@ import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -67,8 +68,7 @@ public class AccountManager implements AccountManagerLocal {
     /**
      * Komponent EJB (Fasada) służący do wykonywania operacji na kontach klientów, z poziomem izolacji readCommitted.
      **/
-    @Inject
-    @Named("MOKCustomerFacadeReadCommitted")
+    @EJB(name = "MOKCustomerFacadeReadCommitted")
     private CustomerFacadeReadCommittedLocal customerFacadeReadCommitted;
 
     /**

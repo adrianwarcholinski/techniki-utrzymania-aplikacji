@@ -16,6 +16,7 @@ import pl.lodz.p.it.ssbd2020.mor.managers.interfaces.OpinionManagerLocal;
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -59,8 +60,7 @@ public class OpinionManager implements OpinionManagerLocal {
     /**
      * Komponent EJB (Fasada) służąca do wykonywania operacji na klientach, z poziomem izolacji read committed.
      */
-    @Inject
-    @Named("MORCustomerFacadeReadCommitted")
+    @EJB(name = "MORCustomerFacadeReadCommitted")
     private CustomerFacadeReadCommittedLocal customerFacadeReadCommitted;
 
     /**
