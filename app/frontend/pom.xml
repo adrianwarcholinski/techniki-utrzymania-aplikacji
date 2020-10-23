@@ -123,5 +123,6 @@
                 </executions>
             </plugin>
         </plugins>
+        <finalName>ssbd01</finalName>
     </build>
 </project>
