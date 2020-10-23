@@ -20,6 +20,7 @@ import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.interceptor.Interceptors;
 import javax.security.enterprise.SecurityContext;
 import javax.validation.constraints.NotBlank;
@@ -59,6 +60,7 @@ public class OpinionManager implements OpinionManagerLocal {
      * Komponent EJB (Fasada) służąca do wykonywania operacji na klientach, z poziomem izolacji read committed.
      */
     @Inject
+    @Named("MORCustomerFacadeReadCommitted")
     private CustomerFacadeReadCommittedLocal customerFacadeReadCommitted;
 
     /**
