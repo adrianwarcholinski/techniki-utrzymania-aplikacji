@@ -23,6 +23,4 @@
             <property name="eclipselink.logging.exceptions" value="false"/>
         </properties>
     </persistence-unit>
-
-
 </persistence>
