@@ -242,6 +242,8 @@ alter table reservation
     add constraint date_check
         check (start_date < end_date);
 
+
+#test
 create table opinion
 (
     id               bigint       not null,
