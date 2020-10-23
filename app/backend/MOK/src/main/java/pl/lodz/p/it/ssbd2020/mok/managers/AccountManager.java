@@ -17,6 +17,7 @@ import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.interceptor.Interceptors;
 import javax.mail.MessagingException;
 import javax.security.enterprise.SecurityContext;
@@ -67,6 +68,7 @@ public class AccountManager implements AccountManagerLocal {
      * Komponent EJB (Fasada) służący do wykonywania operacji na kontach klientów, z poziomem izolacji readCommitted.
      **/
     @Inject
+    @Named("MOKCustomerFacadeReadCommitted")
     private CustomerFacadeReadCommittedLocal customerFacadeReadCommitted;
 
     /**
