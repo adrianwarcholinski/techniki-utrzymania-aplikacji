@@ -22,7 +22,7 @@ public class EmailSender {
     /**
      * Obiekt sesji związanej z serwerem pocztowym
      */
-    @Resource(lookup = "java:app/SSBDJavaMail")
+//    @Resource(lookup = "java:app/SSBDJavaMail")
     private Session mailSession;
 
     /**

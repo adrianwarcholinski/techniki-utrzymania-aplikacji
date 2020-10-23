@@ -15,6 +15,7 @@ services:
       - 8080:8080
       - 9990:9990
       - 8787:8787
+      - 8443:8443
     environment:
       WILDFLY_PASS: admin
       MYSQL_USER: "ssbd01admin"
