@@ -11,7 +11,7 @@
     <artifactId>common</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <eclipse.link.version>2.7.6</eclipse.link.version>
+        <eclipse.link.version>2.7.4</eclipse.link.version>
     </properties>
 
     <dependencies>

@@ -13,7 +13,7 @@ import javax.ws.rs.core.Application;
  * kwerendy służące do pozyskania haseł i dostępnych ról.
  */
 @DatabaseIdentityStoreDefinition(
-        dataSourceLookup = "${'java:app/jdbc/ssbd01payaraDS'}",
+        dataSourceLookup = "${'java:/jdbc/ssbd01payaraDS'}",
         callerQuery = "${'SELECT password FROM auth_view WHERE login = ?'}",
         groupsQuery = "${'SELECT level FROM auth_view WHERE login = ?'}",
         hashAlgorithm = PasswordHash.class

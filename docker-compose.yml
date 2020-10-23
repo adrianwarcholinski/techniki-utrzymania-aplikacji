@@ -10,7 +10,7 @@ services:
       MYSQL_DATABASE: ssbd01
       MYSQL_ROOT_PASSWORD: example
   wildfly:
-    build: ./wildfly
+      build: ./wildfly
       ports:
         - 8080:8080
         - 9990:9990
