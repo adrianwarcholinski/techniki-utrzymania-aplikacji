@@ -25,7 +25,7 @@ import java.util.Optional;
  * Fasada udostępniająca operację dla obiektu encji {@link CustomerEntity}
  * rozszerza klasę {@link AbstractFacade} oraz implementuje interfejs {@link CustomerFacadeReadCommittedLocal}
  */
-@Stateless
+@Stateless(name = "MORCustomerFacadeReadCommitted")
 @Interceptors(LoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.MANDATORY)
 public class CustomerFacadeReadCommitted extends AbstractFacade<CustomerEntity> implements CustomerFacadeReadCommittedLocal {
