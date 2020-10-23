@@ -240,7 +240,8 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed({"getAccountDetails", "getOwnAccountDetails"})
+//    @RolesAllowed({"getAccountDetails", "getOwnAccountDetails"})
+    @PermitAll
     public AccountEntity getAccountDetails(String login) throws AppException {
         return accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
     }

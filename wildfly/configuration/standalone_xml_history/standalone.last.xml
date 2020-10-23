@@ -459,6 +459,22 @@
                         <policy-module code="Delegating" flag="required"/>
                     </authorization>
                 </security-domain>
+                <security-domain name="app" cache-type="default">
+                    <authentication>
+                        <login-module code="Database" flag="required">
+                            <module-option name="dsJndiName" value="java:/jdbc/ssbd01payaraDS"/>
+                            <module-option name="principalsQuery" value="select password from auth_view where login=?"/>
+                            <module-option name="rolesQuery" value="select level from auth_view where login = ?"/>
+                            <module-option name="hashAlgorithm" value="PBKDF2WithHmacSHA256"/>
+                            <module-option name="hashEncoding" value="BASE64"/>
+                            <module-option name="unauthenticatedIdentity" value="guest"/>
+                        </login-module>
+                        <login-module code="RoleMapping" flag="required">
+                            <module-option name="rolesProperties" value="file:${jboss.server.config.dir}/app.properties"/>
+                            <module-option name="replaceRole" value="false"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
             </security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:security-manager:1.0">
@@ -528,4 +544,9 @@
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
     </socket-binding-group>
+    <deployments>
+        <deployment name="ssbd01.war" runtime-name="ssbd01.war">
+            <content sha1="4876b6ee8a02dde2c8b6106796d7720723bcd445"/>
+        </deployment>
+    </deployments>
 </server>

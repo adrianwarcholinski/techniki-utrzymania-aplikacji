@@ -544,4 +544,9 @@
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
     </socket-binding-group>
+    <deployments>
+        <deployment name="ssbd01.war" runtime-name="ssbd01.war">
+            <content sha1="4876b6ee8a02dde2c8b6106796d7720723bcd445"/>
+        </deployment>
+    </deployments>
 </server>

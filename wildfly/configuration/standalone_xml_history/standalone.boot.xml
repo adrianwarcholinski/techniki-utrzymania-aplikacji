@@ -163,6 +163,10 @@
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
                     </driver>
+                    <driver name="mysql" module="com.mysql">
+                        <driver-class>com.mysql.jdbc.Driver</driver-class>
+                        <xa-datasource-class>com.mysql.cj.jdbc.MysqlXADataSource</xa-datasource-class>
+                    </driver>
                 </drivers>
             </datasources>
         </subsystem>
@@ -454,6 +458,22 @@
                     <authorization>
                         <policy-module code="Delegating" flag="required"/>
                     </authorization>
+                </security-domain>
+                <security-domain name="app" cache-type="default">
+                    <authentication>
+                        <login-module code="Database" flag="required">
+                            <module-option name="dsJndiName" value="java:/jdbc/ssbd01payaraDS"/>
+                            <module-option name="principalsQuery" value="select password from auth_view where login=?"/>
+                            <module-option name="rolesQuery" value="select level from auth_view where login = ?"/>
+                            <module-option name="hashAlgorithm" value="PBKDF2WithHmacSHA256"/>
+                            <module-option name="hashEncoding" value="BASE64"/>
+                            <module-option name="unauthenticatedIdentity" value="guest"/>
+                        </login-module>
+                        <login-module code="RoleMapping" flag="required">
+                            <module-option name="rolesProperties" value="file:${jboss.server.config.dir}/app.properties"/>
+                            <module-option name="replaceRole" value="false"/>
+                        </login-module>
+                    </authentication>
                 </security-domain>
             </security-domains>
         </subsystem>
