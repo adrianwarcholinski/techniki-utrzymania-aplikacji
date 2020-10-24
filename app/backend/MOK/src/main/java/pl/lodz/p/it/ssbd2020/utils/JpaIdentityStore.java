@@ -36,16 +36,13 @@ public class JpaIdentityStore implements IdentityStore {
     public CredentialValidationResult validate(Credential credential) {
         if (credential instanceof UsernamePasswordCredential) {
             UsernamePasswordCredential usernamePasswordCredential = (UsernamePasswordCredential) credential;
-            String hashedPassword = hashGenerator.generatePasswordHash(usernamePasswordCredential.getPasswordAsString());
-            Logger.getGlobal().log(Level.INFO, "Original password: " + usernamePasswordCredential.getPasswordAsString());
-            Logger.getGlobal().log(Level.INFO, "Hashed password: " + hashedPassword);
             try {
                 AccountEntity account = accountManager.getAccountDetails(usernamePasswordCredential.getCaller());
                 Set<String> groups = account.getAccessLevels().stream()
                         .map(AccessLevelEntity::getLevel)
                         .collect(Collectors.toSet());
-                UsernamePasswordCredential credentialWithPasswordHash = new UsernamePasswordCredential(usernamePasswordCredential.getCaller(), hashedPassword);
-                if (credentialWithPasswordHash.compareTo(account.getLogin(), account.getPassword())) {
+                if (usernamePasswordCredential.getCaller().equals(account.getLogin()) &&
+                        hashGenerator.verifyPassword(usernamePasswordCredential.getPasswordAsString(),account.getPassword())) {
                     return new CredentialValidationResult(account.getLogin(), groups);
                 }
             } catch (AppException e) {

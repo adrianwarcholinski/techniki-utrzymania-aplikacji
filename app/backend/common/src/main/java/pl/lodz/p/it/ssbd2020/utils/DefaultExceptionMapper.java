@@ -29,6 +29,6 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
         if (e instanceof WebApplicationException)
             return ((WebApplicationException) e).getResponse();
         else
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
     }
 }
