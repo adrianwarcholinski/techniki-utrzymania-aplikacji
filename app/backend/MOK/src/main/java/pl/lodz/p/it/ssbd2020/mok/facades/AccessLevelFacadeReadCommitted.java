@@ -46,7 +46,7 @@ public class AccessLevelFacadeReadCommitted extends AbstractFacade<AccessLevelEn
     }
 
     @Override
-    @RolesAllowed({"grantAdminAccessLevel", "grantEmployeeAccessLevel", "grantCustomerAccessLevel"})
+    @RolesAllowed({"ROLE_ADMIN"})
     public void create(AccessLevelEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -69,7 +69,7 @@ public class AccessLevelFacadeReadCommitted extends AbstractFacade<AccessLevelEn
     }
 
     @Override
-    @RolesAllowed({"editAccount", "editOwnAccount", "grantAdminAccessLevel", "grantEmployeeAccessLevel", "grantCustomerAccessLevel", "revokeAccessLevel"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void edit(AccessLevelEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -100,7 +100,7 @@ public class AccessLevelFacadeReadCommitted extends AbstractFacade<AccessLevelEn
     }
 
     @Override
-    @RolesAllowed({"grantAdminAccessLevel", "grantEmployeeAccessLevel", "grantCustomerAccessLevel", "revokeAccessLevel"})
+    @RolesAllowed("ROLE_ADMIN")
     public Optional<AccessLevelEntity> findByAccessLevelAndLogin(String accessLevel, String login) throws AppException {
         TypedQuery<AccessLevelEntity> tq = em.createNamedQuery("AccessLevelEntity.findByAccessLevelAndLogin", AccessLevelEntity.class);
         tq.setParameter("level", accessLevel);
@@ -120,7 +120,7 @@ public class AccessLevelFacadeReadCommitted extends AbstractFacade<AccessLevelEn
     }
 
     @Override
-    @RolesAllowed("revokeAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public Optional<Long> countAccountRoles(String login) throws AppException {
         TypedQuery<Long> tq = em.createNamedQuery("AccessLevelEntity.countAccountRoles", Long.class);
         tq.setParameter("login", login);
