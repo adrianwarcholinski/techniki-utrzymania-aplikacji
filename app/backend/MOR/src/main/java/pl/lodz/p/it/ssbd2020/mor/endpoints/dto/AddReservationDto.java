@@ -17,15 +17,15 @@ public class AddReservationDto {
      * Pole reprezentujące początek rezerwacji.
      */
     @NotNull
-    @Future
-    private LocalDateTime startDate;
+    //@Future
+    private String startDate;
 
     /**
      * Pole reprezentujące koniec prezentacji.
      */
     @NotNull
-    @Future
-    private LocalDateTime endDate;
+    //@Future
+    private String endDate;
 
     /**
      * Pole reprezentujące nazwe modlu borni.
@@ -41,19 +41,19 @@ public class AddReservationDto {
     @Pattern(regexp = RegexPatterns.NAME)
     private String alleyName;
 
-    public LocalDateTime getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 

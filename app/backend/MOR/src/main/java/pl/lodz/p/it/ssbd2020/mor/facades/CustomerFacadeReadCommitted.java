@@ -81,7 +81,7 @@ public class CustomerFacadeReadCommitted extends AbstractFacade<CustomerEntity> 
     }
 
     @Override
-    @RolesAllowed({"addOpinion"})
+    @RolesAllowed({"ROLE_CUSTOMER"})
     public Optional<CustomerEntity> findByLogin(String login) throws AppException {
         TypedQuery<CustomerEntity> tq = em.createNamedQuery("CustomerEntity.findByLogin", CustomerEntity.class);
         tq.setParameter("login", login);

@@ -56,7 +56,7 @@ public class OpinionEndpoint extends Endpoint {
      */
     @GET
     @Path("get-opinions-for-weapon-model")
-    @RolesAllowed("getAllOpinionsForWeaponModel")
+    @RolesAllowed({"ROLE_CUSTOMER","ROLE_EMPLOYEE"})
     public Response getAllOpinionsForWeaponModel(@QueryParam("weaponModelName")
                                                  @Pattern(regexp = RegexPatterns.WEAPON_MODEL_NAME) String weaponModelName) {
         try {
@@ -82,7 +82,7 @@ public class OpinionEndpoint extends Endpoint {
      */
     @POST
     @Path("add")
-    @RolesAllowed("addOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response addOpinion(@Valid AddOpinionDto addOpinionDto) {
         try {
             performTransaction(opinionManager, () -> opinionManager.addOpinion(addOpinionDto.map()));
@@ -101,7 +101,7 @@ public class OpinionEndpoint extends Endpoint {
      */
     @PUT
     @Path("edit")
-    @RolesAllowed("editOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response editOpinion(@Valid EditOpinionDto opinion) {
         try {
             opinion.setVersion(crypt.decrypt(opinion.getVersion()));
@@ -121,7 +121,7 @@ public class OpinionEndpoint extends Endpoint {
      * lub odpowiedź z kodem 400, jeżeli zakończyło się nie popwdeniem.
      */
     @DELETE
-    @RolesAllowed("removeOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response removeOpinion(@NotNull @QueryParam("number") Long opinionNumber) {
         try {
             performTransaction(opinionManager, () -> opinionManager.removeOpinion(opinionNumber));
@@ -139,7 +139,7 @@ public class OpinionEndpoint extends Endpoint {
      * odpowiedź z kodem 400 w przypadku braku danego modelu borni.
      */
     @GET
-    @RolesAllowed("getOwnOpinionForWeaponModel")
+    @RolesAllowed("ROLE_CUSTOMER")
     @Path("own")
     public Response getOwnOpinion(@QueryParam("name") @NotBlank @Pattern(regexp = RegexPatterns.WEAPON_MODEL_NAME) String weaponModelName) {
         try {

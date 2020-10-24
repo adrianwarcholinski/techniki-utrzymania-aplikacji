@@ -1,5 +1,6 @@
 package pl.lodz.p.it.ssbd2020.mor.endpoints;
 
+import pl.lodz.p.it.ssbd2020.converters.LocalDateTimeConverter;
 import pl.lodz.p.it.ssbd2020.entities.ReservationEntity;
 import pl.lodz.p.it.ssbd2020.exceptions.AppException;
 import pl.lodz.p.it.ssbd2020.exceptions.common.InvalidInputException;
@@ -236,18 +237,19 @@ public class ReservationEndpoint extends Endpoint {
         if (language == null || language.isBlank()) {
             language = "en";
         }
+        LocalDateTimeConverter localDateTimeConverter = new LocalDateTimeConverter();
         long time = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
         int randomNumber = ThreadLocalRandom.current().nextInt(1000);
         String reservationNumber = time + Integer.toString(randomNumber);
 
-        ReservationEntity reservationEntity = new ReservationEntity(Long.parseLong(reservationNumber), reservation.getStartDate(), reservation.getEndDate());
+        ReservationEntity reservationEntity = new ReservationEntity(Long.parseLong(reservationNumber), LocalDateTime.parse(reservation.getStartDate()), LocalDateTime.parse(reservation.getEndDate()));
         try {
-            if (reservation.getEndDate().isBefore(reservation.getStartDate())) {
-                throw new InvalidInputException();
-            }
-            if (reservation.getStartDate().getMinute() % 30 != 0 || reservation.getEndDate().getMinute() % 30 != 0) {
-                throw new InvalidInputException();
-            }
+//            if (reservation.getEndDate().isBefore(reservation.getStartDate())) {
+//                throw new InvalidInputException();
+//            }
+//            if (reservation.getStartDate().getMinute() % 30 != 0 || reservation.getEndDate().getMinute() % 30 != 0) {
+//                throw new InvalidInputException();
+//            }
             String finalLanguage = language;
             performTransaction(reservationManager, () -> reservationManager.makeReservation(reservationEntity, reservation.getAlleyName(), reservation.getWeaponModelName(), finalLanguage));
             return Response.ok().build();

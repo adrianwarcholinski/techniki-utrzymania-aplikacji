@@ -103,7 +103,7 @@ public class OpinionManager implements OpinionManagerLocal {
     }
 
     @Override
-    @RolesAllowed("addOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void addOpinion(OpinionEntity opinion) throws AppException {
         String login = securityContext.getCallerPrincipal().getName();
         CustomerEntity customer = customerFacadeReadCommitted.findByLogin(login)
@@ -134,7 +134,7 @@ public class OpinionManager implements OpinionManagerLocal {
     }
 
     @Override
-    @RolesAllowed("editOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void editOpinion(OpinionEntity opinion) throws AppException {
         String login = securityContext.getCallerPrincipal().getName();
 
@@ -163,7 +163,7 @@ public class OpinionManager implements OpinionManagerLocal {
     }
 
     @Override
-    @RolesAllowed("removeOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void removeOpinion(Long opinionNumber) throws AppException {
         OpinionEntity opinionEntity = opinionFacadeReadCommitted.findByOpinionNumber(opinionNumber).orElseThrow(OpinionDoesNotExistException::new);
         WeaponModelEntity weaponModelEntity = opinionEntity.getWeaponModel();
@@ -187,7 +187,7 @@ public class OpinionManager implements OpinionManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllOpinionsForWeaponModel")
+    @RolesAllowed({"ROLE_CUSTOMER","ROLE_EMPLOYEE"})
     public List<OpinionEntity> getAllOpinionsForWeaponModel(@NotBlank String name) throws AppException {
         WeaponModelEntity weaponModelEntity = weaponModelFacadeReadCommitted.findByName(name).orElseThrow(WeaponModelDoesNotExistException::new);
         List<OpinionEntity> opinions = weaponModelEntity.getOpinions();
@@ -196,7 +196,7 @@ public class OpinionManager implements OpinionManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getOwnOpinionForWeaponModel")
+    @RolesAllowed("ROLE_CUSTOMER")
     public OpinionEntity getOwnOpinionForWeaponModel(String name) throws AppException {
         String login = securityContext.getCallerPrincipal().getName();
         return opinionFacadeReadCommitted.findByWeaponModelAndCustomerLogin(name, login)

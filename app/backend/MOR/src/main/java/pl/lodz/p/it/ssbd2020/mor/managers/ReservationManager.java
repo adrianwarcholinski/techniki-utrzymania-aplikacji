@@ -171,7 +171,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("ROLE_ADMIN")
+    @RolesAllowed({"ROLE_ADMIN","ROLE_CUSTOMER"})
     public List<ReservationEntity> getAllCustomersReservations(String login, boolean getCanceled, boolean getPast) throws AppException {
         return reservationFacadeReadCommitted.findByCustomer(login, getCanceled, getPast);
     }

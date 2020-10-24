@@ -46,7 +46,7 @@ public class OpinionFacadeReadCommitted extends AbstractFacade<OpinionEntity> im
     }
 
     @Override
-    @RolesAllowed("addOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void create(OpinionEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -75,7 +75,7 @@ public class OpinionFacadeReadCommitted extends AbstractFacade<OpinionEntity> im
     }
 
     @Override
-    @RolesAllowed("editOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void edit(OpinionEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -95,7 +95,7 @@ public class OpinionFacadeReadCommitted extends AbstractFacade<OpinionEntity> im
     }
 
     @Override
-    @RolesAllowed("removeOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void remove(OpinionEntity entity) throws AppException {
         try {
             super.remove(entity);
@@ -109,19 +109,19 @@ public class OpinionFacadeReadCommitted extends AbstractFacade<OpinionEntity> im
     }
 
     @Override
-    @RolesAllowed("editOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Optional<OpinionEntity> find(Object id) throws AppException {
         return super.find(id);
     }
 
     @Override
-    @RolesAllowed("addOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public List<OpinionEntity> findAll() throws AppException {
         return super.findAll();
     }
 
     @Override
-    @RolesAllowed("removeOpinion")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Optional<OpinionEntity> findByOpinionNumber(long opinionNumber) throws AppException {
         TypedQuery<OpinionEntity> tq = em.createNamedQuery("OpinionEntity.findByOpinionNumber", OpinionEntity.class);
         tq.setParameter("opinionNumber", opinionNumber);
@@ -140,7 +140,7 @@ public class OpinionFacadeReadCommitted extends AbstractFacade<OpinionEntity> im
     }
 
     @Override
-    @RolesAllowed("getOwnOpinionForWeaponModel")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Optional<OpinionEntity> findByWeaponModelAndCustomerLogin(String weaponModelName, String login) throws AppException {
         TypedQuery<OpinionEntity> tq = em.createNamedQuery("OpinionEntity.findByWeaponModelNameAndCustomer", OpinionEntity.class);
         tq.setParameter("weaponModelName", weaponModelName);
