@@ -55,8 +55,7 @@ public class WeaponModelFacadeReadCommitted extends AbstractFacade<WeaponModelEn
     }
 
     @Override
-    @RolesAllowed({"getConflictReservationsByWeaponModel", "addOpinion", "getWeaponModel",
-            "getAllOpinionsForWeaponModel", "addWeaponModel"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<WeaponModelEntity> findByName(String name) throws AppException {
         TypedQuery<WeaponModelEntity> tq = em.createNamedQuery("WeaponModelEntity.findByName", WeaponModelEntity.class);
         tq.setParameter("name", name);

@@ -58,7 +58,7 @@ public class ReservationFacadeReadCommitted extends AbstractFacade<ReservationEn
     }
 
     @Override
-    @RolesAllowed({"cancelReservation", "cancelOwnReservation"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void edit(ReservationEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -78,7 +78,7 @@ public class ReservationFacadeReadCommitted extends AbstractFacade<ReservationEn
     }
 
     @Override
-    @RolesAllowed({"getReservation", "getOwnReservation", "cancelReservation", "cancelOwnReservation"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<ReservationEntity> findByReservationNumber(long reservationNumber) {
         TypedQuery<ReservationEntity> tq = em.createNamedQuery("ReservationEntity.findByReservationNumber", ReservationEntity.class);
         tq.setParameter("reservationNumber", reservationNumber);
@@ -90,7 +90,7 @@ public class ReservationFacadeReadCommitted extends AbstractFacade<ReservationEn
     }
 
     @Override
-    @RolesAllowed("getAllReservations")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<ReservationEntity> findAll(boolean getCanceled, boolean getPast) throws AppException {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<ReservationEntity> cq = cb.createQuery(ReservationEntity.class);
@@ -144,7 +144,7 @@ public class ReservationFacadeReadCommitted extends AbstractFacade<ReservationEn
     }
 
     @Override
-    @RolesAllowed({"getConflictReservationsByWeaponModel"})
+    @RolesAllowed({"ROLE_CUSTOMER"})
     public List<ReservationEntity> findConflictReservationsByWeaponModel(LocalDateTime startDate, LocalDateTime endDate,
                                                                          String weaponModelName, String alleyName) throws AppException {
         TypedQuery<ReservationEntity> tq = em.createNamedQuery("ReservationEntity.findConflictReservationsByWeaponModel", ReservationEntity.class);
@@ -165,7 +165,7 @@ public class ReservationFacadeReadCommitted extends AbstractFacade<ReservationEn
     }
 
     @Override
-    @RolesAllowed({"getConflictReservationsByWeapon"})
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<ReservationEntity> findConflictReservationsByWeapon(LocalDateTime startDate, LocalDateTime endDate, String weaponSerialNumber, String alleyName) throws AppException {
         TypedQuery<ReservationEntity> tq = em.createNamedQuery("ReservationEntity.findConflictReservationsByWeapon", ReservationEntity.class);
         tq.setParameter("startDate", startDate);

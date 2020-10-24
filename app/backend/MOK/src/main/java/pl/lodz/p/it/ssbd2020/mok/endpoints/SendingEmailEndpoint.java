@@ -67,7 +67,7 @@ public class SendingEmailEndpoint extends Endpoint {
      * @return odpowiedź z kodem 200, niezależnie od wyniku metody
      */
     @POST
-    @RolesAllowed("activityChangedNotification")
+    @RolesAllowed("ROLE_ADMIN")
     public Response activityChangedNotification(@HeaderParam("language") String language,
                                                 @NotNull @HeaderParam("isBlocking") boolean isBlocking,
                                                 @NotNull @HeaderParam("email") @Email(regexp = RegexPatterns.EMAIL) @Size(max = 50) String email) {

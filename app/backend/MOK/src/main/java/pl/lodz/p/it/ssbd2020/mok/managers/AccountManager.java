@@ -383,7 +383,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("activityChangedNotification")
+    @RolesAllowed("ROLE_ADMIN")
     public boolean isVerifiedAccountWithEmail(String email) throws AppException {
         return accountFacadeReadCommitted.findByEmail(email).map(AccountEntity::isVerified).orElse(false);
     }
