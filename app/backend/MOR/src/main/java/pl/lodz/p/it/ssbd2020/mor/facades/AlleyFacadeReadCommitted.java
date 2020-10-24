@@ -52,7 +52,7 @@ public class AlleyFacadeReadCommitted extends AbstractFacade<AlleyEntity> implem
     }
 
     @Override
-    @RolesAllowed("addAlley")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void create(AlleyEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -77,7 +77,7 @@ public class AlleyFacadeReadCommitted extends AbstractFacade<AlleyEntity> implem
     }
 
     @Override
-    @RolesAllowed({"editAlley"})
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public void edit(AlleyEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -98,13 +98,13 @@ public class AlleyFacadeReadCommitted extends AbstractFacade<AlleyEntity> implem
 
 
     @Override
-    @RolesAllowed("editAlley")
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public Optional<AlleyEntity> find(Object id) throws AppException {
             return super.find(id);
     }
 
     @Override
-    @RolesAllowed({"getAlleyDetails", "addAlley"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<AlleyEntity> findByName(String name) throws AppException {
         TypedQuery<AlleyEntity> tq = em.createNamedQuery("AlleyEntity.findByName", AlleyEntity.class);
         tq.setParameter("name", name);
@@ -123,7 +123,7 @@ public class AlleyFacadeReadCommitted extends AbstractFacade<AlleyEntity> implem
     }
 
     @Override
-    @RolesAllowed("getAllActiveAlleys")
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public List<AlleyEntity> findByActive(boolean active) throws AppException {
         TypedQuery<AlleyEntity> tq = em.createNamedQuery("AlleyEntity.findByActive", AlleyEntity.class);
         tq.setParameter("active", active);

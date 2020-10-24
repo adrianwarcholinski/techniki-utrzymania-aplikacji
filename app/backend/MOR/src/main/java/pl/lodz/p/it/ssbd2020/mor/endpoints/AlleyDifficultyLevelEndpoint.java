@@ -40,7 +40,7 @@ public class AlleyDifficultyLevelEndpoint extends Endpoint {
      */
     @GET
     @Path("get-alley-difficulty-levels")
-    @RolesAllowed("getAllAlleyDifficultyLevels")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response getAllAlleyDifficultyLevels() {
         try {
             List<AlleyDifficultyLevelEntity> allAlleyDifficultyLevels = (List<AlleyDifficultyLevelEntity>) performTransaction(alleyDifficultyLevelManager,

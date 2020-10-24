@@ -44,7 +44,7 @@ public class ChangeRoleEndpoint {
      * odpowiedź z kodem 403, jeśli użytkownik próbuje zmienić poziom dostępu na dla niego niedozwolony
      */
     @POST
-    @RolesAllowed("changeRole")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response changeRole(@Context HttpServletRequest request,
                                @HeaderParam("targetRole") String targetRole) {
         try {

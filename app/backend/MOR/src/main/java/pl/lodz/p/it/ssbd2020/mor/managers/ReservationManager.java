@@ -165,7 +165,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllReservations")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<ReservationEntity> getAllReservations(boolean getCanceled, boolean getPast) throws AppException {
         return reservationFacadeReadCommitted.findAll(getCanceled, getPast);
     }
@@ -177,13 +177,13 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getReservation")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public ReservationEntity getReservation(Long reservationNumber) throws AppException {
         return reservationFacadeReadCommitted.findByReservationNumber(reservationNumber).orElseThrow(ReservationDoesNotExistException::new);
     }
 
     @Override
-    @RolesAllowed("getOwnReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public ReservationEntity getOwnReservation(String login, Long reservationNumber) throws AppException {
         ReservationEntity reservationEntity = reservationFacadeReadCommitted.findByReservationNumber(reservationNumber).orElseThrow(ReservationDoesNotExistException::new);
         if (reservationEntity.getCustomer().getAccount().getLogin().equals(login)) {
@@ -194,7 +194,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("updateOwnReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void updateOwnReservation(String login, ReservationEntity targetEntity, String language) throws AppException {
         ReservationEntity originalEntity =
                 reservationFacadeSerializable.find(targetEntity.getId())
@@ -256,7 +256,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("updateReservation")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void updateReservation(ReservationEntity targetEntity, String language) throws AppException {
         ReservationEntity originalEntity =
                 reservationFacadeSerializable.find(targetEntity.getId())
@@ -301,7 +301,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("makeReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void makeReservation(ReservationEntity entity, String alleyName, String weaponModelName, String language) throws AppException {
         CustomerEntity customerEntity = customerFacadeSerializable.findByLogin(getCurrentUser()).orElseThrow(CustomerDoesNotExistException::new);
         AlleyEntity alleyEntity = getActiveAlleyByName(alleyName);
@@ -356,7 +356,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("cancelReservation")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void cancelReservation(long reservationNumber, String language) throws AppException {
         ReservationEntity entity = reservationFacadeReadCommitted.findByReservationNumber(reservationNumber).orElseThrow(ReservationDoesNotExistException::new);
         this.cancelReservation(entity);
@@ -370,7 +370,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("cancelOwnReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public void cancelReservation(long reservationNumber, String login, String language) throws AppException {
         ReservationEntity entity = reservationFacadeReadCommitted.findByReservationNumber(reservationNumber).orElseThrow(ReservationDoesNotExistException::new);
         if (!entity.getCustomer().getAccount().getLogin().equals(login)) {
@@ -387,7 +387,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getConflictReservationsByWeaponModel")
+    @RolesAllowed("ROLE_CUSTOMER")
     public List<ReservationEntity> getConflictReservationsByWeaponModel(LocalDateTime date,
                                                                         String alleyName,
                                                                         String weaponModelName,
@@ -435,7 +435,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getConflictReservationsByWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<ReservationEntity> getConflictReservationsByWeapon(LocalDateTime date,
                                                                    String alleyName,
                                                                    String weaponSerialNumber,

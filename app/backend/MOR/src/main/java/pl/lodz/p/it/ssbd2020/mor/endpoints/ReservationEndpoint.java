@@ -69,7 +69,7 @@ public class ReservationEndpoint extends Endpoint {
      * odpowiedź z kodem 400 w przypadku błedu w czasie pobierania listy
      */
     @GET
-    @RolesAllowed("getAllReservations")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response getAllReservations(@DefaultValue("false") @QueryParam("canceled") boolean getCanceled,
                                        @DefaultValue("false") @QueryParam("past") boolean getPast) {
         try {
@@ -97,7 +97,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @GET
     @Path("own")
-    @RolesAllowed("getAllOwnReservations")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response getAllOwnReservations(@DefaultValue("false") @QueryParam("canceled") boolean getCanceled,
                                           @DefaultValue("false") @QueryParam("past") boolean getPast) {
         try {
@@ -125,7 +125,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @GET
     @Path("get-reservation")
-    @RolesAllowed("getReservation")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response getReservation(@QueryParam("reservationNumber") Long reservationNumber) {
         try {
             ReservationEntity entity = (ReservationEntity) performTransaction(reservationManager, () -> reservationManager.getReservation(reservationNumber));
@@ -147,7 +147,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @GET
     @Path("get-own-reservation")
-    @RolesAllowed("getOwnReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response getOwnReservation(@QueryParam("reservationNumber") Long reservationNumber) {
         String login = securityContext.getCallerPrincipal().getName();
         try {
@@ -171,7 +171,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @PUT
     @Path("update-reservation")
-    @RolesAllowed("updateReservation")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response updateReservation(@HeaderParam("language") String language,
                                       @Valid EditReservationDto reservationDto) {
         try {
@@ -200,7 +200,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @PUT
     @Path("update-own-reservation")
-    @RolesAllowed("updateOwnReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response updateOwnReservation(@HeaderParam("language") String language,
                                          @Valid EditOwnReservationDto reservationDto) {
         String login = securityContext.getCallerPrincipal().getName();
@@ -231,7 +231,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @POST
     @Path("make-reservation")
-    @RolesAllowed("makeReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response makeReservation(@HeaderParam("language") String language, @Valid AddReservationDto reservation) {
         if (language == null || language.isBlank()) {
             language = "en";
@@ -267,7 +267,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @PUT
     @Path("cancel-reservation")
-    @RolesAllowed("cancelReservation")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response cancelReservation(@HeaderParam("reservationNumber") @NotNull @Positive Long reservationNumber,
                                       @HeaderParam("language") String language) {
         if (language == null || language.isBlank()) {
@@ -294,7 +294,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @PUT
     @Path("cancel-own-reservation")
-    @RolesAllowed("cancelOwnReservation")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response cancelOwnReservation(@HeaderParam("reservationNumber") @NotNull @Positive Long reservationNumber,
                                          @HeaderParam("language") String language) {
         if (language == null || language.isBlank()) {
@@ -323,7 +323,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @GET
     @Path("get-conflict-reservations-by-weapon-model")
-    @RolesAllowed("getConflictReservationsByWeaponModel")
+    @RolesAllowed("ROLE_CUSTOMER")
     public Response getConflictReservationsByWeaponModel(@QueryParam("alleyName") @NotBlank @Pattern(regexp = RegexPatterns.ALLEY_NAME)
                                                                  String alleyName,
                                                          @QueryParam("date") @NotBlank String date,
@@ -358,7 +358,7 @@ public class ReservationEndpoint extends Endpoint {
      */
     @GET
     @Path("get-conflict-reservations-by-weapon")
-    @RolesAllowed("getConflictReservationsByWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response getConflictReservationsByWeapon(@QueryParam("date") @NotBlank String date,
                                                     @QueryParam("alleyName") @NotBlank @Pattern(regexp =
                                                             RegexPatterns.ALLEY_NAME, message =

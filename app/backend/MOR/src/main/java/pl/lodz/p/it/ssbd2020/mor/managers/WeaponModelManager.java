@@ -95,13 +95,13 @@ public class WeaponModelManager implements WeaponModelManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllActiveWeaponModels")
+    @RolesAllowed({"ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     public List<WeaponModelEntity> getAllActiveWeaponModels() throws AppException {
         return weaponModelFacadeReadCommitted.findByActive(true);
     }
 
     @Override
-    @RolesAllowed("removeWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void removeWeaponModel(String name) throws AppException {
         WeaponModelEntity weaponModelEntity = weaponModelFacadeSerializable.findByName(name).orElseThrow(WeaponModelDoesNotExistException::new);
         if (!weaponModelEntity.isActive())
@@ -114,7 +114,7 @@ public class WeaponModelManager implements WeaponModelManagerLocal {
     }
 
 
-    @RolesAllowed("getWeaponModel")
+    @RolesAllowed({"ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     public WeaponModelEntity getWeaponModel(String name) throws AppException {
         Optional<WeaponModelEntity> entity = weaponModelFacadeReadCommitted.findByName(name);
         if (entity.isEmpty() || !entity.get().isActive()) {
@@ -124,7 +124,7 @@ public class WeaponModelManager implements WeaponModelManagerLocal {
     }
 
     @Override
-    @RolesAllowed("addWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void addWeaponModel(WeaponModelEntity entity) throws AppException {
         if (weaponModelFacadeReadCommitted.findByName(entity.getName()).isPresent()) {
             throw new WeaponModelWithSuchNameExistsException();
@@ -138,7 +138,7 @@ public class WeaponModelManager implements WeaponModelManagerLocal {
     }
 
     @Override
-    @RolesAllowed("editWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void editWeaponModel(WeaponModelEntity entity) throws AppException {
         Optional<WeaponModelEntity> weaponModelEntity = weaponModelFacadeReadCommitted.find(entity.getId());
         if (weaponModelEntity.isEmpty() || !weaponModelEntity.get().isActive()) {
@@ -154,7 +154,7 @@ public class WeaponModelManager implements WeaponModelManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllActiveWeaponModelsWithActiveWeapons")
+    @RolesAllowed({"ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     public List<WeaponModelEntity> getAllActiveWeaponModelsWithActiveWeapons() throws AppException {
         return weaponModelFacadeReadCommitted.findByActive(true).stream()
                 .filter(weaponModelEntity -> weaponModelEntity.getWeapons().stream().anyMatch(WeaponEntity::isActive)).collect(Collectors.toList());

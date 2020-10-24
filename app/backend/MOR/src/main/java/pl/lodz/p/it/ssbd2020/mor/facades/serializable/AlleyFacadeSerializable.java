@@ -57,7 +57,7 @@ public class AlleyFacadeSerializable extends AbstractFacade<AlleyEntity> impleme
     }
 
     @Override
-    @RolesAllowed({"removeAlley"})
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public void edit(AlleyEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -77,7 +77,7 @@ public class AlleyFacadeSerializable extends AbstractFacade<AlleyEntity> impleme
     }
 
     @Override
-    @RolesAllowed({"removeAlley", "updateReservation", "updateOwnReservation", "makeReservation"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<AlleyEntity> findByName(String name) throws AppException {
         TypedQuery<AlleyEntity> tq = em.createNamedQuery("AlleyEntity.findByName", AlleyEntity.class);
         tq.setLockMode(LockModeType.PESSIMISTIC_WRITE);

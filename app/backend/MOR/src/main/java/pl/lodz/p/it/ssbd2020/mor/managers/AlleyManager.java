@@ -93,13 +93,13 @@ public class AlleyManager implements AlleyManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllActiveAlleys")
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public List<AlleyEntity> getAllActiveAlleys() throws AppException {
         return alleyFacadeReadCommitted.findByActive(true);
     }
 
     @Override
-    @RolesAllowed("getAlleyDetails")
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public AlleyEntity getAlleyDetails(String name) throws AppException {
         AlleyEntity alley = alleyFacadeReadCommitted.findByName(name).orElseThrow(AlleyDoesNotExistException::new);
         if(!alley.isActive()){
@@ -109,7 +109,7 @@ public class AlleyManager implements AlleyManagerLocal {
     }
 
     @Override
-    @RolesAllowed("editAlley")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void editAlleyDetails(AlleyEntity entity) throws AppException {
         AlleyEntity alley = alleyFacadeReadCommitted.find(entity.getId()).orElseThrow(AlleyDoesNotExistException::new);
         if(!alley.isActive()){
@@ -120,7 +120,7 @@ public class AlleyManager implements AlleyManagerLocal {
     }
 
     @Override
-    @RolesAllowed("addAlley")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void addAlley(AlleyEntity alleyEntity, String alleyDifficultyLevelName) throws AppException {
         AlleyDifficultyLevelEntity alleyDifficultyLevelEntity =
                 alleyDifficultyLevelFacadeReadCommitted.findByName(alleyDifficultyLevelName)
@@ -133,7 +133,7 @@ public class AlleyManager implements AlleyManagerLocal {
     }
 
     @Override
-    @RolesAllowed("removeAlley")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void removeAlley(String name) throws AppException {
         AlleyEntity alleyEntity = alleyFacadeSerializable.findByName(name).orElseThrow(AlleyDoesNotExistException::new);
         if (!alleyEntity.isActive()) {

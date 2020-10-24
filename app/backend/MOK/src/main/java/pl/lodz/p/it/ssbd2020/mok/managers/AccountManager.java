@@ -185,7 +185,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("changeOwnPassword")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void changeOwnPassword(String login, String oldPassword, String newPassword) throws AppException {
         AccountEntity account = accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
 
@@ -201,7 +201,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("changePassword")
+    @RolesAllowed("ROLE_ADMIN")
     public void changePassword(String login, String newPassword) throws AppException {
         AccountEntity account = accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
 
@@ -210,7 +210,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed({"grantAdminAccessLevel", "grantEmployeeAccessLevel", "grantCustomerAccessLevel"})
+    @RolesAllowed({"ROLE_ADMIN"})
     public void grantAccessLevel(String accessLevel, String login, String info) throws AppException {
         AccountEntity account = accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
         checkGrantIsAvailable(accessLevel, login, info);
@@ -223,7 +223,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("revokeAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public void revokeAccessLevel(String login, String accessLevel) throws AppException {
         AccessLevelEntity accessLevelEntity =
                 accessLevelFacadeReadCommitted.findByAccessLevelAndLogin(accessLevel, login).orElseThrow(GrantAccessLevelInvalidRoleException::new);
@@ -274,13 +274,13 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed({"getAllAccounts"})
+    @RolesAllowed({"ROLE_ADMIN"})
     public List<AccountEntity> getAllAccounts() throws AppException {
         return accountFacadeReadCommitted.getAllSortedById();
     }
 
     @Override
-    @RolesAllowed({"editAccount", "editOwnAccount"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void editUserDetails(AccountEntity accountEntity, AdminEntity adminEntity, CustomerEntity customerEntity,
                                 EmployeeEntity employeeEntity) throws AppException {
         AccountEntity account = accountFacadeReadCommitted.find(accountEntity.getId()).orElseThrow(AccountDoesNotExistException::new);
@@ -324,7 +324,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("changeOwnEmail")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void changeEmail(String cipherText) throws AppException {
         String[] decrypted;
         if (expiredTokenFacadeReadCommitted.findByToken(cipherText).isPresent()) {
@@ -352,7 +352,7 @@ public class AccountManager implements AccountManagerLocal {
 
 
     @Override
-    @RolesAllowed("lockAccount")
+    @RolesAllowed("ROLE_ADMIN")
     public void lockAccount(String login) throws AppException {
         AccountEntity account = accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
 
@@ -368,7 +368,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("unlockAccount")
+    @RolesAllowed("ROLE_ADMIN")
     public void unlockAccount(String login) throws AppException {
         AccountEntity account = accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
 
@@ -383,7 +383,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("activityChangedNotification")
+    @RolesAllowed("ROLE_ADMIN")
     public boolean isVerifiedAccountWithEmail(String email) throws AppException {
         return accountFacadeReadCommitted.findByEmail(email).map(AccountEntity::isVerified).orElse(false);
     }
@@ -441,13 +441,13 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAccountsFilteredByPhraseInFullName")
+    @RolesAllowed("ROLE_ADMIN")
     public List<AccountEntity> findByPhraseInFullName(String phrase) throws AppException {
         return accountFacadeReadCommitted.findByPhraseInFullName(phrase);
     }
 
     @Override
-    @RolesAllowed({"sendUsersEmailChangeLink", "sendEmailChangeLink"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void sendEmailForChangeEmail(String login, String newEmail, String lang, boolean byAdmin) throws AppException {
         AccountEntity account = accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
 
@@ -466,13 +466,13 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAdminReport")
+    @RolesAllowed("ROLE_ADMIN")
     public List<AccountEntity> getAuthenticatedAccounts() throws AppException {
         return accountFacadeReadCommitted.findAuthenticated();
     }
 
     @Override
-    @RolesAllowed("sendVerificationLink")
+    @RolesAllowed("ROLE_ADMIN")
     public void sendVerificationLink(String login, String language) throws AppException {
         AccountEntity accountEntity = accountFacadeReadCommitted.findByLogin(login).orElseThrow(AccountDoesNotExistException::new);
         if (accountEntity.isVerified()) {

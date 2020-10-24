@@ -66,7 +66,7 @@ public class AlleyEndpoint extends Endpoint {
      */
     @GET
     @Path("details")
-    @RolesAllowed("getAlleyDetails")
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response getAlleyDetails(@QueryParam("name") @NotBlank @Size(max = 50)
                                     @Pattern(regexp = RegexPatterns.ALLEY_NAME) String name) {
         try {
@@ -90,7 +90,7 @@ public class AlleyEndpoint extends Endpoint {
      */
     @PUT
     @Path("edit")
-    @RolesAllowed("editAlley")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response editAlley(@Valid EditAlleyDto editAlleyDto) {
         try {
             this.performEditAlley(editAlleyDto);
@@ -128,7 +128,7 @@ public class AlleyEndpoint extends Endpoint {
      */
     @POST
     @Path("add-alley")
-    @RolesAllowed("addAlley")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response addAlley(@Valid AddAlleyDto addAlleyDto) {
         try {
             AlleyEntity alleyEntity = AddAlleyDto.map(addAlleyDto);
@@ -147,7 +147,7 @@ public class AlleyEndpoint extends Endpoint {
      */
     @PUT
     @Path("remove-alley")
-    @RolesAllowed("removeAlley")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response removeAlley(@QueryParam("alleyName") @NotBlank
                                 @Pattern(regexp = RegexPatterns.ALLEY_NAME) String alleyName) {
         try {

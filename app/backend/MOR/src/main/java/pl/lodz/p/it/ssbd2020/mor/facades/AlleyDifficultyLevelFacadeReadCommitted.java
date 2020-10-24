@@ -41,13 +41,13 @@ public class AlleyDifficultyLevelFacadeReadCommitted extends AbstractFacade<Alle
     }
 
     @Override
-    @RolesAllowed({"getAllAlleyDifficultyLevels", "getAlleyDetails"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public List<AlleyDifficultyLevelEntity> findAll() throws AppException {
         return super.findAll();
     }
 
     @Override
-    @RolesAllowed({"editAlley", "addAlley"})
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public Optional<AlleyDifficultyLevelEntity> findByName(String name) throws AppException {
         TypedQuery<AlleyDifficultyLevelEntity> tq = em.createNamedQuery("AlleyDifficultyLevelEntity.findByName", AlleyDifficultyLevelEntity.class);
         tq.setParameter("name", name);

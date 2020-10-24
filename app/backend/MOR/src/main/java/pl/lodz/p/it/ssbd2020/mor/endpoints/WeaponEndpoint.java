@@ -45,7 +45,7 @@ public class WeaponEndpoint extends Endpoint {
      */
     @GET
     @Path("get-active-weapons")
-    @RolesAllowed("getAllActiveWeapons")
+    @RolesAllowed({"ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     public Response getAllActiveWeapons() {
         try {
             List<WeaponEntity> weapons = (List<WeaponEntity>) performTransaction(weaponManager, () -> weaponManager.getAllActiveWeapons());
@@ -64,7 +64,7 @@ public class WeaponEndpoint extends Endpoint {
      */
     @GET
     @Path("get-active-weapons-by-model-name")
-    @RolesAllowed("getAllActiveWeaponsByModelName")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response getAllActiveWeaponsByModelName(@QueryParam("modelName") @NotBlank
                                                    @Pattern(regexp = RegexPatterns.WEAPON_MODEL_NAME, message =
                                                            "Weapon model name is not valid") String modelName) {
@@ -86,7 +86,7 @@ public class WeaponEndpoint extends Endpoint {
      */
     @DELETE
     @Path("remove")
-    @RolesAllowed("removeWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response removeWeapon(@QueryParam("serialNumber")
                                  @Pattern(regexp = RegexPatterns.WEAPON_SERIAL_NUMBER, message = "serial number is not valid")
                                  @Size(max = 25) String serialNumber) {
@@ -107,7 +107,7 @@ public class WeaponEndpoint extends Endpoint {
      */
     @POST
     @Path("create")
-    @RolesAllowed("createWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response createWeapon(@Valid AddWeaponDto weaponDto) {
         try {
             WeaponEntity weaponEntity = new WeaponEntity(weaponDto.getSerialNumber(), null);

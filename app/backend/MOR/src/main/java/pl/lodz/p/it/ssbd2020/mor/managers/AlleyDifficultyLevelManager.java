@@ -77,7 +77,7 @@ public class AlleyDifficultyLevelManager implements AlleyDifficultyLevelManagerL
     }
 
     @Override
-    @RolesAllowed({"getAllAlleyDifficultyLevels", "getAlleyDetails"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public List<AlleyDifficultyLevelEntity> getAllAlleyDifficultyLevels() throws AppException {
         List<AlleyDifficultyLevelEntity> alleyDifficultyLevelEntityList = alleyDifficultyLevelFacadeReadCommitted.findAll();
         if (alleyDifficultyLevelEntityList.isEmpty()) {
@@ -87,7 +87,7 @@ public class AlleyDifficultyLevelManager implements AlleyDifficultyLevelManagerL
     }
 
     @Override
-    @RolesAllowed({"editAlley"})
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public AlleyDifficultyLevelEntity findByName(String name) throws AppException {
         return alleyDifficultyLevelFacadeReadCommitted.findByName(name).orElseThrow(AlleyDifficultyLevelDoesNotExistException::new);
     }
