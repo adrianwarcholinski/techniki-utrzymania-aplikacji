@@ -45,9 +45,9 @@ class DashboardTemplate extends Component {
     getAuthenticationMessage() {
         const {t} = this.props;
         const {correct, incorrect} = this.props.authenticationTimesData;
-        return <>{correct !== undefined && t("dashboard.lastCorrectAuthentication") + ": " + correct}
-            {(correct !== undefined && incorrect !== undefined)&&<br/>}
-            {incorrect !== undefined && t("dashboard.lastIncorrectAuthentication") + ": " + incorrect}</>;
+        const correctText = correct !== undefined? t("dashboard.lastCorrectAuthentication") + ": " + correct : null;
+        const incorrectText = incorrect !== undefined? t("dashboard.lastIncorrectAuthentication") + ": " + incorrect : null;
+        return <>{correctText}<br/>{incorrectText}</>
     }
 
     handleDisplaySnackbar = (type, message, anchorOrigin = {

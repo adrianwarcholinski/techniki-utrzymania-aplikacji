@@ -19,10 +19,10 @@ class App extends Component {
     SuccessfulLoginHandler(authenticationData) {
         localStorage.setItem(localStorageKeys.userName, authenticationData.user);
         localStorage.setItem(localStorageKeys.roles, JSON.stringify(authenticationData.roles));
-        if (authenticationData.successfulAuthenticationTime !== undefined) {
+        if (authenticationData.successfulAuthenticationTime !== null) {
             this.authenticationTimesData.correct = new Date(authenticationData.successfulAuthenticationTime).toLocaleString();
         }
-        if (authenticationData.failedAuthenticationTime !== undefined) {
+        if (authenticationData.failedAuthenticationTime !== null) {
             this.authenticationTimesData.incorrect = new Date(authenticationData.failedAuthenticationTime).toLocaleString();
         }
         this.props.history.push(urls.dashboard);
