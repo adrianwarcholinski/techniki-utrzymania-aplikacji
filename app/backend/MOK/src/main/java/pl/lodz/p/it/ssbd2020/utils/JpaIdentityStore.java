@@ -44,7 +44,8 @@ public class JpaIdentityStore implements IdentityStore {
                 Set<String> groups = account.getAccessLevels().stream()
                         .map(AccessLevelEntity::getLevel)
                         .collect(Collectors.toSet());
-                if (usernamePasswordCredential.compareTo(account.getLogin(), hashedPassword)) {
+                UsernamePasswordCredential credentialWithPasswordHash = new UsernamePasswordCredential(usernamePasswordCredential.getCaller(), hashedPassword);
+                if (credentialWithPasswordHash.compareTo(account.getLogin(), account.getPassword())) {
                     return new CredentialValidationResult(account.getLogin(), groups);
                 }
             } catch (AppException e) {
