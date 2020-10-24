@@ -158,7 +158,7 @@ public class AuthenticationEndpoint extends Endpoint {
      */
     @GET
     @Path("logout")
-    @RolesAllowed("logout")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response logout(@Context HttpServletRequest request) {
         Logger.getGlobal().log(Level.INFO,
                 String.format("User %1$s logged out from system from ip address %2$s", securityContext.getCallerPrincipal().getName(), request.getRemoteAddr()));

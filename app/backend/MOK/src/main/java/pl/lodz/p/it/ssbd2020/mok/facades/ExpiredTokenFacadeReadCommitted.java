@@ -43,7 +43,7 @@ public class ExpiredTokenFacadeReadCommitted extends AbstractFacade<ExpiredToken
     }
 
     @Override
-    @RolesAllowed("changeOwnEmail")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void create(ExpiredTokenEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -76,7 +76,7 @@ public class ExpiredTokenFacadeReadCommitted extends AbstractFacade<ExpiredToken
     }
 
     @Override
-    @RolesAllowed("changeOwnEmail")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<ExpiredTokenEntity> findByToken(String token) throws AppException{
         TypedQuery<ExpiredTokenEntity> tq = em.createNamedQuery("ExpiredTokenEntity.findByToken", ExpiredTokenEntity.class);
         tq.setParameter("token", token);

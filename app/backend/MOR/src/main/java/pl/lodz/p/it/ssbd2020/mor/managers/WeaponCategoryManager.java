@@ -76,7 +76,7 @@ public class WeaponCategoryManager implements WeaponCategoryManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllWeaponCategories")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<WeaponCategoryEntity> getAllWeaponCategories() throws AppException {
         List<WeaponCategoryEntity> list = weaponCategoryFacadeReadCommitted.findAll();
         if (list.size() == 0) {

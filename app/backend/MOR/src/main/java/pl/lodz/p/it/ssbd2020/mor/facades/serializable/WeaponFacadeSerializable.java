@@ -46,7 +46,7 @@ public class WeaponFacadeSerializable extends AbstractFacade<WeaponEntity> imple
     }
 
     @Override
-    @RolesAllowed("createWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void create(WeaponEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -71,7 +71,7 @@ public class WeaponFacadeSerializable extends AbstractFacade<WeaponEntity> imple
     }
 
     @Override
-    @RolesAllowed({"removeWeapon"})
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public void edit(WeaponEntity entity) throws AppException {
         try {
             super.edit(entity);

@@ -49,7 +49,7 @@ public class WeaponModelFacadeReadCommitted extends AbstractFacade<WeaponModelEn
     }
 
     @Override
-    @RolesAllowed("editWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Optional<WeaponModelEntity> find(Object id) throws AppException {
         return super.find(id);
     }
@@ -80,7 +80,7 @@ public class WeaponModelFacadeReadCommitted extends AbstractFacade<WeaponModelEn
     }
 
     @Override
-    @RolesAllowed({"getAllActiveWeaponModels", "getAllActiveWeaponModelsWithActiveWeapons"})
+    @RolesAllowed({"ROLE_CUSTOMER","ROLE_EMPLOYEE"})
     public List<WeaponModelEntity> findByActive(boolean active) throws AppException {
         TypedQuery<WeaponModelEntity> tq = em.createNamedQuery("WeaponModelEntity.findByActive", WeaponModelEntity.class);
         tq.setParameter("active", active);
@@ -97,7 +97,7 @@ public class WeaponModelFacadeReadCommitted extends AbstractFacade<WeaponModelEn
     }
 
     @Override
-    @RolesAllowed({"editWeaponModel", "removeOpinion"})
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public void edit(WeaponModelEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -124,7 +124,7 @@ public class WeaponModelFacadeReadCommitted extends AbstractFacade<WeaponModelEn
     }
 
     @Override
-    @RolesAllowed("addWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void create(WeaponModelEntity entity) throws AppException {
         try {
             super.create(entity);

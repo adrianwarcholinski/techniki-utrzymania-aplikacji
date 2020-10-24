@@ -50,7 +50,7 @@ public class WeaponModelFacadeSerializable extends AbstractFacade<WeaponModelEnt
     }
 
     @Override
-    @RolesAllowed("removeWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void edit(WeaponModelEntity entity) throws AppException {
         try {
             super.edit(entity);

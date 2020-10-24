@@ -47,7 +47,7 @@ public class AdminFacadeReadCommitted extends AbstractFacade<AdminEntity> implem
     }
 
     @Override
-    @RolesAllowed("grantAdminAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public void create(AdminEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -72,7 +72,7 @@ public class AdminFacadeReadCommitted extends AbstractFacade<AdminEntity> implem
     }
 
     @Override
-    @RolesAllowed({"grantAdminAccessLevel", "editAccount", "editOwnAccount"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void edit(AdminEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -123,7 +123,7 @@ public class AdminFacadeReadCommitted extends AbstractFacade<AdminEntity> implem
     }
 
     @Override
-    @RolesAllowed({"editAccount", "editOwnAccount","grantAdminAccessLevel"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<AdminEntity> findByCardNumber(String cardNumber) throws AppException {
         TypedQuery<AdminEntity> tq = em.createNamedQuery("AdminEntity.findByCardNumber", AdminEntity.class);
         tq.setParameter("cardNumber", cardNumber);
