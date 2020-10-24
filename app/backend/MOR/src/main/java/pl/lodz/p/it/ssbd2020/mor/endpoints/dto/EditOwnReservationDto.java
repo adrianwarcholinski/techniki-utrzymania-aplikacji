@@ -1,6 +1,7 @@
 package pl.lodz.p.it.ssbd2020.mor.endpoints.dto;
 
 
+import pl.lodz.p.it.ssbd2020.converters.LocalDateTimeAdapter;
 import pl.lodz.p.it.ssbd2020.entities.AlleyEntity;
 import pl.lodz.p.it.ssbd2020.entities.ReservationEntity;
 import pl.lodz.p.it.ssbd2020.entities.WeaponEntity;
@@ -8,6 +9,7 @@ import pl.lodz.p.it.ssbd2020.entities.WeaponModelEntity;
 import pl.lodz.p.it.ssbd2020.utils.beanvalidation.RegexPatterns;
 
 import javax.validation.constraints.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -39,13 +41,14 @@ public class EditOwnReservationDto implements Serializable {
      * Pole reprezentujące początkową datę rezerwacji
      */
     @NotNull
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime startDate;
 
     /**
      * Pole reprezentujące końcową datę rezerwacji
      */
     @NotNull
-    @Future
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime endDate;
 
     /**

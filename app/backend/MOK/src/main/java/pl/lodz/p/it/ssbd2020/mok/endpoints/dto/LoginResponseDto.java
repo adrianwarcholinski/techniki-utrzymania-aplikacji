@@ -1,11 +1,12 @@
 package pl.lodz.p.it.ssbd2020.mok.endpoints.dto;
 
+import pl.lodz.p.it.ssbd2020.converters.LocalDateTimeAdapter;
 import pl.lodz.p.it.ssbd2020.utils.beanvalidation.RegexPatterns;
 
 import javax.validation.constraints.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,12 +31,14 @@ public class LoginResponseDto implements Serializable {
      * Pole reprezentujące czas ostatniego niepomyślnego uwierzytelnienia
      */
     @PastOrPresent
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime failedAuthenticationTime;
 
     /**
      * Pole reprezentujące czas ostatniego niepomyślnego uwierzytelnienia
      */
     @PastOrPresent
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime successfulAuthenticationTime;
 
     public LoginResponseDto() {

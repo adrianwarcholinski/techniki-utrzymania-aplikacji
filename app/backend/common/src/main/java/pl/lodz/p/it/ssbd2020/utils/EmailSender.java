@@ -11,6 +11,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Klasa jest odpowiedzialna za wysyłanie maili. Wykoszystuje {@link javax.mail.Session}, do którego
@@ -33,13 +35,14 @@ public class EmailSender {
      * lub w metodach klasy {@link MimeMessage}.
      */
     public void sendEmail(Email email) throws MessagingException {
-        MimeMessage message = new MimeMessage(mailSession);
-        message.setFrom(new InternetAddress(mailSession.getProperty("mail.from")));
-        InternetAddress[] address = {new InternetAddress(email.getReceiverAddress())};
-        message.setRecipients(Message.RecipientType.TO, address);
-        message.setSubject(email.getSubject(), String.valueOf(StandardCharsets.UTF_8));
-        message.setSentDate(new Date());
-        message.setText(email.getBody(), String.valueOf(StandardCharsets.UTF_8), "html");
-        Transport.send(message);
+        Logger.getGlobal().log(Level.INFO, "Sending email...");
+//        MimeMessage message = new MimeMessage(mailSession);
+//        message.setFrom(new InternetAddress(mailSession.getProperty("mail.from")));
+//        InternetAddress[] address = {new InternetAddress(email.getReceiverAddress())};
+//        message.setRecipients(Message.RecipientType.TO, address);
+//        message.setSubject(email.getSubject(), String.valueOf(StandardCharsets.UTF_8));
+//        message.setSentDate(new Date());
+//        message.setText(email.getBody(), String.valueOf(StandardCharsets.UTF_8), "html");
+//        Transport.send(message);
     }
 }

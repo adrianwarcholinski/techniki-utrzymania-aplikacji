@@ -1,7 +1,9 @@
 package pl.lodz.p.it.ssbd2020.mor.endpoints.dto;
 
+import pl.lodz.p.it.ssbd2020.converters.LocalDateTimeAdapter;
 import pl.lodz.p.it.ssbd2020.entities.ReservationEntity;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -28,10 +30,12 @@ public class ListReservationDto implements Serializable {
     /**
      * Pole reprezentujące czas rozpoczecia rezerwacji
      */
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime startDate;
     /**
      * Pole reprezentujące czas zakończenia rezerwacji
      */
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime endDate;
     /**
      * Pole informujące o tym czy rezerwacji nie została anulowana

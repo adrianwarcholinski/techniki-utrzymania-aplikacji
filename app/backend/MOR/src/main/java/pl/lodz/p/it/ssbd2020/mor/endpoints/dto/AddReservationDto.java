@@ -1,5 +1,6 @@
 package pl.lodz.p.it.ssbd2020.mor.endpoints.dto;
 
+import pl.lodz.p.it.ssbd2020.converters.LocalDateTimeAdapter;
 import pl.lodz.p.it.ssbd2020.utils.beanvalidation.RegexPatterns;
 
 import javax.validation.constraints.Future;
@@ -16,15 +17,11 @@ public class AddReservationDto {
     /**
      * Pole reprezentujące początek rezerwacji.
      */
-    @NotNull
-    //@Future
     private String startDate;
 
     /**
      * Pole reprezentujące koniec prezentacji.
      */
-    @NotNull
-    //@Future
     private String endDate;
 
     /**

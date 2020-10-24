@@ -1,7 +1,9 @@
 package pl.lodz.p.it.ssbd2020.mok.endpoints.dto;
 
+import pl.lodz.p.it.ssbd2020.converters.LocalDateTimeAdapter;
 import pl.lodz.p.it.ssbd2020.entities.AccountEntity;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
 /**
@@ -22,6 +24,7 @@ public class AccountReportDto {
     /**
      * Pole reprezentujące ostatni czas w jakim użytkownik próbował się uwierzytelnić.
      */
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime lastAuthentication;
 
 
