@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @Path("weapon-model")
 @Interceptors(MethodInvocationInterceptor.class)
 @RequestScoped
+@Produces("application/json")
 public class WeaponModelEndpoint extends Endpoint {
 
     /**

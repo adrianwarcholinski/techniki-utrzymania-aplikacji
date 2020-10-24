@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @Path("opinion")
 @Interceptors(MethodInvocationInterceptor.class)
 @RequestScoped
+@Produces("application/json")
 public class OpinionEndpoint extends Endpoint {
 
     /**

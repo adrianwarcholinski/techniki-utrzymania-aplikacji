@@ -12,6 +12,7 @@ import pl.lodz.p.it.ssbd2020.mor.facades.interfaces.ReservationFacadeReadCommitt
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
 import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -116,7 +117,7 @@ public class ReservationFacadeReadCommitted extends AbstractFacade<ReservationEn
     }
 
     @Override
-    @RolesAllowed("getAllOwnReservations")
+    @RolesAllowed("ROLE_CUSTOMER")
     public List<ReservationEntity> findByCustomer(String login, boolean getCanceled, boolean getPast) throws AppException {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<ReservationEntity> cq = cb.createQuery(ReservationEntity.class);

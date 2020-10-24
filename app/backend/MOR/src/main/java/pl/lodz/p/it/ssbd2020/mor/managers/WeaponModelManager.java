@@ -12,6 +12,7 @@ import pl.lodz.p.it.ssbd2020.mor.managers.interfaces.WeaponModelManagerLocal;
 import pl.lodz.p.it.ssbd2020.utils.ReservationUtils;
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
@@ -72,6 +73,7 @@ public class WeaponModelManager implements WeaponModelManagerLocal {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.NEVER)
+    @PermitAll
     public boolean isLastTransactionRollback() {
         return !isLastTransactionCommitted;
     }

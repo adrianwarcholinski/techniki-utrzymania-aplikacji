@@ -11,6 +11,7 @@ import pl.lodz.p.it.ssbd2020.mor.managers.interfaces.AlleyManagerLocal;
 import pl.lodz.p.it.ssbd2020.utils.ReservationUtils;
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
@@ -69,6 +70,7 @@ public class AlleyManager implements AlleyManagerLocal {
     }
 
     @Override
+    @PermitAll
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public boolean isLastTransactionRollback() {
         return !isLastTransactionCommitted;

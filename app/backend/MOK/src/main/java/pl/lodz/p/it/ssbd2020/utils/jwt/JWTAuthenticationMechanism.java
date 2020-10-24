@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Optional;
 
-
 /**
  * Klasa odpowiedzialna za uwierzytelnienie użytkownika.
  */

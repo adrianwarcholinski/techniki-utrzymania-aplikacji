@@ -8,6 +8,7 @@ import pl.lodz.p.it.ssbd2020.mor.facades.interfaces.AlleyDifficultyLevelFacadeRe
 import pl.lodz.p.it.ssbd2020.mor.managers.interfaces.AlleyDifficultyLevelManagerLocal;
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
@@ -53,6 +54,7 @@ public class AlleyDifficultyLevelManager implements AlleyDifficultyLevelManagerL
     }
 
     @Override
+    @PermitAll
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public boolean isLastTransactionRollback() {
         return !isLastTransactionCommitted;

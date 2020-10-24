@@ -7,6 +7,7 @@ import pl.lodz.p.it.ssbd2020.mor.facades.interfaces.WeaponCategoryFacadeReadComm
 import pl.lodz.p.it.ssbd2020.mor.managers.interfaces.WeaponCategoryManagerLocal;
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
@@ -53,6 +54,7 @@ public class WeaponCategoryManager implements WeaponCategoryManagerLocal {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.NEVER)
+    @PermitAll
     public boolean isLastTransactionRollback() {
         return !isLastTransactionCommitted;
     }

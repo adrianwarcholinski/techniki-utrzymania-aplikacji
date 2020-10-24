@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 @Path("reservation")
 @Interceptors(MethodInvocationInterceptor.class)
 @RequestScoped
+@Produces("application/json")
 public class ReservationEndpoint extends Endpoint {
 
     /**

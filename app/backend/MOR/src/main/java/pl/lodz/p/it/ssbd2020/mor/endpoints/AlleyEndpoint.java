@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @Path("alley")
 @Interceptors(MethodInvocationInterceptor.class)
 @RequestScoped
+@Produces("application/json")
 public class AlleyEndpoint extends Endpoint {
     /**
      * Komponent EJB (Menedżer) odpowiedzialny za operacje związane z torami.

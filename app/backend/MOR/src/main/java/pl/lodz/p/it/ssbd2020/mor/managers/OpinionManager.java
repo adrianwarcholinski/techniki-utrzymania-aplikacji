@@ -15,6 +15,7 @@ import pl.lodz.p.it.ssbd2020.mor.facades.interfaces.WeaponModelFacadeReadCommitt
 import pl.lodz.p.it.ssbd2020.mor.managers.interfaces.OpinionManagerLocal;
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateful;
@@ -79,6 +80,7 @@ public class OpinionManager implements OpinionManagerLocal {
     }
 
     @Override
+    @PermitAll
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public boolean isLastTransactionRollback() {
         return !isLastTransactionCommitted;

@@ -14,6 +14,7 @@ import pl.lodz.p.it.ssbd2020.utils.EmailSender;
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
@@ -141,6 +142,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
+    @PermitAll
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public boolean isLastTransactionRollback() {
         return !isLastTransactionCommitted;
@@ -169,7 +171,7 @@ public class ReservationManager implements ReservationManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllOwnReservations")
+    @RolesAllowed("ROLE_ADMIN")
     public List<ReservationEntity> getAllCustomersReservations(String login, boolean getCanceled, boolean getPast) throws AppException {
         return reservationFacadeReadCommitted.findByCustomer(login, getCanceled, getPast);
     }

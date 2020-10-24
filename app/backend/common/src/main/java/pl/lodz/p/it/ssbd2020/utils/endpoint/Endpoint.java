@@ -6,6 +6,7 @@ import pl.lodz.p.it.ssbd2020.exceptions.common.TransactionRollbackException;
 import pl.lodz.p.it.ssbd2020.utils.manager.Manager;
 
 import javax.ejb.*;
+import javax.ws.rs.Produces;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
  * Klasa abstrakcyjna, która powinna być dziedziczona przez klasy punktów końcowych,
  * które korzystają z mechanizmu powtarzania transakcji.
  */
+
 public abstract class Endpoint {
 
     /**
