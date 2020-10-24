@@ -12,6 +12,13 @@ import javax.ws.rs.core.Application;
  * Oprócz tego określono źródło danych używane do autoryzacji, a także
  * kwerendy służące do pozyskania haseł i dostępnych ról.
  */
+@DatabaseIdentityStoreDefinition(
+        dataSourceLookup = "${'java:/jdbc/ssbd01payaraDS'}",
+        callerQuery = "${'SELECT password FROM auth_view WHERE login = ?'}",
+        groupsQuery = "${'SELECT level FROM auth_view WHERE login = ?'}",
+        hashAlgorithm = PasswordHash.class,
+        priority = 10
+)
 @ApplicationPath(value = "app")
 @ApplicationScoped
 public class ApplicationConfig extends Application {
