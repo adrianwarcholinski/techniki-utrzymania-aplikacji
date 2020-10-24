@@ -43,7 +43,7 @@ public class WeaponCategoryEndpoint extends Endpoint {
      */
     @GET
     @Path("get-all-weapon-categories")
-    @RolesAllowed("getAllWeaponCategories")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response getAllWeaponCategories() {
         try {
             List<WeaponCategoryEntity> list = (List<WeaponCategoryEntity>) performTransaction(weaponCategoryManager,

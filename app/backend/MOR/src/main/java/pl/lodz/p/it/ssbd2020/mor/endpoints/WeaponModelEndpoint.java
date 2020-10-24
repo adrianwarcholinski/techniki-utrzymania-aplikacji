@@ -53,7 +53,7 @@ public class WeaponModelEndpoint extends Endpoint {
      */
     @GET
     @Path("get-active-weapon-models")
-    @RolesAllowed("getAllActiveWeaponModels")
+    @RolesAllowed({"ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     public Response getAllActiveWeaponModels() {
         try {
             List<WeaponModelEntity> activeWeaponModelEntityList = (List<WeaponModelEntity>) performTransaction(weaponModelManager,
@@ -72,7 +72,7 @@ public class WeaponModelEndpoint extends Endpoint {
      */
     @GET
     @Path("get-active-weapon-models-with-active-weapons")
-    @RolesAllowed("getAllActiveWeaponModelsWithActiveWeapons")
+    @RolesAllowed({"ROLE_CUSTOMER","ROLE_EMPLOYEE"})
     public Response getAllActiveWeaponModelsWithActiveWeapons() {
         try {
             List<WeaponModelEntity> activeWeaponModelEntityList =
@@ -92,7 +92,7 @@ public class WeaponModelEndpoint extends Endpoint {
      * odpowiedź z kodem 400 w przeciwnym przypadku.
      */
     @DELETE
-    @RolesAllowed("removeWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response removeWeaponModel(@QueryParam("name")  @Pattern(regexp = RegexPatterns.WEAPON_MODEL_NAME)
                                           @NotBlank String name) {
         try {
@@ -113,7 +113,7 @@ public class WeaponModelEndpoint extends Endpoint {
      */
     @GET
     @Path("get-weapon-model")
-    @RolesAllowed("getWeaponModel")
+    @RolesAllowed({"ROLE_CUSTOMER","ROLE_EMPLOYEE"})
     public Response getWeaponModel(@QueryParam("name") @Pattern(regexp = RegexPatterns.WEAPON_MODEL_NAME) @NotBlank String name) {
         try {
             WeaponModelEntity entity = (WeaponModelEntity) performTransaction(weaponModelManager,
@@ -136,7 +136,7 @@ public class WeaponModelEndpoint extends Endpoint {
      */
     @POST
     @Path("add-weapon-model")
-    @RolesAllowed("addWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response addWeaponModel(@Valid AddWeaponModelDto addWeaponModelDto) {
         try {
             WeaponCategoryEntity weaponCategoryEntity = new WeaponCategoryEntity(addWeaponModelDto.getWeaponCategory());
@@ -157,7 +157,7 @@ public class WeaponModelEndpoint extends Endpoint {
      */
     @PUT
     @Path("edit-weapon-model")
-    @RolesAllowed("editWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public Response editWeaponModel(@Valid EditWeaponModelDto editWeaponModelDto) {
         try {
             WeaponCategoryEntity weaponCategoryEntity = new WeaponCategoryEntity(editWeaponModelDto.getWeaponCategory());

@@ -41,13 +41,13 @@ public class WeaponCategoryFacadeReadCommitted extends AbstractFacade<WeaponCate
     }
 
     @Override
-    @RolesAllowed("getAllWeaponCategories")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<WeaponCategoryEntity> findAll() throws AppException {
         return super.findAll();
     }
 
     @Override
-    @RolesAllowed({"addWeaponModel", "editWeaponModel"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_EMPLOYEE"})
     public Optional<WeaponCategoryEntity> findByName(String name) throws AppException {
         try {
             TypedQuery<WeaponCategoryEntity> tq = em.createNamedQuery("WeaponCategoryEntity.findByName", WeaponCategoryEntity.class);

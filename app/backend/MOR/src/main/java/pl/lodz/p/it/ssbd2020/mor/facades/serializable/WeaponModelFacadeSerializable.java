@@ -50,7 +50,7 @@ public class WeaponModelFacadeSerializable extends AbstractFacade<WeaponModelEnt
     }
 
     @Override
-    @RolesAllowed("removeWeaponModel")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void edit(WeaponModelEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -83,7 +83,7 @@ public class WeaponModelFacadeSerializable extends AbstractFacade<WeaponModelEnt
     }
 
     @Override
-    @RolesAllowed({"updateOwnReservation", "createWeapon", "makeReservation", "removeWeaponModel"})
+    @RolesAllowed({"updateOwnReservation", "createWeapon", "makeReservation", "ROLE_EMPLOYEE"})
     public Optional<WeaponModelEntity> findByName(String name) throws AppException {
         TypedQuery<WeaponModelEntity> tq = em.createNamedQuery("WeaponModelEntity.findByName", WeaponModelEntity.class);
         tq.setLockMode(LockModeType.PESSIMISTIC_WRITE);

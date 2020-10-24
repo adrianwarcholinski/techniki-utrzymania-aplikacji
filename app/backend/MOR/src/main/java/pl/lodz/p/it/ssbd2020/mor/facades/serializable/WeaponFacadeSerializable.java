@@ -46,7 +46,7 @@ public class WeaponFacadeSerializable extends AbstractFacade<WeaponEntity> imple
     }
 
     @Override
-    @RolesAllowed("createWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void create(WeaponEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -71,7 +71,7 @@ public class WeaponFacadeSerializable extends AbstractFacade<WeaponEntity> imple
     }
 
     @Override
-    @RolesAllowed({"removeWeapon"})
+    @RolesAllowed({"ROLE_EMPLOYEE"})
     public void edit(WeaponEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -94,7 +94,7 @@ public class WeaponFacadeSerializable extends AbstractFacade<WeaponEntity> imple
     }
 
     @Override
-    @RolesAllowed({"removeWeapon", "updateReservation", "createWeapon", "makeReservation"})
+    @RolesAllowed({"ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<WeaponEntity> findBySerialNumber(String serialNumber) throws AppException {
         TypedQuery<WeaponEntity> tq = em.createNamedQuery("WeaponEntity.findBySerial", WeaponEntity.class);
         tq.setLockMode(LockModeType.PESSIMISTIC_WRITE);
