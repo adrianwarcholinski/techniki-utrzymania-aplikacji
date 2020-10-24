@@ -93,7 +93,7 @@ public class WeaponFacadeReadCommitted extends AbstractFacade<WeaponEntity> impl
     }
 
     @Override
-    @RolesAllowed("getAllActiveWeapons")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<WeaponEntity> findByActive(boolean active) throws AppException {
         TypedQuery<WeaponEntity> tq = em.createNamedQuery("WeaponEntity.findByActive", WeaponEntity.class);
         tq.setParameter("active", active);
@@ -110,7 +110,7 @@ public class WeaponFacadeReadCommitted extends AbstractFacade<WeaponEntity> impl
     }
 
     @Override
-    @RolesAllowed("getAllActiveWeaponsByModelName")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<WeaponEntity> findByActiveAndWeaponModelName(boolean active, String weaponModelName) throws AppException {
         TypedQuery<WeaponEntity> tq = em.createNamedQuery("WeaponEntity.findByActiveAndModelName", WeaponEntity.class);
         tq.setParameter("active", active);

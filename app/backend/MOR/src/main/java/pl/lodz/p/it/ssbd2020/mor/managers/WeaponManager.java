@@ -93,13 +93,13 @@ public class WeaponManager implements WeaponManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllActiveWeapons")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<WeaponEntity> getAllActiveWeapons() throws AppException {
         return weaponFacadeReadCommitted.findByActive(true);
     }
 
     @Override
-    @RolesAllowed("removeWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void removeWeapon(String serialNumber) throws AppException {
         WeaponEntity weaponToDeactivate = weaponFacadeSerializable.findBySerialNumber(serialNumber).orElseThrow(WeaponDoesNotExistException::new);
         if (!weaponToDeactivate.isActive()) {
@@ -113,7 +113,7 @@ public class WeaponManager implements WeaponManagerLocal {
     }
 
     @Override
-    @RolesAllowed("createWeapon")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public void createWeapon(WeaponEntity weaponEntity, String weaponModelName) throws AppException {
         Optional<WeaponEntity> entityWithTheSameSerialNumber = weaponFacadeSerializable.findBySerialNumber(weaponEntity.getSerialNumber());
         if (entityWithTheSameSerialNumber.isPresent()) {
@@ -128,7 +128,7 @@ public class WeaponManager implements WeaponManagerLocal {
     }
 
     @Override
-    @RolesAllowed("getAllActiveWeaponsByModelName")
+    @RolesAllowed("ROLE_EMPLOYEE")
     public List<WeaponEntity> getAllActiveWeaponsByModelName(String modelName) throws AppException {
         return weaponFacadeReadCommitted.findByActiveAndWeaponModelName(true, modelName);
     }

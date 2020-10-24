@@ -43,7 +43,7 @@ public class EmployeeFacadeReadCommitted extends AbstractFacade<EmployeeEntity> 
     }
 
     @Override
-    @RolesAllowed("grantEmployeeAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public void create(EmployeeEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -68,7 +68,7 @@ public class EmployeeFacadeReadCommitted extends AbstractFacade<EmployeeEntity> 
     }
 
     @Override
-    @RolesAllowed({"grantEmployeeAccessLevel", "editAccount", "editOwnAccount"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void edit(EmployeeEntity entity) throws AppException {
         try {
             super.edit(entity);
@@ -102,7 +102,7 @@ public class EmployeeFacadeReadCommitted extends AbstractFacade<EmployeeEntity> 
     }
 
     @Override
-    @RolesAllowed({"editAccount", "editOwnAccount","grantEmployeeAccessLevel"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<EmployeeEntity> findByWorkPhoneNumber(String workPhoneNumber) throws AppException {
         TypedQuery<EmployeeEntity> tq = em.createNamedQuery("EmployeeEntity.findByWorkPhoneNumber", EmployeeEntity.class);
         tq.setParameter("workPhoneNumber", workPhoneNumber);

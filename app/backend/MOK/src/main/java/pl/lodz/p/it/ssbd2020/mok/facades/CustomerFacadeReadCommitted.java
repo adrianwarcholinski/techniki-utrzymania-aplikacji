@@ -44,7 +44,7 @@ public class CustomerFacadeReadCommitted extends AbstractFacade<CustomerEntity> 
     }
 
     @Override
-    @RolesAllowed("grantCustomerAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public void create(CustomerEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -69,7 +69,7 @@ public class CustomerFacadeReadCommitted extends AbstractFacade<CustomerEntity> 
     }
 
     @Override
-    @RolesAllowed({"editAccount", "editOwnAccount", "grantCustomerAccessLevel"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public void edit(CustomerEntity entity) throws AppException {
         try {
             super.edit(entity);
