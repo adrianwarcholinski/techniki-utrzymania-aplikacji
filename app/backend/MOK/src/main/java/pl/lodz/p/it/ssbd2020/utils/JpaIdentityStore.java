@@ -14,6 +14,8 @@ import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -21,6 +23,9 @@ public class JpaIdentityStore implements IdentityStore {
 
     @Inject
     private AccountManagerLocal accountManager;
+
+    @Inject
+    private HashGenerator hashGenerator;
 
     @Override
     public Set<String> getCallerGroups(CredentialValidationResult validationResult) {
@@ -31,12 +36,15 @@ public class JpaIdentityStore implements IdentityStore {
     public CredentialValidationResult validate(Credential credential) {
         if (credential instanceof UsernamePasswordCredential) {
             UsernamePasswordCredential usernamePasswordCredential = (UsernamePasswordCredential) credential;
+            String hashedPassword = hashGenerator.generatePasswordHash(usernamePasswordCredential.getPasswordAsString());
+            Logger.getGlobal().log(Level.INFO, "Original password: " + usernamePasswordCredential.getPasswordAsString());
+            Logger.getGlobal().log(Level.INFO, "Hashed password: " + hashedPassword);
             try {
                 AccountEntity account = accountManager.getAccountDetails(usernamePasswordCredential.getCaller());
                 Set<String> groups = account.getAccessLevels().stream()
                         .map(AccessLevelEntity::getLevel)
                         .collect(Collectors.toSet());
-                if (usernamePasswordCredential.compareTo(account.getLogin(), account.getPassword())) {
+                if (usernamePasswordCredential.compareTo(account.getLogin(), hashedPassword)) {
                     return new CredentialValidationResult(account.getLogin(), groups);
                 }
             } catch (AppException e) {
