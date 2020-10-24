@@ -118,6 +118,7 @@ public class AccountManager implements AccountManagerLocal {
     private String lastTransactionId;
 
     @Override
+    @PermitAll
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public boolean isLastTransactionRollback() {
         return !isLastTransactionCommitted;
