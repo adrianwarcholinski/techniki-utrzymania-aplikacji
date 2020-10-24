@@ -1,43 +1,40 @@
-.DS_Store
-vagrant/.vagrant/**
-
 ##############################
 ## Java
 ##############################
-.mtj.tmp/
+**/.mtj.tmp/
 *.class
 *.jar
 *.war
 *.ear
 *.nar
-hs_err_pid*
+**/hs_err_pid*
 
 ##############################
 ## Maven
 ##############################
 **/target
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-pom.xml.bak
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+**/pom.xml.tag
+**/pom.xml.releaseBackup
+**/pom.xml.versionsBackup
+**/pom.xml.next
+**/pom.xml.bak
+**/release.properties
+**/dependency-reduced-pom.xml
+**/buildNumber.properties
+**/.mvn/timing.properties
+**/.mvn/wrapper/maven-wrapper.jar
 !**/WEB-INF
 *.lock
 
 ##############################
 ## Gradle
 ##############################
-bin/
-build/
-.gradle
-.gradletasknamecache
-gradle-app.setting
-!gradle-wrapper.jar
+**/bin/
+**/build/
+**/.gradle
+**/.gradletasknamecache
+**/gradle-app.setting
+**/!gradle-wrapper.jar
 
 ##############################
 ## IntelliJ
@@ -52,35 +49,35 @@ gradle-app.setting
 ##############################
 ## Eclipse
 ##############################
-.settings/
-bin/
-tmp/
-.metadata
-.classpath
-.project
+**/.settings/
+b**/in/
+**/tmp/
+**/.metadata
+**/.classpath
+**/.project
 *.tmp
 *.bak
 *.swp
 *~.nib
-local.properties
-.loadpath
-.factorypath
+**/local.properties
+**/.loadpath
+**/.factorypath
 
 ##############################
 ## NetBeans
 ##############################
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-nbactions.xml
-nb-configuration.xml
+**/nbproject/private/
+**/build/
+**/nbbuild/
+**/dist/
+**/nbdist/
+**/nbactions.xml
+**/nb-configuration.xml
 
 ##############################
 ## OS X
 ##############################
-*.DS_Store
+**/*.DS_Store
 
 # dependencies
 **/node_modules
@@ -103,44 +100,27 @@ nb-configuration.xml
 **/yarn-debug.log*
 **/yarn-error.log*
 **/precache*
-frontend/src/main/app/package-lock.json
+**/frontend/src/main/app/package-lock.json
 
-frontend/web/static/
+**/frontend/web/static/
 
-frontend/web/asset-manifest.json
+**/frontend/web/asset-manifest.json
 
-frontend/web/favicon.ico
+**/frontend/web/favicon.ico
 
-frontend/web/index.html
+**/frontend/web/index.html
 
-frontend/web/logo192.png
+**/frontend/web/logo192.png
 
-frontend/web/logo512.png
+**/frontend/web/logo512.png
 
-frontend/web/manifest.json
+**/frontend/web/manifest.json
 
-frontend/web/robots.txt
+**/frontend/web/robots.txt
 
-frontend/web/service-worker.js
+**/frontend/web/service-worker.js
 
-frontend/web/locales/
+**/frontend/web/locales/
 
-lsp/
-backend/MOK/src/test/resources/chromedriver.exe
-
-app/frontend/web/asset-manifest.json
-app/frontend/web/favicon.ico
-app/frontend/web/index.html
-app/frontend/web/locales/
-app/frontend/web/logo192.png
-app/frontend/web/logo512.png
-app/frontend/web/manifest.json
-app/frontend/web/robots.txt
-app/frontend/web/service-worker.js
-app/frontend/web/static/
-wildfly/configuration/application.keystore
-wildfly/configuration/standalone_xml_history/20201024-103712748/
-wildfly/configuration/standalone_xml_history/20201024-111225856/
-wildfly/configuration/standalone_xml_history/20201024-115123933/
-wildfly/configuration/standalone_xml_history/current/
-
+**/lsp/
+**/backend/MOK/src/test/resources/chromedriver.exe
