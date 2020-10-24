@@ -137,7 +137,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @POST
     @Path("add")
-    @RolesAllowed("addAccount")
+    @RolesAllowed("ROLE_ADMIN")
     public Response addAccount(@Valid AccountDto accountDto,
                                @HeaderParam("accessLevel") @NotBlank String accessLevel,
                                @HeaderParam("language") String language,
@@ -174,7 +174,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("edit")
-    @RolesAllowed("editAccount")
+    @RolesAllowed("ROLE_ADMIN")
     public Response editAccount(@Valid EditAccountDto editAccountDto) {
         try {
             this.performEditAccount(editAccountDto);
@@ -196,7 +196,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("edit-own")
-    @RolesAllowed("editOwnAccount")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response editOwnAccount(@Valid EditAccountDto editAccountDto,
                                    @HeaderParam("captchaToken") String captchaToken) {
         try {
@@ -259,7 +259,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("add-admin-access-level")
-    @RolesAllowed("grantAdminAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public Response grantAdminAccessLevel(@HeaderParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                                           @HeaderParam("param") @NotBlank @Pattern(regexp = RegexPatterns.CARD_NUMBER) String cardNumber) {
         try {
@@ -281,7 +281,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("add-employee-access-level")
-    @RolesAllowed("grantEmployeeAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public Response grantEmployeeAccessLevel(@HeaderParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                                              @HeaderParam("param") @NotBlank @Size(min = 9, max = 9) @Pattern(regexp = RegexPatterns.PHONE_NUMBER) String workPhoneNumber) {
         try {
@@ -303,7 +303,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("add-customer-access-level")
-    @RolesAllowed("grantCustomerAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public Response grantCustomerAccessLevel(@HeaderParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                                              @HeaderParam("param") @NotBlank @Size(min = 9, max = 9) @Pattern(regexp = RegexPatterns.PHONE_NUMBER) String phoneNumber) {
         try {
@@ -325,7 +325,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("revoke-access-level")
-    @RolesAllowed("revokeAccessLevel")
+    @RolesAllowed("ROLE_ADMIN")
     public Response revokeAccessLevel(@HeaderParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                                       @HeaderParam("param") @NotBlank String accessLevel) {
         try {
@@ -345,7 +345,7 @@ public class AccountEndpoint extends Endpoint {
      * @return odpowiedź z kodem 200 oraz lista wszystkich danych użytkowników w postaci JSON.
      */
     @GET
-    @RolesAllowed("getAllAccounts")
+    @RolesAllowed("ROLE_ADMIN")
     public Response getAllAccounts() {
         try {
             List<AccountEntity> allAccounts = (List<AccountEntity>) performTransaction(accountManager, () -> accountManager.getAllAccounts());
@@ -370,7 +370,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @GET
     @Path("details")
-    @RolesAllowed("getAccountDetails")
+    @RolesAllowed("ROLE_ADMIN")
     public Response getAccountDetails(@QueryParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login) {
         try {
             EditAccountDto editAccountDto = this.getAccountDetailsDto(login);
@@ -389,7 +389,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @GET
     @Path("own-details")
-    @RolesAllowed("getOwnAccountDetails")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response getOwnAccountDetails() {
         try {
             String login = securityContext.getCallerPrincipal().getName();
@@ -413,7 +413,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("change-own-password")
-    @RolesAllowed("changeOwnPassword")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response changeOwnPassword(@HeaderParam("oldPassword") @NotBlank @Size(min = 8) @Pattern(regexp = RegexPatterns.PASSWORD) String oldPassword,
                                       @HeaderParam("newPassword") @NotBlank @Size(min = 8) @Pattern(regexp = RegexPatterns.PASSWORD) String newPassword,
                                       @HeaderParam("captchaToken") String captchaToken) {
@@ -444,7 +444,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("change-password")
-    @RolesAllowed("changePassword")
+    @RolesAllowed("ROLE_ADMIN")
     public Response changePassword(@QueryParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                                    @HeaderParam("newPassword") @NotBlank @Size(min = 8) @Pattern(regexp = RegexPatterns.PASSWORD) String newPassword) {
         try {
@@ -465,7 +465,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("lock-account")
-    @RolesAllowed("lockAccount")
+    @RolesAllowed("ROLE_ADMIN")
     public Response lockAccount(@QueryParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login) {
         try {
             performTransaction(accountManager, () -> accountManager.lockAccount(login));
@@ -484,7 +484,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @PUT
     @Path("unlock-account")
-    @RolesAllowed("unlockAccount")
+    @RolesAllowed("ROLE_ADMIN")
     public Response unlockAccount(@QueryParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login) {
         try {
             performTransaction(accountManager, () -> accountManager.unlockAccount(login));
@@ -503,7 +503,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @GET
     @Path("filter-accounts-by-full-name")
-    @RolesAllowed("getAccountsFilteredByPhraseInFullName")
+    @RolesAllowed("ROLE_ADMIN")
     public Response getAccountsFilteredByPhraseInFullName(@QueryParam("phrase") @Pattern(regexp = RegexPatterns.NAME_AND_SURNAME) String phrase) {
         try {
             String lowerCasePhrase = phrase.replaceAll("\\s+", "").toLowerCase();
@@ -533,7 +533,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @POST
     @Path("send-email-change-link")
-    @RolesAllowed("sendEmailChangeLink")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response sendEmailChangeLink(@QueryParam("email") @Pattern(regexp = RegexPatterns.EMAIL) @Size(max = 50) String email,
                                         @QueryParam("lang") @NotBlank String lang,
                                         @HeaderParam("captchaToken") String captchaToken) {
@@ -562,7 +562,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @POST
     @Path("send-users-email-change-link")
-    @RolesAllowed("sendUsersEmailChangeLink")
+    @RolesAllowed("ROLE_ADMIN")
     public Response sendUsersEmailChangeLink(@QueryParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                                              @QueryParam("email") @Pattern(regexp = RegexPatterns.EMAIL) @Size(max = 50) String email,
                                              @QueryParam("lang") @NotBlank String lang) {
@@ -584,7 +584,7 @@ public class AccountEndpoint extends Endpoint {
 
     @PUT
     @Path("change-email")
-    @RolesAllowed("changeOwnEmail")
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Response changeOwnEmail(@QueryParam("toVerify") @NotBlank String toVerify) {
         try {
             performTransaction(accountManager, () -> accountManager.changeEmail(toVerify));
@@ -628,7 +628,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @GET
     @Path("admin-report")
-    @RolesAllowed("getAdminReport")
+    @RolesAllowed("ROLE_ADMIN")
     public Response getAdminReport() {
         try {
             List<AccountEntity> allAccounts = null;
@@ -654,7 +654,7 @@ public class AccountEndpoint extends Endpoint {
      */
     @POST
     @Path("send-verification-link")
-    @RolesAllowed("sendVerificationLink")
+    @RolesAllowed("ROLE_ADMIN")
     public Response sendVerificationLink(@QueryParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) String login,
                                          @QueryParam("language") String language) {
         if (language == null || language.isBlank()) {

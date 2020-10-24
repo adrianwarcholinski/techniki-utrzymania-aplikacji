@@ -121,7 +121,7 @@ public class AccountFacadeReadCommitted extends AbstractFacade<AccountEntity> im
 
 
     @Override
-    @RolesAllowed({"editAccount", "editOwnAccount"})
+    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     public Optional<AccountEntity> find(Object id) throws AppException {
         return super.find(id);
     }
@@ -166,7 +166,7 @@ public class AccountFacadeReadCommitted extends AbstractFacade<AccountEntity> im
     }
 
     @Override
-    @RolesAllowed("getAccountsFilteredByPhraseInFullName")
+    @RolesAllowed("ROLE_ADMIN")
     public List<AccountEntity> findByPhraseInFullName(String phrase) throws AppException {
         TypedQuery<AccountEntity> tq = em.createNamedQuery("Account.findByPhraseInFullName", AccountEntity.class);
         tq.setParameter("phrase", "%" + phrase + "%");
@@ -183,7 +183,7 @@ public class AccountFacadeReadCommitted extends AbstractFacade<AccountEntity> im
     }
 
     @Override
-    @RolesAllowed("getAdminReport")
+    @RolesAllowed("ROLE_ADMIN")
     public List<AccountEntity> findAuthenticated() throws AppException {
         TypedQuery<AccountEntity> tq = em.createNamedQuery("Account.findAuthenticated", AccountEntity.class);
         try {
@@ -199,7 +199,7 @@ public class AccountFacadeReadCommitted extends AbstractFacade<AccountEntity> im
     }
 
     @Override
-    @RolesAllowed({"getAllAccounts"})
+    @RolesAllowed({"ROLE_ADMIN"})
     public List<AccountEntity> getAllSortedById() throws AppException {
         TypedQuery<AccountEntity> tq = em.createNamedQuery("Account.findAllSortedById", AccountEntity.class);
         try {
