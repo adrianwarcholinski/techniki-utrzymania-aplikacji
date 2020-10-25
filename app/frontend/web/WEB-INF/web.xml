@@ -17,7 +17,7 @@
     <!--adres URL API używany do wysyłania e-maili-->
     <context-param>
         <param-name>API_URL</param-name>
-        <param-value>https://studapp.it.p.lodz.pl:8401</param-value>
+        <param-value>https://localhost:8443</param-value>
     </context-param>
 
     <!--czas życia -linku do formularza zmiany hasła-->
