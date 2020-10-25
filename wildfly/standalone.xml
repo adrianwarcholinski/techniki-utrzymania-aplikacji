@@ -486,6 +486,9 @@
             <mail-session name="java:/mail/org.imixs.workflow.mail" jndi-name="java:/mail/org.imixs.workflow.mail" debug="false">
             	<smtp-server outbound-socket-binding-ref="mail-smtp"/>
             </mail-session>
+			<mail-session name="gmail-outgoing" from="ssbd2020.01@gmail.com" jndi-name="java:jboss/mail/gmail-outgoing">
+				<smtp-server ssl="true" outbound-socket-binding-ref="mail-gmail-outgoing" username="ssbd2020.01@gmail.com" password="P@ssw0rd1."/>
+			</mail-session>
         </subsystem>
         <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:1.0"/>
         <subsystem xmlns="urn:wildfly:microprofile-health-smallrye:2.0" security-enabled="false" empty-liveness-checks-status="${env.MP_HEALTH_EMPTY_LIVENESS_CHECKS_STATUS:UP}" empty-readiness-checks-status="${env.MP_HEALTH_EMPTY_READINESS_CHECKS_STATUS:UP}"/>
@@ -620,5 +623,8 @@
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="mailgateway" port="25"/>
         </outbound-socket-binding>
+		<outbound-socket-binding name="mail-gmail-outgoing">
+			<remote-destination host="smtp.gmail.com" port="465"/>
+		</outbound-socket-binding>
     </socket-binding-group>
 </server>
