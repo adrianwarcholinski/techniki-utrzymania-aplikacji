@@ -5,7 +5,7 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_USER: ssbd01admin
+      MYSQL_USER: admin
       MYSQL_PASSWORD: P@ssw0rd
       MYSQL_DATABASE: ssbd01
       MYSQL_ROOT_PASSWORD: example
@@ -22,5 +22,4 @@ services:
       MYSQL_PASSWORD: "P@ssw0rd"
       MYSQL_CONNECTION: "jdbc:mysql://mysql:3306/ssbd01"
     volumes:
-    - "./wildfly/configuration:/opt/wildfly/standalone/configuration/:rw"
-
+      - "./wildfly/configuration:/opt/wildfly/standalone/configuration/:rw"

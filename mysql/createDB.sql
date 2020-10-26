@@ -2,6 +2,7 @@ CREATE USER 'ssbd01' IDENTIFIED BY 'P@ssw0rd';
 CREATE USER 'ssbd01mok' IDENTIFIED BY 'P@ssw0rd';
 CREATE USER 'ssbd01mor' IDENTIFIED BY 'P@ssw0rd';
 CREATE USER 'ssbd01payara' IDENTIFIED BY 'P@ssw0rd';
+CREATE USER 'ssbd01admin' IDENTIFIED BY 'P@ssw0rd';
 
 
 create table account
