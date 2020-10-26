@@ -18,8 +18,3 @@ services:
       - 8443:8443
     environment:
       WILDFLY_PASS: admin
-      MYSQL_USER: "ssbd01admin"
-      MYSQL_PASSWORD: "P@ssw0rd"
-      MYSQL_CONNECTION: "jdbc:mysql://mysql:3306/ssbd01"
-    volumes:
-      - "./wildfly/configuration:/opt/wildfly/standalone/configuration/:rw"

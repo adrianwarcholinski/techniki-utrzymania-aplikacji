@@ -33,6 +33,7 @@ RUN chmod +x $WILDFLY_HOME/wildfly_add_admin_user.sh $WILDFLY_HOME/wildfly_start
 
 # add eclipsliknk configuration 
 COPY modules/ $WILDFLY_HOME/modules/
+COPY standalone.xml $WILDFLY_CONFIG/
 
 # change owner of /opt/wildfly
 RUN chown -R imixs:imixs $WILDFLY_HOME/
