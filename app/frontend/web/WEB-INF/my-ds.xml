@@ -9,11 +9,6 @@
             <user-name>ssbd01payara</user-name>
             <password>P@ssw0rd</password>
         </security>
-        <validation>
-            <validate-on-match>true</validate-on-match>
-            <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
-            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
-        </validation>
     </datasource>
     <datasource jndi-name="java:/jdbc/ssbd01mokDS" pool-name="jdbc/ssbd01mokCP" enabled="true"
                 use-java-context="true" >
@@ -24,11 +19,6 @@
             <user-name>ssbd01mok</user-name>
             <password>P@ssw0rd</password>
         </security>
-        <validation>
-            <validate-on-match>true</validate-on-match>
-            <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
-            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
-        </validation>
     </datasource>
     <datasource jndi-name="java:/jdbc/ssbd01morDS" pool-name="jdbc/ssbd01morCP" enabled="true"
                 use-java-context="true">
@@ -39,11 +29,5 @@
             <user-name>ssbd01mor</user-name>
             <password>P@ssw0rd</password>
         </security>
-        <validation>
-            <validate-on-match>true</validate-on-match>
-            <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
-            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
-        </validation>
-
     </datasource>
 </datasources>

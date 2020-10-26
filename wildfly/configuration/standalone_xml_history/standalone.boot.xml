@@ -39,12 +39,9 @@
         <extension module="org.wildfly.extension.security.manager"/>
         <extension module="org.wildfly.extension.undertow"/>
     </extensions>
-
     <system-properties>
         <property name="eclipselink.archive.factory" value="org.jipijapa.eclipselink.JBossArchiveFactoryImpl"/>
     </system-properties>
-
-
     <management>
         <security-realms>
             <security-realm name="ManagementRealm">
@@ -165,82 +162,13 @@
                         <password>sa</password>
                     </security>
                 </datasource>
-              
-              
-              	<!-- imixs-workflow datasource -->
-                <datasource jta="true" jndi-name="java:/jdbc/office" pool-name="office" enabled="true" use-ccm="true">
-                	<connection-url>${env.MYSQL_CONNECTION}</connection-url>
-				    <driver-class>org.postgresql.Driver</driver-class>
-				    <driver>postgresql</driver>
-				    <security>
-				      <user-name>${env.MYSQL_USER}</user-name>
-				      <password>${env.MYSQL_PASSWORD}</password>
-				    </security>
-                     <validation>
-                        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
-                        <!-- any background-validation-millis > 0 will enable background validation. See https://jira.jboss.org/browse/JBAS-4088. -->
-                        <background-validation-millis>60000</background-validation-millis>
-                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"></exception-sorter>
-                    </validation>                
-                </datasource>
-                <datasource jndi-name="java:/jdbc/ssbd01payaraDS" pool-name="ssbd01payaraCP" enabled="true"
-                use-java-context="true" >
-        <connection-url>jdbc:mysql://mysql:3306/ssbd01</connection-url>
-        <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
-        <driver>mysql</driver>
-        <security>
-            <user-name>ssbd01payara</user-name>
-            <password>P@ssw0rd</password>
-        </security>
-        <validation>
-            <validate-on-match>true</validate-on-match>
-            <valid-connection-checker
-                    class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
-            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
-        </validation>
-    </datasource>
-    <datasource jndi-name="java:/jdbc/ssbd01mokDS" pool-name="ssbd01mokCP" enabled="true"
-                use-java-context="true" >
-        <connection-url>jdbc:mysql://mysql:3306/ssbd01</connection-url>
-        <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
-        <driver>mysql</driver>
-        <security>
-            <user-name>ssbd01mok</user-name>
-            <password>P@ssw0rd</password>
-        </security>
-        <validation>
-            <validate-on-match>true</validate-on-match>
-            <valid-connection-checker
-                    class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
-            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
-        </validation>
-    </datasource>
-    <datasource jndi-name="java:/jdbc/ssbd01morDS" pool-name="ssbd01morCP" enabled="true"
-                use-java-context="true">
-        <connection-url>jdbc:mysql://mysql:3306/ssbd01</connection-url>
-        <driver>mysql</driver>
-        <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
-        <security>
-            <user-name>ssbd01mor</user-name>
-            <password>P@ssw0rd</password>
-        </security>
-        <validation>
-            <validate-on-match>true</validate-on-match>
-            <valid-connection-checker
-                    class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
-            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
-        </validation>
-    </datasource>
                 <drivers>
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
                     </driver>
-                    <driver name="postgresql" module="org.postgresql">
-                		<driver-class>org.postgresql.Driver</driver-class>
-            		</driver>
-			<driver name="mysql" module="com.mysql">
-                	<driver-class>com.mysql.jdbc.Driver</driver-class>
-           		 </driver>
+                    <driver name="mysql" module="com.mysql">
+                        <xa-datasource-class>com.mysql.cj.jdbc.MysqlXADataSource</xa-datasource-class>
+                    </driver>
                 </drivers>
             </datasources>
         </subsystem>
@@ -483,12 +411,9 @@
             <mail-session name="default" jndi-name="java:jboss/mail/Default">
                 <smtp-server outbound-socket-binding-ref="mail-smtp"/>
             </mail-session>
-            <mail-session name="java:/mail/org.imixs.workflow.mail" jndi-name="java:/mail/org.imixs.workflow.mail" debug="false">
-            	<smtp-server outbound-socket-binding-ref="mail-smtp"/>
-            </mail-session>
-			<mail-session name="gmail-outgoing" from="ssbd2020.01@gmail.com" jndi-name="java:jboss/mail/gmail-outgoing">
-				<smtp-server ssl="true" outbound-socket-binding-ref="mail-gmail-outgoing" username="ssbd2020.01@gmail.com" password="P@ssw0rd1."/>
-			</mail-session>
+	    <mail-session name="gmail-outgoing" from="ssbd2020.01@gmail.com" jndi-name="java:jboss/mail/gmail-outgoing">
+		<smtp-server ssl="true" outbound-socket-binding-ref="mail-gmail-outgoing" username="ssbd2020.01@gmail.com" password="P@ssw0rd1."/>
+	    </mail-session>
         </subsystem>
         <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:1.0"/>
         <subsystem xmlns="urn:wildfly:microprofile-health-smallrye:2.0" security-enabled="false" empty-liveness-checks-status="${env.MP_HEALTH_EMPTY_LIVENESS_CHECKS_STATUS:UP}" empty-readiness-checks-status="${env.MP_HEALTH_EMPTY_READINESS_CHECKS_STATUS:UP}"/>
@@ -539,22 +464,6 @@
                         <policy-module code="Delegating" flag="required"/>
                     </authorization>
                 </security-domain>
-                <security-domain name="imixsrealm">
-                    <authentication>
-                        <login-module code="Database" flag="required">
-                            <module-option name="dsJndiName" value="java:/jdbc/office"/>
-                            <module-option name="hashAlgorithm" value="SHA-256"/>
-                            <module-option name="hashEncoding" value="hex"/>
-                            <module-option name="principalsQuery" value="select PASSWORD from USERID where ID=?"/>
-                            <module-option name="rolesQuery" value="select GROUP_ID,'Roles' from USERID_USERGROUP where ID=?"/>
-                            <module-option name="unauthenticatedIdentity" value="anonymous"/>
-                        </login-module>
-                        <login-module code="RoleMapping" flag="required">
-                            <module-option name="rolesProperties" value="file:${jboss.server.config.dir}/imixsrealm.properties"/>
-                            <module-option name="replaceRole" value="false"/>
-                        </login-module>
-                    </authentication>
-                </security-domain>                
             </security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:security-manager:1.0">
@@ -621,10 +530,10 @@
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">
-            <remote-destination host="mailgateway" port="25"/>
+            <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
-		<outbound-socket-binding name="mail-gmail-outgoing">
-			<remote-destination host="smtp.gmail.com" port="465"/>
-		</outbound-socket-binding>
+	<outbound-socket-binding name="mail-gmail-outgoing">
+		<remote-destination host="smtp.gmail.com" port="465"/>
+	</outbound-socket-binding>
     </socket-binding-group>
 </server>

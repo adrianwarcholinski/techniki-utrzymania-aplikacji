@@ -11,6 +11,7 @@ import pl.lodz.p.it.ssbd2020.mok.facades.interfaces.ExpiredTokenFacadeReadCommit
 import pl.lodz.p.it.ssbd2020.utils.interceptor.LoggingInterceptor;
 
 import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -43,7 +44,7 @@ public class ExpiredTokenFacadeReadCommitted extends AbstractFacade<ExpiredToken
     }
 
     @Override
-    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
+    @PermitAll
     public void create(ExpiredTokenEntity entity) throws AppException {
         try {
             super.create(entity);
@@ -76,7 +77,7 @@ public class ExpiredTokenFacadeReadCommitted extends AbstractFacade<ExpiredToken
     }
 
     @Override
-    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
+    @PermitAll
     public Optional<ExpiredTokenEntity> findByToken(String token) throws AppException{
         TypedQuery<ExpiredTokenEntity> tq = em.createNamedQuery("ExpiredTokenEntity.findByToken", ExpiredTokenEntity.class);
         tq.setParameter("token", token);

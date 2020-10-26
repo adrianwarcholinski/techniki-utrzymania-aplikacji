@@ -323,7 +323,7 @@ public class AccountManager implements AccountManagerLocal {
     }
 
     @Override
-    @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
+    @PermitAll
     public void changeEmail(String cipherText) throws AppException {
         String[] decrypted;
         if (expiredTokenFacadeReadCommitted.findByToken(cipherText).isPresent()) {
