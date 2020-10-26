@@ -303,108 +303,60 @@ WHERE account.verified = true
   AND access_level.active = true;
 
 
-
-# REVOKE ALL ON SCHEMA public FROM PUBLIC;
-# REVOKE ALL ON SCHEMA public FROM postgres;
-# GRANT ALL ON SCHEMA public TO postgres;
-# GRANT ALL ON SCHEMA public TO PUBLIC;
-
-# REVOKE ALL PRIVILEGES ON TABLE auth_view FROM PUBLIC;
-# REVOKE ALL PRIVILEGES ON TABLE auth_view FROM 'ssbd01admin';
 GRANT ALL PRIVILEGES ON TABLE auth_view TO 'ssbd01admin';
 GRANT SELECT ON TABLE auth_view TO 'ssbd01payara';
-#
-# # REVOKE ALL ON TABLE account FROM PUBLIC;
-# # REVOKE ALL ON TABLE account FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE account TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE account TO ssbd01mok;
 GRANT SELECT ON TABLE account TO ssbd01mor;
-#
-#
-# # REVOKE ALL ON TABLE personal_data FROM PUBLIC;
-# # REVOKE ALL ON TABLE personal_data FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE personal_data TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE personal_data TO ssbd01mok;
 GRANT SELECT ON TABLE personal_data TO ssbd01mor;
-#
-#
-# # REVOKE ALL ON TABLE access_level FROM PUBLIC;
-# # REVOKE ALL ON TABLE access_level FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE access_level TO ssbd01admin;
 GRANT SELECT,INSERT, UPDATE ON TABLE access_level TO ssbd01mok;
 GRANT SELECT ON TABLE access_level TO ssbd01mor;
-#
-#
-# REVOKE ALL ON TABLE admin_data FROM PUBLIC;
-# REVOKE ALL ON TABLE admin_data FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE admin_data TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE admin_data TO ssbd01mok;
-#
-# # REVOKE ALL ON TABLE customer_data FROM PUBLIC;
-# # REVOKE ALL ON TABLE customer_data FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE customer_data TO ssbd01admin;
 GRANT SELECT,INSERT, UPDATE ON TABLE customer_data TO ssbd01mok;
 GRANT SELECT ON TABLE customer_data TO ssbd01mor;
-#
-# # REVOKE ALL ON TABLE employee_data FROM PUBLIC;
-# # REVOKE ALL ON TABLE employee_data FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE employee_data TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE employee_data TO ssbd01mok;
-#
-#
-# # REVOKE ALL ON TABLE reservation FROM PUBLIC;
-# # REVOKE ALL ON TABLE reservation FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE reservation TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE reservation TO ssbd01mor;
-#
-# # REVOKE ALL ON TABLE weapon FROM PUBLIC;
-# # REVOKE ALL ON TABLE weapon FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE weapon TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE weapon TO ssbd01mor;
-#
-# # REVOKE ALL ON TABLE weapon_category FROM PUBLIC;
-# # REVOKE ALL ON TABLE weapon_category FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE weapon_category TO ssbd01admin;
 GRANT SELECT ON TABLE weapon_category TO ssbd01mor;
-#
-# # REVOKE ALL ON TABLE weapon_model FROM PUBLIC;
-# # REVOKE ALL ON TABLE weapon_model FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE weapon_model TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE weapon_model TO ssbd01mor;
-#
-# # REVOKE ALL ON TABLE opinion FROM PUBLIC;
-# # REVOKE ALL ON TABLE opinion FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE opinion TO ssbd01admin;
 GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE opinion TO ssbd01mor;
-#
-# # REVOKE ALL ON TABLE alley FROM PUBLIC;
-# # REVOKE ALL ON TABLE alley FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE alley TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE alley TO ssbd01mor;
-#
-#
-# # REVOKE ALL ON TABLE alley_difficulty_level FROM PUBLIC;
-# # REVOKE ALL ON TABLE alley_difficulty_level FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE alley_difficulty_level TO ssbd01admin;
 GRANT SELECT ON TABLE alley_difficulty_level TO ssbd01mor;
-#
-#
-# # REVOKE ALL ON TABLE average_rate FROM PUBLIC;
-# # REVOKE ALL ON TABLE average_rate FROM ssbd01admin;
+
 GRANT ALL PRIVILEGES ON TABLE average_rate TO ssbd01admin;
 GRANT SELECT, INSERT, UPDATE ON TABLE average_rate TO ssbd01mor;
-#
-#
-# # REVOKE ALL ON TABLE generator FROM PUBLIC;
-# # REVOKE ALL ON TABLE generator FROM ssbd01;
+
 GRANT ALL PRIVILEGES ON TABLE generator TO ssbd01;
 GRANT ALL PRIVILEGES ON TABLE generator TO ssbd01admin;
 GRANT SELECT,UPDATE ON TABLE generator TO ssbd01mok;
 GRANT SELECT,UPDATE ON TABLE generator TO ssbd01mor;
-#
-#
-# REVOKE ALL ON TABLE expired_token FROM PUBLIC;
-# REVOKE ALL ON TABLE expired_token FROM ssbd01;
+
 GRANT ALL PRIVILEGES ON TABLE expired_token TO ssbd01;
 GRANT ALL PRIVILEGES ON TABLE expired_token TO ssbd01admin;
 GRANT SELECT, INSERT ON TABLE expired_token TO ssbd01mok;
