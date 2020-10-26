@@ -24,7 +24,7 @@ public class EmailSender {
     /**
      * Obiekt sesji związanej z serwerem pocztowym
      */
-//    @Resource(lookup = "java:app/SSBDJavaMail")
+    @Resource(name = "java:jboss/mail/gmail-outgoing")
     private Session mailSession;
 
     /**
@@ -36,13 +36,13 @@ public class EmailSender {
      */
     public void sendEmail(Email email) throws MessagingException {
         Logger.getGlobal().log(Level.INFO, "Sending email...");
-//        MimeMessage message = new MimeMessage(mailSession);
-//        message.setFrom(new InternetAddress(mailSession.getProperty("mail.from")));
-//        InternetAddress[] address = {new InternetAddress(email.getReceiverAddress())};
-//        message.setRecipients(Message.RecipientType.TO, address);
-//        message.setSubject(email.getSubject(), String.valueOf(StandardCharsets.UTF_8));
-//        message.setSentDate(new Date());
-//        message.setText(email.getBody(), String.valueOf(StandardCharsets.UTF_8), "html");
-//        Transport.send(message);
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(mailSession.getProperty("mail.from")));
+        InternetAddress[] address = {new InternetAddress(email.getReceiverAddress())};
+        message.setRecipients(Message.RecipientType.TO, address);
+        message.setSubject(email.getSubject(), String.valueOf(StandardCharsets.UTF_8));
+        message.setSentDate(new Date());
+        message.setText(email.getBody(), String.valueOf(StandardCharsets.UTF_8), "html");
+        Transport.send(message);
     }
 }
