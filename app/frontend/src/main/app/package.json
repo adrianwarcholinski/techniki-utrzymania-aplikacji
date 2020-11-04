@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "/ssbd01",
-  "proxy": "https://localhost:8443/ssbd01",
+  "proxy": "http://localhost:8080/ssbd01",
   "dependencies": {
     "@material-ui/core": "^4.9.10",
     "@material-ui/icons": "^4.9.1",
