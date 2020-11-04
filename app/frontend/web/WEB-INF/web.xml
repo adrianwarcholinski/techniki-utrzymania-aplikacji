@@ -44,7 +44,7 @@
     </context-param>
     <context-param>
         <param-name>COOKIE_SECURE</param-name>
-        <param-value>true</param-value>
+        <param-value>false</param-value>
     </context-param>
     <context-param>
         <param-name>COOKIE_HTTP_ONLY</param-name>
