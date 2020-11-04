@@ -1,20 +1,25 @@
 version: "3.1"
 services:
   mysql:
-    build: ./mysql
+    image: mysql
     ports:
       - 3306:3306
     environment:
       MYSQL_USER: admin
       MYSQL_PASSWORD: P@ssw0rd
       MYSQL_DATABASE: ssbd01
-      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/data:/var/lib/mysql:rw
   wildfly:
     build: ./wildfly
+  proxy:
+    image: nginx
+    volumes:
+      - ./nginx:/etc/nginx
     ports:
-      - 8080:8080
-      - 9990:9990
-      - 8787:8787
-      - 8443:8443
+      - "443:443"
     environment:
-      WILDFLY_PASS: admin
+      - NGINX_PORT=443
+

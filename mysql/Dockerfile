@@ -1,3 +1,3 @@
 FROM mysql:latest
-ADD ./createDB.sql /docker-entrypoint-initdb.d
+ADD init/createDB.sql /docker-entrypoint-initdb.d
 
