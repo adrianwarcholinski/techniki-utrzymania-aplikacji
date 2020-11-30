@@ -1,0 +1,56 @@
+@import "Colors";
+
+.navbar {
+  vertical-align: middle;
+  background-color: $color-paper;
+  height: 100%;
+}
+
+.account-button {
+  border-radius: 20px !important;
+  padding: 2px 8px 2px 12px !important;
+  font-size: 20px !important;
+  margin-left: 20px !important;
+  text-transform: none !important;
+}
+
+.account-button-color {
+  background-color: #999 !important;
+}
+
+.MuiPaper-root {
+  border-radius: 25px !important;
+  margin-top: 7px !important;
+}
+
+.account-menu-item-typography {
+  width: 100% !important;
+  margin-left: 5px !important;
+  color: $color-dark-grey !important;
+}
+
+.account-menu-item-icon {
+  color: $color-dark-grey !important;
+  min-width: 30px !important;
+}
+
+.role-button {
+  border-radius: 20px !important;
+  padding: 2px 8px 2px 12px !important;
+  font-size: 20px !important;
+  text-transform: none !important;
+}
+
+.home-icon {
+  margin-right: 5px !important;
+}
+
+.breadcrumbs-text {
+  font-size: 18px !important;
+  color: inherit !important;
+}
+
+.account-circle-icon {
+  font-size: 32px !important;
+  margin-left: -3px;
+}

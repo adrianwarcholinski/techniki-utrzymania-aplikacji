@@ -1,0 +1,37 @@
+{
+  "reservationDetails": {
+    "customerName": "reservationDetails.customerName",
+    "customerSurname": "reservationDetails.customerSurname",
+    "customerLogin": "reservationDetails.customerLogin",
+    "customerEmail": "reservationDetails.customerEmail",
+    "customerPhoneNumber": "reservationDetails.customerPhoneNumber",
+    "alleyNameAndDifficultyLevel": "reservationDetails.alleyNameAndDifficultyLevel",
+    "weaponModelAndSerialNumber": "reservationDetails.weaponModelAndSerialNumber",
+    "startDate": "reservationDetails.startDate",
+    "endDate": "reservationDetails.endDate",
+    "header": "reservationDetails.header",
+    "status": "reservationDetails.status",
+    "weaponModel": "reservationDetails.weaponModel",
+    "weaponSerialNumber": "reservationDetails.weaponSerialNumber"
+  },
+  "common": {
+    "loading": "common.loading"
+  },
+  "editReservation": {
+    "header": "editReservation.header",
+    "confirmDialogTitle": "editReservation.confirmDialogTitle",
+    "confirmDialogContent": "editReservation.confirmDialogContent",
+    "change": "editReservation.change",
+    "cancel": "editReservation.cancel",
+    "SUCCESS": "editReservation.SUCCESS",
+    "ERROR": "editReservation.ERROR"
+  },
+  "updateReservation": {
+    "SUCCESS": "updateReservation.SUCCESS"
+  },
+  "error": {
+    "noAvailableAlleys": "error.noAvailableAlleys",
+    "noAvailableWeaponModels": "error.noAvailableWeaponModels",
+    "noAvailableWeapons": "error.noAvailableWeapons"
+  }
+}

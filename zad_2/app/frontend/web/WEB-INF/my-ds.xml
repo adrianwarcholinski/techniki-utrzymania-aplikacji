@@ -1,0 +1,33 @@
+<datasources xmlns="http://www.jboss.org/ironjacamar/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.jboss.org/ironjacamar/schema ">
+    <datasource jndi-name="java:/jdbc/ssbd01payaraDS" pool-name="jdbc/ssbd01payaraCP" enabled="true"
+                use-java-context="true" >
+        <connection-url>jdbc:mysql://mysql:3306/ssbd01</connection-url>
+        <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+        <driver>mysql</driver>
+        <security>
+            <user-name>ssbd01payara</user-name>
+            <password>P@ssw0rd</password>
+        </security>
+    </datasource>
+    <datasource jndi-name="java:/jdbc/ssbd01mokDS" pool-name="jdbc/ssbd01mokCP" enabled="true"
+                use-java-context="true" >
+        <connection-url>jdbc:mysql://mysql:3306/ssbd01</connection-url>
+        <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+        <driver>mysql</driver>
+        <security>
+            <user-name>ssbd01mok</user-name>
+            <password>P@ssw0rd</password>
+        </security>
+    </datasource>
+    <datasource jndi-name="java:/jdbc/ssbd01morDS" pool-name="jdbc/ssbd01morCP" enabled="true"
+                use-java-context="true">
+        <connection-url>jdbc:mysql://mysql:3306/ssbd01</connection-url>
+        <driver>mysql</driver>
+        <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+        <security>
+            <user-name>ssbd01mor</user-name>
+            <password>P@ssw0rd</password>
+        </security>
+    </datasource>
+</datasources>

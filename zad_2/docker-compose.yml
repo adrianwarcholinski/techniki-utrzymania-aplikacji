@@ -1,0 +1,33 @@
+version: "3.1"
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: P@ssw0rd
+      MYSQL_DATABASE: ssbd01
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/data:/var/lib/mysql:rw
+    networks: 
+      - tua
+
+  wildfly:
+    build: ./wildfly
+    networks: 
+      - tua
+
+  proxy:
+    image: nginx
+    volumes:
+      - ./nginx/conf:/etc/nginx
+      - ./nginx/certs:/etc/certs
+    ports:
+      - "8443:8443"
+    networks: 
+      - tua
+
+networks: 
+  tua:
+    driver: bridge
