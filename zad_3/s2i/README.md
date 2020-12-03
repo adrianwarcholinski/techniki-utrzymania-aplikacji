@@ -1,10 +1,11 @@
 ## 0. Prerequisities
 s2i binary has to be installed. It can be downloaded from https://github.com/openshift/source-to-image/releases/tag/v1.3.1
 
-Next required tools are JAR files with EclipseLink. Put them into `modules/system/layers/base/org/eclipse/persistence/main` directory.
-Required JAR files:
-* https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink/2.7.4 (but name of the file should be "eclipselink.jar"
-* https://mvnrepository.com/artifact/org.wildfly/jipijapa-eclipselink/20.0.0.Final 
+Download WildFly from https://download.jboss.org/wildfly/20.0.0.Final/wildfly-20.0.0.Final.zip and put `modules` directory under this directory (so the absolute path of `modules` directory is `.../techniki-utrzymania-aplikacji/zad_3/s2i/modules`. 
+
+Next required tool is JAR file with EclipseLink. Download JAR from https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink/2.7.4 and save it in `modules/system/layers/base/org/eclipse/persistence/main` directory with name "eclipselink.jar".
+
+Last step is to replace `modules/system/layers/base/org/eclipse/persistence/main/module.xml` file with content of `org-eclipse-persistence-main-module.xml`
 
 ## 1. Build custom builder image
 ```
