@@ -5,6 +5,8 @@ Download WildFly from https://download.jboss.org/wildfly/20.0.0.Final/wildfly-20
 
 Next required tool is JAR file with EclipseLink. Download JAR from https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink/2.7.4 and save it in `modules/system/layers/base/org/eclipse/persistence/main` directory with name "eclipselink.jar".
 
+Create `modules/system/layers/base/com/mysql/main` directory and put `module.xml` file with content of `mysql-module.xml`.
+
 Last step is to replace `modules/system/layers/base/org/eclipse/persistence/main/module.xml` file with content of `org-eclipse-persistence-main-module.xml`
 
 ## 1. Build custom builder image
