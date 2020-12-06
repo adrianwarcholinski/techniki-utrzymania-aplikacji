@@ -1,5 +1,7 @@
 package pl.lodz.p.it.ssbd2020.mok.endpoints;
 
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 import pl.lodz.p.it.ssbd2020.exceptions.AppException;
 import pl.lodz.p.it.ssbd2020.exceptions.common.AccountDoesNotExistException;
 import pl.lodz.p.it.ssbd2020.exceptions.common.SendingEmailException;
@@ -107,6 +109,11 @@ public class AuthenticationEndpoint extends Endpoint {
     @POST
     @Path("login")
     @PermitAll
+    @Counted(unit = MetricUnits.NONE,
+            name = "countLogin",
+            absolute = true,
+            displayName = "Count login",
+            description = "Metrics to show how many times login method was called.")
     public Response login(@Context HttpServletRequest request,
                           @HeaderParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                           @HeaderParam("password") @NotBlank String password,
