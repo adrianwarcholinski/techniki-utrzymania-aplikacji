@@ -5,13 +5,13 @@ Download WildFly from https://download.jboss.org/wildfly/20.0.0.Final/wildfly-20
 
 Next required tool is JAR file with EclipseLink. Download JAR from https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink/2.7.4 and save it in `modules/system/layers/base/org/eclipse/persistence/main` directory with name "eclipselink.jar".
 
-Create `modules/system/layers/base/com/mysql/main` directory and put `module.xml` file with content of `mysql-module.xml`.
+Create `modules/system/layers/base/com/mysql/main` directory and put `module.xml` file with content of `mysql-module.xml`. Additionally, download JDBC Driver (mysql-connector-java-8.0.21.jar) from here: https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.21 and put it into `modules/system/layers/base/com/mysql/main`.
 
-Last step is to replace `modules/system/layers/base/org/eclipse/persistence/main/module.xml` file with content of `org-eclipse-persistence-main-module.xml`
+Last step is to replace `modules/system/layers/base/org/eclipse/persistence/main/module.xml` file with content of `org-eclipse-persistence-main-module.xml`.
 
 ## 1. Build custom builder image
 ```
-docker build -t tua06-wildfly:1.0
+docker build -t tua06-wildfly:1.0 . 
 ```
 
 ## 2. Use created builder image to build the application
