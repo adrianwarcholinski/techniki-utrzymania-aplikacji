@@ -22,34 +22,19 @@
      spec:
        containers:
        - name:  app
-         image:  jboss/wildfly:latest
-        #  resources:
-        #    requests:
-        #      cpu: 100m
-        #      memory: 100Mi
-        #    limits:
-        #      cpu: 500m
-        #      memory: 200Mi
-        #  livenessProbe:
-        #    tcpSocket:
-        #      port: 80
-        #    initialDelaySeconds: 5
-        #    timeoutSeconds: 5
-        #    successThreshold: 1
-        #    failureThreshold: 3
-        #    periodSeconds: 10
-        #  readinessProbe:
-        #    httpGet:
-        #      path: /_status/healthz
-        #      port: 80
-        #    initialDelaySeconds: 5
-        #    timeoutSeconds: 2
-        #    successThreshold: 1
-        #    failureThreshold: 3
-        #    periodSeconds: 10
-         ports:
-         - containerPort:  8080
-           name:  https
+         image:  strzelbex:1.0
+         livenessProbe:
+           httpGet:
+             path: /ssbd01/app/healthz
+             port: 8080
+             scheme: HTTPS
+           initialDelaySeconds: 20
+           timeoutSeconds: 2
+           successThreshold: 1
+           failureThreshold: 3
+       ports:
+       - containerPort:  8080
+         name:  https
        restartPolicy: Always
 
 ---
