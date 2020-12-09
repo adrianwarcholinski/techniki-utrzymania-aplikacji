@@ -22,7 +22,7 @@
      spec:
        containers:
        - name:  app
-         image:  adrianwarcholinski/strzelbex:1.0
+         image:  adrianwarcholinski/strzelbex:1.1
          livenessProbe:
            httpGet:
              path: /ssbd01/app/healthz
