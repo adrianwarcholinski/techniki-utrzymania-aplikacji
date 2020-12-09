@@ -2,6 +2,8 @@ package pl.lodz.p.it.ssbd2020.mok.endpoints;
 
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Gauge;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import pl.lodz.p.it.ssbd2020.exceptions.AppException;
 import pl.lodz.p.it.ssbd2020.exceptions.common.AccountDoesNotExistException;
 import pl.lodz.p.it.ssbd2020.exceptions.common.SendingEmailException;
@@ -49,6 +51,34 @@ import java.util.logging.Logger;
 @RequestScoped
 @Produces("application/json")
 public class AuthenticationEndpoint extends Endpoint {
+    private long amountOf200 = 0;
+    private long amountOf400 = 0;
+
+    @Gauge(unit = "response",
+            name = "amount_of_200",
+            displayName = "Amount of responses with 200 error code",
+            tags = "code=200",
+            absolute = true)
+    public long getAmountOf200() {
+        return amountOf200;
+    }
+
+    public void incrementAmountOf200() {
+        this.amountOf200++;
+    }
+
+    @Gauge(unit = "response",
+            name = "amount_of_400",
+            displayName = "Amount of responses with 400 error code",
+            tags = "code=400",
+            absolute = true)
+    public long getAmountOf400() {
+        return amountOf400;
+    }
+
+    public void incrementAmountOf400() {
+        this.amountOf400++;
+    }
 
     /**
      * Kontekst serwletu, który pozwala odczytywać parametry z deskryptora web.xml.
@@ -110,10 +140,16 @@ public class AuthenticationEndpoint extends Endpoint {
     @Path("login")
     @PermitAll
     @Counted(unit = MetricUnits.NONE,
-            name = "countLogin",
+            name = "method_invocation",
             absolute = true,
-            displayName = "Count login",
-            description = "Metrics to show how many times login method was called.")
+            displayName = "Method invocation",
+            description = "Metrics to show how many times login method was called.",
+            tags = "method_invocation=login")
+    @Timed(name = "handling_time",
+            description = "Time of handling the method",
+            unit = MetricUnits.MILLISECONDS,
+            tags = "method_handling_time=login",
+            absolute = true)
     public Response login(@Context HttpServletRequest request,
                           @HeaderParam("login") @NotBlank @Pattern(regexp = RegexPatterns.LOGIN) @Size(max = 20) String login,
                           @HeaderParam("password") @NotBlank String password,
@@ -140,6 +176,8 @@ public class AuthenticationEndpoint extends Endpoint {
                 Logger.getGlobal().log(Level.INFO,
                         String.format("User %1$s logged to system from ip address %2$s", login, ip));
                 NewCookie cookie = jwtTokenUtils.newCookie(principal.getName(), callerGroups);
+
+                incrementAmountOf200();
                 return Response.ok(loginResponseDto).cookie(cookie).build();
             } else {
                 performTransaction(accountManager, () -> accountManager.handleUnsuccessfulAuthenticationAttempt(login));
@@ -150,8 +188,10 @@ public class AuthenticationEndpoint extends Endpoint {
                 }
             }
         } catch (AccountDoesNotExistException | AttemptToLockLastAdminAccountException | SendingEmailException e) {
+            incrementAmountOf400();
             return new UnauthorizedException().getResponse();
         } catch (AppException e) {
+            incrementAmountOf400();
             return e.getResponse();
         }
     }
@@ -166,6 +206,17 @@ public class AuthenticationEndpoint extends Endpoint {
     @GET
     @Path("logout")
     @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
+    @Counted(unit = MetricUnits.NONE,
+            name = "method_invocation",
+            absolute = true,
+            displayName = "Method invocation",
+            description = "Metrics to show how many times logout method was called.",
+            tags = "method_invocation=logout")
+    @Timed(name = "handling_time",
+            description = "Time of handling the method",
+            unit = MetricUnits.MILLISECONDS,
+            tags = "method_handling_time=logout",
+            absolute = true)
     public Response logout(@Context HttpServletRequest request) {
         Logger.getGlobal().log(Level.INFO,
                 String.format("User %1$s logged out from system from ip address %2$s", securityContext.getCallerPrincipal().getName(), request.getRemoteAddr()));
@@ -185,15 +236,29 @@ public class AuthenticationEndpoint extends Endpoint {
     @POST
     @Path("send-reset-link")
     @PermitAll
+    @Counted(unit = MetricUnits.NONE,
+            name = "method_invocation",
+            absolute = true,
+            displayName = "Method invocation",
+            description = "Metrics to show how many times sendResetPasswordEmail method was called.",
+            tags = "method_invocation=sendResetPasswordEmail")
+    @Timed(name = "handling_time",
+            description = "Time of handling the method",
+            unit = MetricUnits.MILLISECONDS,
+            tags = "method_handling_time=sendResetPasswordEmail",
+            absolute = true)
     public Response sendResetPasswordEmail(@HeaderParam("email") @NotBlank @Email(regexp = RegexPatterns.EMAIL) String email,
                                            @HeaderParam("language") String language) {
         try {
             performTransaction(accountManager, () -> accountManager.sendEmailForResetPassword(email, language));
+            incrementAmountOf200();
             return Response.ok().build();
 
         } catch (AccountDoesNotExistException e) {
+            incrementAmountOf200();
             return Response.ok().build();
         } catch (AppException e) {
+            incrementAmountOf400();
             return e.getResponse();
         }
     }
@@ -209,12 +274,25 @@ public class AuthenticationEndpoint extends Endpoint {
     @POST
     @Path("verify-reset-link")
     @PermitAll
+    @Counted(unit = MetricUnits.NONE,
+            name = "method_invocation",
+            absolute = true,
+            displayName = "Method invocation",
+            description = "Metrics to show how many times verifyLink method was called.",
+            tags = "method_invocation=verifyLink")
+    @Timed(name = "handling_time",
+            description = "Time of handling the method",
+            unit = MetricUnits.MILLISECONDS,
+            tags = "method_handling_time=verifyLink",
+            absolute = true)
     public Response verifyLink(@NotNull @HeaderParam("token") String token) {
         try {
             token = URLDecoder.decode(token, StandardCharsets.UTF_8);
             linkUtils.validateTimedToken(linkUtils.extractDataFromTimedToken(token));
+            incrementAmountOf200();
             return Response.ok().build();
         } catch (AppException e) {
+            incrementAmountOf400();
             return e.getResponse();
         }
     }
