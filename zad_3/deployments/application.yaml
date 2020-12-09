@@ -31,12 +31,12 @@
            timeoutSeconds: 2
            successThreshold: 1
            failureThreshold: 3
-       ports:
-       - containerPort:  8080
-         name:  http
-       - containerPort: 9990
-         name: metrics
-       restartPolicy: Always
+         ports:
+          - containerPort:  8080
+            name:  http
+          - containerPort: 9990
+            name: metrics
+         restartPolicy: Always
 
 ---
 
