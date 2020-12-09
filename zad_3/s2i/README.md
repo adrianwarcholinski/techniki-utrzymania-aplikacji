@@ -21,5 +21,5 @@ s2i build --context-dir=zad_2/app https://github.com/adrianwarcholinski/techniki
 
 ## 3. Run the application
 ```
-docker run -p 8443:8443 strzelbex:1.0
+docker run -p 8443:8443 -p 9990:9990 strzelbex:1.0
 ```
