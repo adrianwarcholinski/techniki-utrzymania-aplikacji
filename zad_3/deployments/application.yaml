@@ -36,7 +36,7 @@
             name:  http
           - containerPort: 9990
             name: metrics
-         restartPolicy: Always
+       restartPolicy: Always
 
 ---
 
