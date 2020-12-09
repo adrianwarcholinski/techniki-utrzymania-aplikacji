@@ -22,19 +22,20 @@
      spec:
        containers:
        - name:  app
-         image:  strzelbex:1.0
+         image:  adrianwarcholinski/strzelbex:1.0
          livenessProbe:
            httpGet:
              path: /ssbd01/app/healthz
              port: 8080
-             scheme: HTTPS
            initialDelaySeconds: 20
            timeoutSeconds: 2
            successThreshold: 1
            failureThreshold: 3
        ports:
        - containerPort:  8080
-         name:  https
+         name:  http
+       - containerPort: 9990
+         name: metrics
        restartPolicy: Always
 
 ---
@@ -64,10 +65,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - tua06.apps.okd.cti.p.lodz.pl
+    - strzelbex.apps.okd.cti.p.lodz.pl
     secretName: tls
   rules:
-  - host: tua06.apps.okd.cti.p.lodz.pl
+  - host: strzelbex.apps.okd.cti.p.lodz.pl
     http:
       paths:
       - path: /ssbd01
