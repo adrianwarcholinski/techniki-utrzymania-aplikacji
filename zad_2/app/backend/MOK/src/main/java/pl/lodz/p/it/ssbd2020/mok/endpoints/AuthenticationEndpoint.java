@@ -54,32 +54,6 @@ public class AuthenticationEndpoint extends Endpoint {
     private long amountOf200 = 0;
     private long amountOf400 = 0;
 
-    @Gauge(unit = "response",
-            name = "amount_of_200",
-            displayName = "Amount of responses with 200 error code",
-            tags = "code=200",
-            absolute = true)
-    public long getAmountOf200() {
-        return amountOf200;
-    }
-
-    public void incrementAmountOf200() {
-        this.amountOf200++;
-    }
-
-    @Gauge(unit = "response",
-            name = "amount_of_400",
-            displayName = "Amount of responses with 400 error code",
-            tags = "code=400",
-            absolute = true)
-    public long getAmountOf400() {
-        return amountOf400;
-    }
-
-    public void incrementAmountOf400() {
-        this.amountOf400++;
-    }
-
     /**
      * Kontekst serwletu, który pozwala odczytywać parametry z deskryptora web.xml.
      */
@@ -122,6 +96,38 @@ public class AuthenticationEndpoint extends Endpoint {
     @PostConstruct
     public void init() {
         maxTransactions = Integer.parseInt(servletContext.getInitParameter("RENEW_TRANSACTION_LIMIT"));
+    }
+
+    @GET
+    @Path("stats-success")
+    @PermitAll
+    @Gauge(unit = "response",
+            name = "amount_of_200",
+            displayName = "Amount of responses with 200 error code",
+            tags = "code=200",
+            absolute = true)
+    public long getAmountOf200() {
+        return amountOf200;
+    }
+
+    public void incrementAmountOf200() {
+        this.amountOf200++;
+    }
+
+    @GET
+    @Path("stats-error")
+    @PermitAll
+    @Gauge(unit = "response",
+            name = "amount_of_400",
+            displayName = "Amount of responses with 400 error code",
+            tags = "code=400",
+            absolute = true)
+    public long getAmountOf400() {
+        return amountOf400;
+    }
+
+    public void incrementAmountOf400() {
+        this.amountOf400++;
     }
 
     /**
