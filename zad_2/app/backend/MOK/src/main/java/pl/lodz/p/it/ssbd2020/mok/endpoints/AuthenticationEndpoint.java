@@ -146,13 +146,13 @@ public class AuthenticationEndpoint extends Endpoint {
     @Path("login")
     @PermitAll
     @Counted(unit = MetricUnits.NONE,
-            name = "method_invocation",
+            name = "login_method_invocation",
             absolute = true,
             displayName = "Method invocation",
             description = "Metrics to show how many times login method was called.",
             tags = "method_invocation=login")
-    @Timed(name = "handling_time",
-            description = "Time of handling the method",
+    @Timed(name = "login_handling_time",
+            description = "Time of handling the login method",
             unit = MetricUnits.MILLISECONDS,
             tags = "method_handling_time=login",
             absolute = true)
@@ -213,13 +213,13 @@ public class AuthenticationEndpoint extends Endpoint {
     @Path("logout")
     @RolesAllowed({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CUSTOMER"})
     @Counted(unit = MetricUnits.NONE,
-            name = "method_invocation",
+            name = "logout_method_invocation",
             absolute = true,
             displayName = "Method invocation",
             description = "Metrics to show how many times logout method was called.",
             tags = "method_invocation=logout")
-    @Timed(name = "handling_time",
-            description = "Time of handling the method",
+    @Timed(name = "logout_handling_time",
+            description = "Time of handling the logout method",
             unit = MetricUnits.MILLISECONDS,
             tags = "method_handling_time=logout",
             absolute = true)
@@ -243,13 +243,13 @@ public class AuthenticationEndpoint extends Endpoint {
     @Path("send-reset-link")
     @PermitAll
     @Counted(unit = MetricUnits.NONE,
-            name = "method_invocation",
+            name = "sendResetPasswordEmail_method_invocation",
             absolute = true,
             displayName = "Method invocation",
             description = "Metrics to show how many times sendResetPasswordEmail method was called.",
             tags = "method_invocation=sendResetPasswordEmail")
-    @Timed(name = "handling_time",
-            description = "Time of handling the method",
+    @Timed(name = "sendResetPasswordEmail_handling_time",
+            description = "Time of handling the sendResetPasswordEmail method",
             unit = MetricUnits.MILLISECONDS,
             tags = "method_handling_time=sendResetPasswordEmail",
             absolute = true)
@@ -281,13 +281,13 @@ public class AuthenticationEndpoint extends Endpoint {
     @Path("verify-reset-link")
     @PermitAll
     @Counted(unit = MetricUnits.NONE,
-            name = "method_invocation",
+            name = "verifyLink_method_invocation",
             absolute = true,
             displayName = "Method invocation",
             description = "Metrics to show how many times verifyLink method was called.",
             tags = "method_invocation=verifyLink")
-    @Timed(name = "handling_time",
-            description = "Time of handling the method",
+    @Timed(name = "verifyLink_handling_time",
+            description = "Time of handling the verifyLink method",
             unit = MetricUnits.MILLISECONDS,
             tags = "method_handling_time=verifyLink",
             absolute = true)
