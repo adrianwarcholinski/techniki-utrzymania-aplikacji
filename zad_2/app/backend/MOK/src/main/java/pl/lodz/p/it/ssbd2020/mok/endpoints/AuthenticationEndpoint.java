@@ -98,9 +98,6 @@ public class AuthenticationEndpoint extends Endpoint {
         maxTransactions = Integer.parseInt(servletContext.getInitParameter("RENEW_TRANSACTION_LIMIT"));
     }
 
-    // @GET
-    // @Path("stats-success")
-    // @PermitAll
     @Gauge(unit = "response",
             name = "amount_of_200",
             displayName = "Amount of responses with 200 error code",
@@ -114,9 +111,6 @@ public class AuthenticationEndpoint extends Endpoint {
         this.amountOf200++;
     }
 
-    // @GET
-    // @Path("stats-error")
-    // @PermitAll
     @Gauge(unit = "response",
             name = "amount_of_400",
             displayName = "Amount of responses with 400 error code",
