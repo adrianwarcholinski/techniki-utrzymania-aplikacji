@@ -22,7 +22,7 @@
      spec:
        containers:
        - name:  app
-         image:  adrianwarcholinski/strzelbex:1.2
+         image:  adrianwarcholinski/strzelbex:1.4
          livenessProbe:
            httpGet:
              path: /ssbd01/app/healthz
@@ -38,7 +38,7 @@
             name: metrics
          resources:
             requests:
-              cpu: 50m
+              cpu: 500m
        restartPolicy: Always
 
 ---
@@ -97,4 +97,4 @@ spec:
     name: app
   minReplicas: 1
   maxReplicas: 5
-  targetCPUUtilizationPercentage: 30
+  targetCPUUtilizationPercentage: 90
