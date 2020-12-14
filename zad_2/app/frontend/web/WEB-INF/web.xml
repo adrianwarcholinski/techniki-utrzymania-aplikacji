@@ -7,7 +7,7 @@
     <!--adres URL API używany do wysyłania e-maili-->
     <context-param>
         <param-name>API_URL</param-name>
-        <param-value>https://localhost:8443/ssbd01</param-value>
+        <param-value>https://strzelbex.apps.okd.cti.p.lodz.pl:8443/ssbd01</param-value>
     </context-param>
 
     <!--czas życia -linku do formularza zmiany hasła-->
