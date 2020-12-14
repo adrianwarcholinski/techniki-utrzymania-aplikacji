@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: tua-06
+spec:
+  tls:
+  - hosts:
+    - grafana.strzelbex.apps.okd.cti.p.lodz.pl
+    secretName: tls
+  rules:
+  - host: grafana.strzelbex.apps.okd.cti.p.lodz.pl
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: grafana
+          servicePort: 3000
