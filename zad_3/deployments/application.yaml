@@ -86,9 +86,14 @@ spec:
           serviceName: app
           servicePort: 8080
 ---
-  apiVersion: autoscaling/v1
-  kind: HorizontalPodAutoscaler
-  metadata:
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
     name: app
   spec:
     scaleTargetRef:
