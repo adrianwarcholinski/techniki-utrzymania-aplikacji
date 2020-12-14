@@ -51,8 +51,6 @@ import java.util.logging.Logger;
 @RequestScoped
 @Produces("application/json")
 public class AuthenticationEndpoint extends Endpoint {
-    private long amountOf200 = 0;
-    private long amountOf400 = 0;
 
     /**
      * Kontekst serwletu, który pozwala odczytywać parametry z deskryptora web.xml.
@@ -96,32 +94,6 @@ public class AuthenticationEndpoint extends Endpoint {
     @PostConstruct
     public void init() {
         maxTransactions = Integer.parseInt(servletContext.getInitParameter("RENEW_TRANSACTION_LIMIT"));
-    }
-
-    @Gauge(unit = "response",
-            name = "amount_of_200",
-            displayName = "Amount of responses with 200 error code",
-            tags = "code=200",
-            absolute = true)
-    public long getAmountOf200() {
-        return amountOf200;
-    }
-
-    public void incrementAmountOf200() {
-        this.amountOf200++;
-    }
-
-    @Gauge(unit = "response",
-            name = "amount_of_400",
-            displayName = "Amount of responses with 400 error code",
-            tags = "code=400",
-            absolute = true)
-    public long getAmountOf400() {
-        return amountOf400;
-    }
-
-    public void incrementAmountOf400() {
-        this.amountOf400++;
     }
 
     /**
@@ -177,7 +149,6 @@ public class AuthenticationEndpoint extends Endpoint {
                         String.format("User %1$s logged to system from ip address %2$s", login, ip));
                 NewCookie cookie = jwtTokenUtils.newCookie(principal.getName(), callerGroups);
 
-                incrementAmountOf200();
                 return Response.ok(loginResponseDto).cookie(cookie).build();
             } else {
                 performTransaction(accountManager, () -> accountManager.handleUnsuccessfulAuthenticationAttempt(login));
@@ -188,10 +159,8 @@ public class AuthenticationEndpoint extends Endpoint {
                 }
             }
         } catch (AccountDoesNotExistException | AttemptToLockLastAdminAccountException | SendingEmailException e) {
-            incrementAmountOf400();
             return new UnauthorizedException().getResponse();
         } catch (AppException e) {
-            incrementAmountOf400();
             return e.getResponse();
         }
     }
@@ -251,14 +220,11 @@ public class AuthenticationEndpoint extends Endpoint {
                                            @HeaderParam("language") String language) {
         try {
             performTransaction(accountManager, () -> accountManager.sendEmailForResetPassword(email, language));
-            incrementAmountOf200();
             return Response.ok().build();
 
         } catch (AccountDoesNotExistException e) {
-            incrementAmountOf200();
             return Response.ok().build();
         } catch (AppException e) {
-            incrementAmountOf400();
             return e.getResponse();
         }
     }
@@ -289,10 +255,8 @@ public class AuthenticationEndpoint extends Endpoint {
         try {
             token = URLDecoder.decode(token, StandardCharsets.UTF_8);
             linkUtils.validateTimedToken(linkUtils.extractDataFromTimedToken(token));
-            incrementAmountOf200();
             return Response.ok().build();
         } catch (AppException e) {
-            incrementAmountOf400();
             return e.getResponse();
         }
     }
