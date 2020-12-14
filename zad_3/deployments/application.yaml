@@ -38,7 +38,7 @@
             name: metrics
          resources:
             requests:
-              cpu: 500m
+              cpu: 90m
        restartPolicy: Always
 
 ---
