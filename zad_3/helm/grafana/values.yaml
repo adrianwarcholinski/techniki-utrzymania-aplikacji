@@ -197,8 +197,8 @@ affinity: {}
 ##
 securityContext:
   enabled: false
-  runAsUser: 1001
-  fsGroup: 1001
+  runAsUser: 1000640000
+  fsGroup: 1000640000
   runAsNonRoot: true
 
 ## Grafana containers' resource requests and limits
@@ -434,8 +434,8 @@ imageRenderer:
   ##
   securityContext:
     enabled: false
-    runAsUser: 1001
-    fsGroup: 1001
+    runAsUser: 1000640000
+    fsGroup: 1000640000
     runAsNonRoot: true
   service:
     ## Grafana Image Renderer metrics port
